@@ -24,21 +24,5 @@ chrome.storage.session.onChanged.addListener(function (changes) {
     }
 });
 
-// chrome.runtime.onMessage.addListener(
-//     function(request, sender, sendResponse) {
-//         console.log(sender.tab ?
-//                   "from a content script:" + sender.tab.url :
-//                   "from the extension");
-//         if (request.listenSession === true) {
-//             chrome.storage.session.onChanged.addListener(function (changes) {
-//                 const newState = changes["state"].newValue;
-//                 if (newState) {
-//                     sendResponse({farewell: "goodbye"});
-//                 }
-//             });
-//         }
-//     }
-// );
-
 // content script is an untrusted context
 chrome.storage.session.setAccessLevel({accessLevel: "TRUSTED_AND_UNTRUSTED_CONTEXTS"});
