@@ -1,35 +1,45 @@
 const postings = "https://waterlooworks.uwaterloo.ca/myAccount/co-op/coop-postings.htm"
 
 var postingsToScrape = -1;
-var pageNumber = -1;
-var nextPageButton = undefined;
+var searchAction = "";
+var searchForm = {};
+
+function onLoadPostingsTable(event) {
+    console.log(`Scraping page ${searchForm["page"]}`);
+    
+    var htmlDoc = $.parseHTML(event.currentTarget.response);
+
+    const pageNumberElem = $(htmlDoc).find('#currentPageff45d44d8af8');
+    pageNumber = pageNumberElem.attr('value');
+
+    if (pageNumber != searchForm["page"]) { // not strict equality
+        console.log(`No more pages to scrape. Last scraped page: ${pageNumber}. Requested page: ${searchForm["page"]}.`);
+        return;
+    }
+
+    // postings list
+    const table = $(htmlDoc).find('#postingsTable');
+    table.find('tbody tr').each(function (index, tr) {
+        scrapeJobTableRowEntry(tr);
+    });
+
+    const startCount = $('#totalOverAllDocs').text();
+    const endCount = $('#totalOverAllPacks').text();
+    postingsToScrape = Number(endCount) - Number(startCount) + 1;
+}
 
 async function main() {
     console.log("running extension main...");
     if (window.location.href === postings) {
-        // const searchButton = $('#widgetSearch').find('[type="submit"]');
-        // if (searchButton.length > 0) { // home page
-        //     searchButton.click();
-        //     return;
-        // }
-
-        // postings list
-        const table = $('#postingsTable');
-        table.find('tbody tr').each(function (index, tr) {
-            scrapeJobTableRowEntry(tr);
-        });
-
-        const startCount = $('#totalOverAllDocs').text();
-        const endCount = $('#totalOverAllPacks').text();
-        postingsToScrape = Number(endCount) - Number(startCount) + 1;
-
-        const pageNumberElem = $('#currentPageff45d44d8af8');
-        pageNumber = pageNumberElem.attr('value');
-        nextPageButton = pageNumberElem.parent().find('ul li.active').next();
+        searchAction = $('#widgetSearch input[name="action"]').attr('value');
+        console.log(searchAction);
+        searchForm["action"] = searchAction;
+        searchForm["page"] = 1;
+        sendForm(searchForm, onLoadPostingsTable, 5);
     }
-    // else {
-    //     window.location.replace(postings);
-    // }
+    else {
+        window.location.replace(postings);
+    }
 }
 
 function scrapeJobTableRowEntry(tr) {
@@ -67,10 +77,8 @@ function scrapeJobTableRowEntry(tr) {
         postingsToScrape -= 1;
         if (postingsToScrape === 0) {
             console.log("Done scraping!");
-            console.log(nextPageButton);
-            if (nextPageButton !== undefined && !nextPageButton.hasClass('disabled')) {
-                
-            }
+            searchForm["page"] += 1;
+            sendForm(searchForm, onLoadPostingsTable, 5);
         }
     };
     sendForm(formObj, onLoad, 5);
@@ -145,15 +153,15 @@ function sendForm(data, onLoad, retries) {
 }
 
 chrome.storage.session.get(["state"], (items) => {
-    const state = items["state"];
-    if (state === "ON") {
-        main();
-    }
+    // const state = items["state"];
+    // if (state === "ON") {
+    //     main();
+    // }
 });
 
 chrome.storage.session.onChanged.addListener(function (changes) {
     const state = changes["state"];
-    if (state !== undefined && state["newValue"] === "ON") {
+    if (state !== undefined) {
         main();
     }
 });
