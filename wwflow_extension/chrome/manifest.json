@@ -1,0 +1,41 @@
+{
+    "manifest_version": 3,
+    "name": "WaterlooWorks Flow",
+    "short_name": "WWFlow",
+    "description": "Integrate your personal WaterlooWorks info into WWFlow",
+    "version": "1.0",
+    "icons": {
+        "16": "images/icon-16.png",
+        "32": "images/icon-32.png",
+        "48": "images/icon-48.png",
+        "128": "images/icon-128.png"
+    },
+    "action": {
+        "default_icon": {
+            "16": "images/icon-16.png",
+            "32": "images/icon-32.png",
+            "48": "images/icon-48.png",
+            "128": "images/icon-128.png"
+        }
+    },
+    "background": {
+        "service_worker": "js/background.js"
+    },
+    "host_permissions": [
+        "*://waterlooworks.uwaterloo.ca/*"
+    ],
+    "permissions": [
+        "scripting",
+        "storage",
+        "unlimitedStorage"
+    ],
+    "content_scripts": [
+        {
+            "matches": ["*://waterlooworks.uwaterloo.ca/*"],
+            "js": [
+                "js/lib/jquery-3.6.1.min.js",
+                "js/runner.js"
+            ]
+        }
+    ]
+}
