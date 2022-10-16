@@ -1,48 +1,53 @@
 const postings = "https://waterlooworks.uwaterloo.ca/myAccount/co-op/coop-postings.htm"
 
-var postingsToScrape = -1;
 var searchAction = "";
-var searchForm = {};
-
-function onLoadPostingsTable(event) {
-    console.log(`Scraping page ${searchForm["page"]}`);
-    
-    var htmlDoc = $.parseHTML(event.currentTarget.response);
-
-    const pageNumberElem = $(htmlDoc).find('#currentPageff45d44d8af8');
-    pageNumber = pageNumberElem.attr('value');
-
-    if (pageNumber != searchForm["page"]) { // not strict equality
-        console.log(`No more pages to scrape. Last scraped page: ${pageNumber}. Requested page: ${searchForm["page"]}.`);
-        return;
-    }
-
-    // postings list
-    const table = $(htmlDoc).find('#postingsTable');
-    table.find('tbody tr').each(function (index, tr) {
-        scrapeJobTableRowEntry(tr);
-    });
-
-    const startCount = $('#totalOverAllDocs').text();
-    const endCount = $('#totalOverAllPacks').text();
-    postingsToScrape = Number(endCount) - Number(startCount) + 1;
-}
 
 async function main() {
     console.log("running extension main...");
     if (window.location.href === postings) {
         searchAction = $('#widgetSearch input[name="action"]').attr('value');
-        console.log(searchAction);
-        searchForm["action"] = searchAction;
-        searchForm["page"] = 1;
-        sendForm(searchForm, onLoadPostingsTable, 5);
+        sendForm({action: searchAction, page: 1}, onLoadPostingsTable, 5);
     }
     else {
         window.location.replace(postings);
     }
 }
 
-function scrapeJobTableRowEntry(tr) {
+function onLoadPostingsTable(event, data) {
+    console.log(`Scraping page ${data["page"]}`);
+
+    var htmlDoc = $.parseHTML(event.currentTarget.response);
+
+    const pageNumberElem = $(htmlDoc).find('#currentPageff45d44d8af8');
+    const pageNumber = pageNumberElem.attr('value');
+
+    if (pageNumber != data["page"]) { // not strict equality
+        console.log(`No more pages to scrape. Actual page ${pageNumber}. Requested page ${data["page"]}.`);
+        return;
+    }
+
+    // Need to load pages individually as the server can only serve one page at a time
+    sendForm({action: searchAction, page: data["page"] + 1}, onLoadPostingsTable, 5);
+
+    const startCount = $('#totalOverAllDocs').text();
+    const endCount = $('#totalOverAllPacks').text();
+    var postingsToScrape = Number(endCount) - Number(startCount) + 1;
+
+    const doneScrapeRow = () => {
+        postingsToScrape -= 1;
+        if (postingsToScrape === 0) {
+            console.log(`Done scraping page ${pageNumber}.`);
+        }
+    }
+
+    // postings list
+    const table = $(htmlDoc).find('#postingsTable');
+    table.find('tbody tr').each(function (index, tr) {
+        scrapeJobTableRowEntry(tr, doneScrapeRow);
+    });
+}
+
+function scrapeJobTableRowEntry(tr, callback) {
     // get the form data to open the job posting
     const jobTitleLink = $(tr).find('td:nth-child(4) a');
     const onclick = $(jobTitleLink).attr('onclick');
@@ -66,7 +71,7 @@ function scrapeJobTableRowEntry(tr) {
         const location = $(tr).find('td:nth-child(9)').text().trim();
         const level = $(tr).find('td:nth-child(10)').text().trim();
         const applications = $(tr).find('td:nth-child(11)').text().trim();
-        const deadline = $(tr).find('td:nth-child(11)').text().trim();
+        const deadline = $(tr).find('td:nth-child(12)').text().trim();
 
         const postingListData = {jobTitle, company, division, openings, location, level, applications, deadline};
         
@@ -74,11 +79,8 @@ function scrapeJobTableRowEntry(tr) {
         data[jobId] = postingScrape;
         data[jobId]["Posting List Data"] = postingListData;
         chrome.storage.local.set(data);
-        postingsToScrape -= 1;
-        if (postingsToScrape === 0) {
-            console.log("Done scraping!");
-            searchForm["page"] += 1;
-            sendForm(searchForm, onLoadPostingsTable, 5);
+        if (callback) {
+            callback();
         }
     };
     sendForm(formObj, onLoad, 5);
@@ -132,7 +134,7 @@ function sendForm(data, onLoad, retries) {
                 sendForm(data, onLoad, retries - 1); 
             }
         } else if (onLoad) {
-            onLoad(event);
+            onLoad(event, data);
         }
     });
 
@@ -152,12 +154,7 @@ function sendForm(data, onLoad, retries) {
     XHR.send(FD);
 }
 
-chrome.storage.session.get(["state"], (items) => {
-    // const state = items["state"];
-    // if (state === "ON") {
-    //     main();
-    // }
-});
+chrome.storage.session.get(["state"], (items) => {});
 
 chrome.storage.session.onChanged.addListener(function (changes) {
     const state = changes["state"];
