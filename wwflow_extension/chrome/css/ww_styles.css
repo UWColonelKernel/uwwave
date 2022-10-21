@@ -1,0 +1,14 @@
+.ck_root {
+    padding: 16px 0;
+}
+
+.ck_container {
+    border: 2px solid;
+    border-radius: 12px;
+    padding: 16px 20px;
+}
+
+.ck_title {
+    line-height: inherit;
+}
+

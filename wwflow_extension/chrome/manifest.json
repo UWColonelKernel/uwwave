@@ -35,7 +35,16 @@
             "js": [
                 "js/lib/jquery-3.6.1.min.js",
                 "js/runner.js"
+            ],
+            "css": [
+                "css/ww_styles.css"
             ]
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [ "html/*.html" ],
+            "matches": [ "*://waterlooworks.uwaterloo.ca/*" ]
         }
     ]
 }
