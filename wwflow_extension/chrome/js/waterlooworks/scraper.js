@@ -12,6 +12,8 @@ function scrapeMain() {
         $('#ck_scrapeProgress').show();
 
         runState = 0;
+        stateTarget = [0, 0];
+        stateProgress = [0, 0];
         getHttp(postings, onLoadCoopHome, 5);
     }
     else {
@@ -27,34 +29,41 @@ function onLoadCoopHome(event) {
 }
 
 function updateProgressBar() {
-    var progressMessage = "";
     const progressPerStage = ((100 - baseProgress)/totalNumberOfStates);
-    var progressValue = progressPerStage * runState;
-    if (stateTarget[runState] > 0) {
-        progressValue += progressPerStage * (stateProgress[runState]/stateTarget[runState]);
-    }
+    var progressValue = 0;
+    stateTarget.forEach((target, index) => {
+        if (target > 0) {
+            progressValue += progressPerStage * (stateProgress[index]/target);
+        }
+    });
     progressValue += baseProgress;
+
+    var progressMessage = "";
     switch (runState) {
+        default:
+            if (progressValue >= 100) {
+                progressMessage = "Done!";
+                break;
+            }
+            // FALL THROUGH
+        case 1:
+            if (stateTarget[0] === stateProgress[0]) {
+                if (stateTarget[1] === 0) {
+                    progressMessage = "Scanning 'For My Program'...";
+                }
+                else {
+                    progressMessage = `Scanned ${stateProgress[1]} / ${stateTarget[1]} jobs`;
+                }
+                break;
+            }
+            // FALL THROUGH
         case 0:
             if (stateTarget[0] === 0) {
                 progressMessage = "Starting...";
             }
             else {
-                progressMessage = `Viewed ${stateProgress[0]} /${stateTarget[0]} jobs`;
-                
+                progressMessage = `Viewed ${stateProgress[0]} / ${stateTarget[0]} jobs`;
             }
-            break;
-        case 1:
-            if (stateTarget[1] === 0) {
-                progressMessage = "Scanning 'For My Program'...";
-            }
-            else {
-                progressMessage = `Scanned ${stateProgress[1]} /${stateTarget[1]} jobs`;
-            }
-            break;
-        default:
-            progressMessage = "Done!";
-            progressValue = 100;
             break;
     }
     $('#ck_scrapeProgressBar').text(progressMessage);
@@ -94,8 +103,6 @@ function runSearch() {
             // done, update before resetting variables
             updateProgressBar();
             runState = -1;
-            stateTarget = [0, 0];
-            stateProgress = [0, 0];
             return;
     }
     updateProgressBar();
@@ -141,7 +148,7 @@ function onLoadPostingsTable(event, data) {
     var postingsToScrape = Number(endCount) - Number(startCount) + 1;
 
     const jobsCount = $(htmlDoc).find('#postingsTablePlaceholder div.orbis-posting-actions span').eq(0).text();
-    stateTarget[tempRunState] = jobsCount;
+    stateTarget[tempRunState] = Number(jobsCount);
 
     const doneScrapeRow = () => {
         postingsToScrape -= 1;
