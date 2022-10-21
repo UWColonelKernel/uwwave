@@ -8,13 +8,13 @@ chrome.storage.session.onChanged.addListener(function (changes) {
 });
 
 $.get(chrome.runtime.getURL('html/ww_helper.html'), function(data) {
-    $($.parseHTML(data)).prependTo('main');
+    $($.parseHTML(data)).insertAfter($('main .orbisModuleHeader'));
 
-    if (window.location.href === dashboard) {
-        $.get(chrome.runtime.getURL('html/ww_dashboard.html'), function(data_content) {
-            $($.parseHTML(data_content)).prependTo('#ck_content_container');
+    // if (window.location.href === dashboard) {
+    $.get(chrome.runtime.getURL('html/ww_dashboard.html'), function(data_content) {
+        $('#ck_content_container').replaceWith($($.parseHTML(data_content)));
 
-            updateJobCount();
-        });
-    }
+        updateJobCount();
+    });
+    // }
 });

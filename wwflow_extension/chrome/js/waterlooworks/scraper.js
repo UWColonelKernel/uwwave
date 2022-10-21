@@ -54,6 +54,7 @@ function updateProgressBar() {
             break;
         default:
             progressMessage = "Done!";
+            progressValue = 100;
             break;
     }
     $('#ck_scrapeProgressBar').text(progressMessage);
