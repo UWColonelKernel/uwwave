@@ -13,6 +13,8 @@ $.get(chrome.runtime.getURL('html/ww_helper.html'), function(data) {
     if (window.location.href === dashboard) {
         $.get(chrome.runtime.getURL('html/ww_dashboard.html'), function(data_content) {
             $($.parseHTML(data_content)).prependTo('#ck_content_container');
+
+            updateJobCount();
         });
     }
 });

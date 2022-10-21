@@ -17,8 +17,27 @@
             style="width: 0%"></div>
     </div>
 
-    <!-- <h5>Other options</h5>
+    <h5>Other options</h5>
     <p>
-        tbd lorem ipsum
-    </p> -->
+        Number of scraped jobs: <span id="ck_scrapeCount"></span>
+    </p>
+
+    <button href="javascript:void(0)" class="btn btn-primary" 
+        onclick="window.dispatchEvent(new Event('ck_exportJSON'));"
+    >
+        Export data to JSON
+    </button>
+
+    <button href="javascript:void(0)" class="btn btn-primary" 
+        onclick="window.dispatchEvent(new Event('ck_importJSON'));"
+    >
+        Import JSON data
+    </button>
+    <input id="ck_importJSONpicker" type="file" name="name" style="display: none;" />
+
+    <button href="javascript:void(0)" class="btn btn-primary" 
+        onclick="window.dispatchEvent(new Event('ck_clearData'));"
+    >
+        Clear data
+    </button>
 </div>

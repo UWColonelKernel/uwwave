@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
     "name": "WaterlooWorks Flow",
-    "short_name": "WWFlow",
-    "description": "Integrate your personal WaterlooWorks info into WWFlow",
+    "short_name": "WW Flow",
+    "description": "Integrate your personal WaterlooWorks data into WW Flow",
     "version": "1.0",
     "icons": {
         "16": "images/icon-16.png",
@@ -36,7 +36,8 @@
                 "js/lib/jquery-3.6.1.min.js",
                 "js/waterlooworks/runner.js",
                 "js/waterlooworks/scraper.js",
-                "js/waterlooworks/constants.js"
+                "js/waterlooworks/constants.js",
+                "js/waterlooworks/data_reader.js"
             ],
             "css": [
                 "css/ww_styles.css",
