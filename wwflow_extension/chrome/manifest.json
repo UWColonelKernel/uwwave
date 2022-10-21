@@ -39,7 +39,8 @@
                 "js/waterlooworks/constants.js"
             ],
             "css": [
-                "css/ww_styles.css"
+                "css/ww_styles.css",
+                "css/ww_imported.css"
             ]
         }
     ],

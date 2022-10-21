@@ -12,3 +12,10 @@
     line-height: inherit;
 }
 
+#ck_scrapeProgressBar.ck_progress-bar {
+    background: rgb(13, 110, 253);
+    height: 100%;
+    border-radius: 4px;
+    min-width: fit-content;
+    padding: 0px 8px;
+}

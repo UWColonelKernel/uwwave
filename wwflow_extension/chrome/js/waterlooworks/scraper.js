@@ -1,19 +1,123 @@
-function scrapeMain() {
-    console.log("Running scraper...");
+var coopHomeDoc = undefined
+var runState = -1;
+var stateTarget = [0, 0];
+var stateProgress = [0, 0];
+const totalNumberOfStates = 2;
+const baseProgress = 10;
 
-    getHttp(postings, onLoadCoopHome, 5);
+function scrapeMain() {
+    if (runState === -1) {
+        console.log("Starting scraper...");
+
+        $('#ck_scrapeProgress').show();
+
+        runState = 0;
+        getHttp(postings, onLoadCoopHome, 5);
+    }
+    else {
+        console.log("Scraper still running, please wait...");
+    }
 }
 
 window.addEventListener("ck_scrapeMain", scrapeMain);
 
 function onLoadCoopHome(event) {
+    coopHomeDoc = $.parseHTML(event.currentTarget.response, document, true);
+    runSearch();
+}
+
+function updateProgressBar() {
+    var progressMessage = "";
+    const progressPerStage = ((100 - baseProgress)/totalNumberOfStates);
+    var progressValue = progressPerStage * runState;
+    if (stateTarget[runState] > 0) {
+        progressValue += progressPerStage * (stateProgress[0]/stateTarget[0]);
+    }
+    progressValue += baseProgress;
+    switch (runState) {
+        case 0:
+            if (stateTarget[0] === 0) {
+                progressMessage = "Starting...";
+            }
+            else {
+                progressMessage = `Viewed ${stateProgress[0]} /${stateTarget[0]} jobs`;
+                
+            }
+            break;
+        case 1:
+            if (stateTarget[1] === 0) {
+                progressMessage = "Scanning 'For My Program'...";
+            }
+            else {
+                progressMessage = `Scanned ${stateProgress[1]} /${stateTarget[1]} jobs`;
+            }
+            break;
+        default:
+            progressMessage = "Done!";
+            break;
+    }
+    $('#ck_scrapeProgressBar').text(progressMessage);
+    $('#ck_scrapeProgressBar').css('width', `${progressValue}%`);
+    $('#ck_scrapeProgressBar').attr('aria-valuenow', progressValue);
+}
+
+// Runs when all pages have been loaded for a run
+function runSearch() {
+    scrapedJobs = 0;
+    jobsCount = -1;
+    switch (runState) {
+        case 0:
+            console.log("Scraping all jobs");
+            const searchAction = $(coopHomeDoc).find('#widgetSearch input[name="action"]').attr('value');
+            sendForm({action: searchAction, page: 1}, onLoadPostingsTable, 5);
+            break;
+        case 1:
+            console.log("Scraping to find For My Program jobs")
+            // Find "For my program" link
+            var reloadQuickSearchCountsAction = "";
+            $(coopHomeDoc).find('script').each(function (index, script) {
+                const text = $(script).text();
+                const funcIndex = text.indexOf("function reloadQuickSearchCounts");
+                if (funcIndex !== -1) {
+                    const searchStr = "request.action = ";
+                    const actionIndex = text.indexOf(searchStr, funcIndex);
+                    const start = text.indexOf('\"', actionIndex);
+                    const end = text.indexOf('\"', start + 1);
+                    
+                    reloadQuickSearchCountsAction = text.substring(start+1, end);
+                }
+            });
+            sendForm({action: reloadQuickSearchCountsAction}, onLoadQuickSearches, 5);
+            break;
+        default:
+            // done, update before resetting variables
+            updateProgressBar();
+            runState = -1;
+            stateTarget = [0, 0];
+            stateProgress = [0, 0];
+            return;
+    }
+    updateProgressBar();
+}
+
+// "For my program" action
+function onLoadQuickSearches(event, data) {
     var htmlDoc = $.parseHTML(event.currentTarget.response);
 
-    const searchAction = $(htmlDoc).find('#widgetSearch input[name="action"]').attr('value');
-    sendForm({action: searchAction, page: 1}, onLoadPostingsTable, 5);
+    const forMyProgramLink = $(htmlDoc).find('tr:nth-child(1) a');
+    const onclick = $(forMyProgramLink).attr('onclick');
+    const offset = "displayQuickSearch('".length;
+    const start = onclick.indexOf("displayQuickSearch('") + offset;
+    const end = onclick.indexOf("'", start);
+    const action = onclick.substring(start, end);
+
+    // isForMyProgram is used to tag the jobs
+    sendForm({action, page: 1, performNewSearch: true, isForMyProgram: true}, onLoadPostingsTable, 5);
 }
 
 function onLoadPostingsTable(event, data) {
+    const tempRunState = runState; // save before it gets changed
+
     console.log(`Scraping page ${data["page"]}`);
 
     var htmlDoc = $.parseHTML(event.currentTarget.response);
@@ -23,18 +127,25 @@ function onLoadPostingsTable(event, data) {
 
     if (pageNumber != data["page"]) { // not strict equality
         console.log(`No more pages to scrape. Actual page ${pageNumber}. Requested page ${data["page"]}.`);
+        runState += 1;
+        runSearch();
         return;
     }
 
     // Need to load pages individually as the server can only serve one page at a time
-    sendForm({action: data["action"], page: data["page"] + 1}, onLoadPostingsTable, 5);
+    sendForm({...data, page: data["page"] + 1}, onLoadPostingsTable, 5);
 
-    const startCount = $('#totalOverAllDocs').text();
-    const endCount = $('#totalOverAllPacks').text();
+    const startCount = $(htmlDoc).find('#totalOverAllDocs').text();
+    const endCount = $(htmlDoc).find('#totalOverAllPacks').text();
     var postingsToScrape = Number(endCount) - Number(startCount) + 1;
+
+    const jobsCount = $(htmlDoc).find('#postingsTablePlaceholder div.orbis-posting-actions span').eq(0).text();
+    stateTarget[tempRunState] = jobsCount;
 
     const doneScrapeRow = () => {
         postingsToScrape -= 1;
+        stateProgress[tempRunState] += 1;
+        updateProgressBar();
         if (postingsToScrape === 0) {
             console.log(`Done scraping page ${pageNumber}.`);
         }
@@ -43,19 +154,32 @@ function onLoadPostingsTable(event, data) {
     // postings list
     const table = $(htmlDoc).find('#postingsTable');
     table.find('tbody tr').each(function (index, tr) {
-        scrapeJobTableRowEntry(tr, doneScrapeRow);
+        scrapeJobTableRowEntry(tr, data, doneScrapeRow);
     });
 }
 
-function scrapeJobTableRowEntry(tr, callback) {
+function scrapeJobTableRowEntry(tr, data, callback) {
+    // get the job id
+    const jobId = $(tr).find('td:nth-child(3)').text();
+
+    // are we scanning for isForMyProgram only?
+    const isForMyProgram = data["isForMyProgram"] === true;
+    if (isForMyProgram) {
+        chrome.storage.local.get(jobId, function(result){
+            result[jobId]["isForMyProgram"] = isForMyProgram;
+            chrome.storage.local.set(result);
+            if (callback) {
+                callback();
+            }
+        });
+        return;
+    }
+
     // get the form data to open the job posting
     const jobTitleLink = $(tr).find('td:nth-child(4) a');
     const onclick = $(jobTitleLink).attr('onclick');
     const formObjStr = onclick.substring(onclick.indexOf("{"), onclick.indexOf("}") + 1).replace(/\'/g, "\"");
     const formObj = JSON.parse(formObjStr);
-
-    // get the job id
-    const jobId = $(tr).find('td:nth-child(3)').text();
 
     // open the job posting, and scrape it
     const onLoad = (event) => {
@@ -75,10 +199,10 @@ function scrapeJobTableRowEntry(tr, callback) {
 
         const postingListData = {jobTitle, company, division, openings, location, level, applications, deadline};
         
-        const data = {};
-        data[jobId] = postingScrape;
-        data[jobId]["Posting List Data"] = postingListData;
-        chrome.storage.local.set(data);
+        const storeData = {};
+        storeData[jobId] = postingScrape;
+        storeData[jobId]["Posting List Data"] = postingListData;
+        chrome.storage.local.set(storeData);
         if (callback) {
             callback();
         }
