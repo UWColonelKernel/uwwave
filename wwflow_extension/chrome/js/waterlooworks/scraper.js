@@ -1,17 +1,16 @@
-const postings = "https://waterlooworks.uwaterloo.ca/myAccount/co-op/coop-postings.htm"
-const dashboard = "https://waterlooworks.uwaterloo.ca/myAccount/dashboard.htm"
+function scrapeMain() {
+    console.log("Running scraper...");
 
-var searchAction = "";
+    getHttp(postings, onLoadCoopHome, 5);
+}
 
-async function main() {
-    console.log("running extension main...");
-    if (window.location.href === postings) {
-        searchAction = $('#widgetSearch input[name="action"]').attr('value');
-        sendForm({action: searchAction, page: 1}, onLoadPostingsTable, 5);
-    }
-    else {
-        window.location.replace(postings);
-    }
+window.addEventListener("ck_scrapeMain", scrapeMain);
+
+function onLoadCoopHome(event) {
+    var htmlDoc = $.parseHTML(event.currentTarget.response);
+
+    const searchAction = $(htmlDoc).find('#widgetSearch input[name="action"]').attr('value');
+    sendForm({action: searchAction, page: 1}, onLoadPostingsTable, 5);
 }
 
 function onLoadPostingsTable(event, data) {
@@ -28,7 +27,7 @@ function onLoadPostingsTable(event, data) {
     }
 
     // Need to load pages individually as the server can only serve one page at a time
-    sendForm({action: searchAction, page: data["page"] + 1}, onLoadPostingsTable, 5);
+    sendForm({action: data["action"], page: data["page"] + 1}, onLoadPostingsTable, 5);
 
     const startCount = $('#totalOverAllDocs').text();
     const endCount = $('#totalOverAllPacks').text();
@@ -155,20 +154,32 @@ function sendForm(data, onLoad, retries) {
     XHR.send(FD);
 }
 
-chrome.storage.session.get(["state"], (items) => {});
+function getHttp(url, onLoad, retries) {
+    const XHR = new XMLHttpRequest();
 
-chrome.storage.session.onChanged.addListener(function (changes) {
-    const state = changes["state"];
-    if (state !== undefined) {
-        main();
-    }
-});
+    // Define what happens on successful data submission
+    XHR.addEventListener('load', (event) => {
+        if (XHR.status === 404) {
+            console.error("Not found.", event);
+            if (retries > 0) {
+                console.log("Retrying...");
+                getHttp(url, onLoad, retries - 1); 
+            }
+        } else if (onLoad) {
+            onLoad(event);
+        }
+    });
 
-$.get(chrome.runtime.getURL('html/ww_helper.html'), function(data) {
-    $($.parseHTML(data)).prependTo('main');
-    if (window.location.href === dashboard) {
-        $.get(chrome.runtime.getURL('html/ww_dashboard.html'), function(data_content) {
-            $($.parseHTML(data_content)).prependTo('#ck_content_container');
-        });
-    }
-});
+    // Define what happens in case of error
+    XHR.addEventListener('error', (event) => {
+        console.error("Failed to send form.", event);
+        if (retries > 0) {
+            console.log("Retrying...");
+            getHttp(url, onLoad, retries - 1);
+        }
+    });
+    
+    XHR.open("GET", url);
+
+    XHR.send();
+}

@@ -34,7 +34,9 @@
             "matches": ["*://waterlooworks.uwaterloo.ca/*"],
             "js": [
                 "js/lib/jquery-3.6.1.min.js",
-                "js/runner.js"
+                "js/waterlooworks/runner.js",
+                "js/waterlooworks/scraper.js",
+                "js/waterlooworks/constants.js"
             ],
             "css": [
                 "css/ww_styles.css"
