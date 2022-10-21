@@ -31,7 +31,7 @@ function updateProgressBar() {
     const progressPerStage = ((100 - baseProgress)/totalNumberOfStates);
     var progressValue = progressPerStage * runState;
     if (stateTarget[runState] > 0) {
-        progressValue += progressPerStage * (stateProgress[0]/stateTarget[0]);
+        progressValue += progressPerStage * (stateProgress[runState]/stateTarget[runState]);
     }
     progressValue += baseProgress;
     switch (runState) {
@@ -213,28 +213,47 @@ function scrapeJobTableRowEntry(tr, data, callback) {
 
 function scrapeJobPosting(htmlDoc) {
     data = {};
-    const postingDiv = $(htmlDoc).find('#postingDiv');
-    // job posting information
-    postingDiv.find('div:nth-child(1) table tbody tr').each(function (index, tr) {
+
+    function processTableRow(index, tr) {
+        var ret = {};
         var key = $(tr).find('td:nth-child(1) strong').text().trim();
         key = key.substring(0, key.length - 1);
         const content = $(tr).find('td:nth-child(2) span');
         if (content.length > 0) {
-            const value = content.text().trim();
-            data[key] = value;
+            const value = content.html().trim();
+            ret[key] = value;
+            return ret;
         }
-        else {
-            const contentTable = $(tr).find('td:nth-child(2) table');
-            if (contentTable.length > 0) {
-                var value = [];
-                contentTable.find('tbody tr').each(function (index, subTr) {
-                    $(subTr).find('td').each(function (index, subTd) {
-                        value.push($(subTd).text().trim());
-                    });
+
+        const contentPlain = $(tr).find('td:nth-child(2)');
+        if (contentPlain.length > 0) {
+            const value = contentPlain.html().trim();
+            ret[key] = value;
+            return ret;
+        }
+
+        const contentTable = $(tr).find('td:nth-child(2) table');
+        if (contentTable.length > 0) {
+            var value = [];
+            contentTable.find('tbody tr').each(function (index, subTr) {
+                $(subTr).find('td').each(function (index, subTd) {
+                    value.push($(subTd).text().trim());
                 });
-                data[key] = value;
-            }
+            });
+            ret[key] = value;
+            return ret;
         }
+
+        return ret;
+    }
+
+    const postingDiv = $(htmlDoc).find('#postingDiv');
+    postingDiv.find('> div').each(function(index, div) {
+        const header = $(div).find('> div').eq(0).text().trim();
+        $(div).find('div > table tbody tr').each(function (index, tr) {
+            const pair = processTableRow(index, tr);
+            data[header] = {...data[header], ...pair};
+        });
     });
     
     return data;
