@@ -1,0 +1,54 @@
+{
+    "manifest_version": 3,
+    "name": "WaterlooWorks Flow",
+    "short_name": "WW Flow",
+    "description": "Integrate your personal WaterlooWorks data into WW Flow",
+    "version": "1.0",
+    "icons": {
+        "16": "images/icon-16.png",
+        "32": "images/icon-32.png",
+        "48": "images/icon-48.png",
+        "128": "images/icon-128.png"
+    },
+    "action": {
+        "default_icon": {
+            "16": "images/icon-16.png",
+            "32": "images/icon-32.png",
+            "48": "images/icon-48.png",
+            "128": "images/icon-128.png"
+        }
+    },
+    "background": {
+        "service_worker": "js/background.js"
+    },
+    "host_permissions": [
+        "*://waterlooworks.uwaterloo.ca/*"
+    ],
+    "permissions": [
+        "scripting",
+        "storage",
+        "unlimitedStorage"
+    ],
+    "content_scripts": [
+        {
+            "matches": ["*://waterlooworks.uwaterloo.ca/*"],
+            "js": [
+                "js/lib/jquery-3.6.1.min.js",
+                "js/waterlooworks/runner.js",
+                "js/waterlooworks/scraper.js",
+                "js/waterlooworks/constants.js",
+                "js/waterlooworks/data_reader.js"
+            ],
+            "css": [
+                "css/ww_styles.css",
+                "css/ww_imported.css"
+            ]
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [ "html/*.html" ],
+            "matches": [ "*://waterlooworks.uwaterloo.ca/*" ]
+        }
+    ]
+}

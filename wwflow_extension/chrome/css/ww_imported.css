@@ -1,0 +1,27 @@
+/* Imported styles, except selectively copied into this doc instead of importing the whole css file */
+
+/* Bootstrap */
+.progress-bar {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: rgb(255, 255, 255);
+    text-align: center;
+    white-space: nowrap;
+    background-color: rgb(13, 110, 253);
+    overflow: hidden;
+    transition: width 0.6s ease 0s;
+}
+
+.progress-bar-animated {
+    animation: 1s linear 0s infinite normal none running progress-bar-stripes;
+}
+
+.progress {
+    display: flex;
+    height: 1rem;
+    font-size: 0.75rem;
+    background-color: rgb(233, 236, 239);
+    overflow: hidden;
+    border-radius: 0.25rem;
+}
