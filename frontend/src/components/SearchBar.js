@@ -3,7 +3,7 @@ import { Form, Button } from 'react-bootstrap'
 
 export default function SearchBar() {
   return (
-    <Form className="d-flex">
+    <Form className="d-flex" style={{marginBottom: "10px"}}>
         <Form.Control
             type="search"
             placeholder="Search"
