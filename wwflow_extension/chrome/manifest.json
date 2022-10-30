@@ -43,6 +43,13 @@
                 "css/ww_styles.css",
                 "css/ww_imported.css"
             ]
+        },
+        {
+            "matches": ["*://127.0.0.1/*", "*://localhost/*"],
+            "js": [
+                "js/wwflow_website/data_service.js"
+            ],
+            "css": []
         }
     ],
     "web_accessible_resources": [
