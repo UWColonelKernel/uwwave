@@ -108,16 +108,21 @@ function runSearch() {
     updateProgressBar();
 }
 
+function getActionFromQuickSearchLink(link) {
+    const onclick = $(link).attr('onclick');
+    const offset = "displayQuickSearch('".length;
+    const start = onclick.indexOf("displayQuickSearch('") + offset;
+    const end = onclick.indexOf("'", start);
+    const action = onclick.substring(start, end);
+    return action;
+}
+
 // "For my program" action
 function onLoadQuickSearches(event, data) {
     var htmlDoc = $.parseHTML(event.currentTarget.response);
 
     const forMyProgramLink = $(htmlDoc).find('tr:nth-child(1) a');
-    const onclick = $(forMyProgramLink).attr('onclick');
-    const offset = "displayQuickSearch('".length;
-    const start = onclick.indexOf("displayQuickSearch('") + offset;
-    const end = onclick.indexOf("'", start);
-    const action = onclick.substring(start, end);
+    const action = getActionFromQuickSearchLink(forMyProgramLink);
 
     // isForMyProgram is used to tag the jobs
     sendForm({action, page: 1, performNewSearch: true, isForMyProgram: true}, onLoadPostingsTable, 5);
