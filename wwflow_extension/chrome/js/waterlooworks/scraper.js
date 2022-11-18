@@ -1,8 +1,8 @@
 var coopHomeDoc = undefined
 var runState = -1;
-var stateTarget = [0, 0];
-var stateProgress = [0, 0];
-const totalNumberOfStates = 2;
+var stateTarget = [0, 0, 0];
+var stateProgress = [0, 0, 0];
+const totalNumberOfStates = 3;
 const baseProgress = 10;
 
 function scrapeMain() {
@@ -12,8 +12,8 @@ function scrapeMain() {
         $('#ck_scrapeProgress').show();
 
         runState = 0;
-        stateTarget = [0, 0];
-        stateProgress = [0, 0];
+        stateTarget = [0, 0, 0];
+        stateProgress = [0, 0, 0];
         getHttp(postings, onLoadCoopHome, 5);
     }
     else {
@@ -46,6 +46,17 @@ function updateProgressBar() {
                 break;
             }
             // FALL THROUGH
+        case 2:
+            if (stateTarget[0] === stateProgress[0] && stateTarget[1] === stateProgress[1]) {
+                if (stateTarget[2] === 0) {
+                    progressMessage = "Scraping 'Viewed'...";
+                }
+                else {
+                    progressMessage = `Viewed ${stateProgress[2]} / ${stateTarget[2]} jobs`;
+                }
+                break;
+            }
+            // FALL THROUGH
         case 1:
             if (stateTarget[0] === stateProgress[0]) {
                 if (stateTarget[1] === 0) {
@@ -75,6 +86,10 @@ function updateProgressBar() {
 function runSearch() {
     scrapedJobs = 0;
     jobsCount = -1;
+
+    // Find quick search links
+    const reloadQuickSearchCountsAction = getReloadQuickSearchCountsAction();
+
     switch (runState) {
         case 0:
             console.log("Scraping all jobs");
@@ -83,21 +98,35 @@ function runSearch() {
             break;
         case 1:
             console.log("Scraping to find For My Program jobs")
-            // Find "For my program" link
-            var reloadQuickSearchCountsAction = "";
-            $(coopHomeDoc).find('script').each(function (index, script) {
-                const text = $(script).text();
-                const funcIndex = text.indexOf("function reloadQuickSearchCounts");
-                if (funcIndex !== -1) {
-                    const searchStr = "request.action = ";
-                    const actionIndex = text.indexOf(searchStr, funcIndex);
-                    const start = text.indexOf('\"', actionIndex);
-                    const end = text.indexOf('\"', start + 1);
-                    
-                    reloadQuickSearchCountsAction = text.substring(start+1, end);
-                }
-            });
-            sendForm({action: reloadQuickSearchCountsAction}, onLoadQuickSearches, 5);
+
+            // Load and scrape "For my program"
+            function onLoadQuickSearchesForMyProgram(event, data) {
+                var htmlDoc = $.parseHTML(event.currentTarget.response);
+
+                const forMyProgramLink = $(htmlDoc).find('tr:nth-child(1) a');
+                const action = getActionFromQuickSearchLink(forMyProgramLink);
+
+                // isForMyProgram is used to tag the jobs
+                sendForm({action, page: 1, performNewSearch: true, isForMyProgram: true}, onLoadPostingsTable, 5);
+            }
+
+            sendForm({action: reloadQuickSearchCountsAction}, onLoadQuickSearchesForMyProgram, 5);
+            break;
+        case 2:
+            console.log("Scraping to find Viewed jobs")
+
+            // Load and scrape "Viewed"
+            function onLoadQuickSearchesViewed(event, data) {
+                var htmlDoc = $.parseHTML(event.currentTarget.response);
+
+                const viewedLink = $(htmlDoc).find('tr:nth-child(4) a');
+                const action = getActionFromQuickSearchLink(viewedLink);
+
+                // isForMyProgram is used to tag the jobs
+                sendForm({action, page: 1, performNewSearch: true}, onLoadPostingsTable, 5);
+            }
+
+            sendForm({action: reloadQuickSearchCountsAction}, onLoadQuickSearchesViewed, 5);
             break;
         default:
             // done, update before resetting variables
@@ -108,6 +137,24 @@ function runSearch() {
     updateProgressBar();
 }
 
+// Calling the action gives you links to "For My Program", "Applied To", "Shortlist", "Viewed", etc.
+function getReloadQuickSearchCountsAction() {
+    var reloadQuickSearchCountsAction = "";
+    $(coopHomeDoc).find('script').each(function (index, script) {
+        const text = $(script).text();
+        const funcIndex = text.indexOf("function reloadQuickSearchCounts");
+        if (funcIndex !== -1) {
+            const searchStr = "request.action = ";
+            const actionIndex = text.indexOf(searchStr, funcIndex);
+            const start = text.indexOf('\"', actionIndex);
+            const end = text.indexOf('\"', start + 1);
+            
+            reloadQuickSearchCountsAction = text.substring(start+1, end);
+        }
+    });
+    return reloadQuickSearchCountsAction;
+}
+
 function getActionFromQuickSearchLink(link) {
     const onclick = $(link).attr('onclick');
     const offset = "displayQuickSearch('".length;
@@ -115,17 +162,6 @@ function getActionFromQuickSearchLink(link) {
     const end = onclick.indexOf("'", start);
     const action = onclick.substring(start, end);
     return action;
-}
-
-// "For my program" action
-function onLoadQuickSearches(event, data) {
-    var htmlDoc = $.parseHTML(event.currentTarget.response);
-
-    const forMyProgramLink = $(htmlDoc).find('tr:nth-child(1) a');
-    const action = getActionFromQuickSearchLink(forMyProgramLink);
-
-    // isForMyProgram is used to tag the jobs
-    sendForm({action, page: 1, performNewSearch: true, isForMyProgram: true}, onLoadPostingsTable, 5);
 }
 
 function onLoadPostingsTable(event, data) {
@@ -195,9 +231,10 @@ function scrapeJobTableRowEntry(tr, data, callback) {
     const formObj = JSON.parse(formObjStr);
 
     // open the job posting, and scrape it
-    const onLoad = (event) => {
+    const onLoad = (event, data) => {
         var htmlDoc = $.parseHTML(event.currentTarget.response);
         var postingScrape = scrapeJobPosting(htmlDoc);
+        openJobWorkTermRatings(htmlDoc, jobId);
 
         // get data from the table row
         const jobTitle = $(tr).find('td:nth-child(4)').attr('data-totitle');
@@ -269,6 +306,91 @@ function scrapeJobPosting(htmlDoc) {
     });
     
     return data;
+}
+
+function readVariableSingleQuote(text, searchStr) {
+    var actionIndex = text.indexOf(searchStr);
+    if (actionIndex !== -1) {
+        actionIndex += searchStr.length;
+        const start = text.indexOf('\'', actionIndex);
+        const end = text.indexOf('\'', start + 1);
+        return text.substring(start+1, end);
+    } else {
+        return "";
+    }
+}
+
+// pass in job posting html doc
+function openJobWorkTermRatings(htmlDoc, jobId) {
+    const workTermRatingButton = $(htmlDoc).find('ul.nav-pills li').last().find('a')[0];
+
+    const onclick = $(workTermRatingButton).attr('onclick');
+    const formObjStr = onclick.substring(onclick.indexOf("{"), onclick.indexOf("}") + 1).replace(/\'/g, "\"");
+    const formObj = JSON.parse(formObjStr);
+
+    const onLoad = (event, data) => {
+        var workTermRatingContainerHtmlDoc = $.parseHTML(event.currentTarget.response, document, true);  // last param true to include scripts
+
+        var reportHolder = "";
+        var reportHolderId = "";
+        var reportHolderField = "";
+        var workTermRatingAction = "";
+        
+        $(workTermRatingContainerHtmlDoc).find('ul.nav-pills').siblings('script').each(function (index, script) {
+            const text = $(script).text();
+            const holderTemp = readVariableSingleQuote(text, "reportParams.reportHolder = ");
+            if (holderTemp !== "") {
+                reportHolder = holderTemp;
+            }
+            const holderIdTemp = readVariableSingleQuote(text, "reportParams.reportHolderId = ");
+            if (holderIdTemp !== "") {
+                reportHolderId = holderIdTemp;
+            }
+            const holderFieldTemp = readVariableSingleQuote(text, "reportParams.reportHolderField = ");
+            if (holderFieldTemp !== "") {
+                reportHolderField = holderFieldTemp;
+            }
+            const actionTemp = readVariableSingleQuote(text, "'action':");
+            if (actionTemp !== "") {
+                workTermRatingAction = actionTemp;
+            }
+        });
+
+        const workTermRatingFormObj = {
+            reportHolder, 
+            reportHolderId, 
+            reportHolderField, 
+            actions: workTermRatingAction
+        };
+
+        // open the work term rating, and scrape it
+        const onLoadWorkTermRatings = (event, data) => {
+            var htmlDoc = $.parseHTML(event.currentTarget.response);
+            var workTermRatingScrape = scrapeWorkTermRatings(htmlDoc);
+    
+            const storeData = {};
+            storeData["company_" + reportHolderId] = workTermRatingScrape;
+            chrome.storage.local.set(storeData);
+
+            console.log(data);
+        };
+
+        // update the job's company field
+        chrome.storage.local.get(jobId, function (response) {
+            response[jobId]["Company ID"] = reportHolderId;
+            const storeData = {};
+            storeData[jobId] = response[jobId];
+            chrome.storage.local.set(storeData);
+        });
+
+        sendForm(workTermRatingFormObj, onLoadWorkTermRatings, 5)
+    };
+
+    sendForm(formObj, onLoad, 5);
+}
+
+function scrapeWorkTermRatings(htmlDoc) {
+    return {};
 }
 
 // https://developer.mozilla.org/en-US/docs/Learn/Forms/Sending_forms_through_JavaScript

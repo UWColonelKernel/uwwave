@@ -19,7 +19,13 @@
 
     <h5>Other options</h5>
     <p>
-        Number of scraped jobs: <span id="ck_scrapeCount"></span>
+        Number of scraped jobs: 
+        <span id="ck_scrapeCount"></span>
+        <a href="javascript:void(0)" id="ck_loadJobCountButton"
+            onclick="window.dispatchEvent(new Event('ck_loadJobCount'));"
+        >
+            (Update)
+        </a>
     </p>
 
     <button href="javascript:void(0)" class="btn btn-primary" 

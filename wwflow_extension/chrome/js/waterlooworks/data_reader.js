@@ -1,17 +1,19 @@
 chrome.storage.local.onChanged.addListener(function (changes) {
-    updateJobCount();
+    $('#ck_loadJobCountButton').show();
 });
 
 function updateJobCount() {
     chrome.storage.local.get(function(results) {
         const keys = Object.keys(results);
         $('#ck_scrapeCount').text(keys.length === 0 ? "0" : keys.length);
+        $('#ck_loadJobCountButton').hide();
     });
 }
 
 window.addEventListener("ck_exportJSON", exportJSON);
 window.addEventListener("ck_importJSON", importJSON);
 window.addEventListener("ck_clearData", clearData);
+window.addEventListener("ck_loadJobCount", updateJobCount);
 
 var textFile = null;
 
