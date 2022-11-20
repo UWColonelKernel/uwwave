@@ -6,6 +6,7 @@ const totalNumberOfStates = 4;
 const baseProgress = 10;
 
 var workTermRatingRequests = [];
+var scrapeViewed = false;
 
 function scrapeMain() {
     if (runState === -1) {
@@ -17,6 +18,7 @@ function scrapeMain() {
         stateTarget = [0, 0, 0, 0];
         stateProgress = [0, 0, 0, 0];
         workTermRatingRequests = [];
+        scrapeViewed = $('#ck_scrapeViewedCheckbox').prop('checked');
         getHttp(postings, onLoadCoopHome, 5);
     }
     else {
@@ -130,7 +132,6 @@ function runSearch() {
             console.log(`${runState}) Scraping to find Viewed jobs`);
 
             // Load and scrape "Viewed"
-            /*
             function onLoadQuickSearchesViewed(event, data) {
                 var htmlDoc = $.parseHTML(event.currentTarget.response);
 
@@ -138,23 +139,27 @@ function runSearch() {
                 const action = getActionFromQuickSearchLink(viewedLink);
 
                 // isForMyProgram is used to tag the jobs
-                sendForm({action, page: 1, performNewSearch: true}, onLoadPostingsTable, 5);
+                sendForm({action, page: 1, performNewSearch: true, isViewed: true}, onLoadPostingsTable, 5);
             }
 
-            sendForm({action: reloadQuickSearchCountsAction}, onLoadQuickSearchesViewed, 5);
-            */
-
-            // skip this stage
-            stateTarget[2] = 1;
-            stateProgress[2] = 1;
-            runState += 1;
-            runSearch();
+            if (scrapeViewed) {
+                sendForm({action: reloadQuickSearchCountsAction}, onLoadQuickSearchesViewed, 5);
+            }
+            else {
+                // skip this stage
+                stateTarget[2] = 1;
+                stateProgress[2] = 1;
+                runState += 1;
+                runSearch();
+            }
 
             break;
         case 3:
             console.log(`${runState}) Scraping work term ratings`);
 
             stateTarget[3] = workTermRatingRequests.length;
+
+            const limit = Math.min(workTermRatingRequests.length, 100);
 
             const doneScrapeRating = () => {
                 stateProgress[3] += 1;
@@ -163,15 +168,24 @@ function runSearch() {
                     console.log(`${runState}) Done scraping work term ratings.`);
                     runState += 1;
                     runSearch();
+                } else if (limit - 1 + stateProgress[3] < stateTarget[3]) {
+                    const wtrForm = workTermRatingRequests[limit - 1 + stateProgress[3]];
+                    openJobWorkTermRatings(wtrForm.formObj, wtrForm.jobId, doneScrapeRating);
                 }
             }
 
-            setTimeout(() => {  
-                workTermRatingRequests.forEach((wtrForm) => {
-                    openJobWorkTermRatings(wtrForm.formObj, wtrForm.jobId, doneScrapeRating);
-                });
-            }, 1000);
+            if (limit === 0) {
+                // skip this stage
+                stateTarget[3] = 1;
+                stateProgress[3] = 1;
+                runState += 1;
+                runSearch();
+            }
 
+            for (var i = 0; i < limit; i += 1) {
+                const wtrForm = workTermRatingRequests[i];
+                openJobWorkTermRatings(wtrForm.formObj, wtrForm.jobId, doneScrapeRating);
+            }
 
             break;
         default:
@@ -263,7 +277,7 @@ function scrapeJobTableRowEntry(tr, data, callback) {
     const jobId = $(tr).find('td:nth-child(3)').text();
 
     // are we scanning for isForMyProgram only?
-    const isForMyProgram = data["isForMyProgram"] === true;
+    const isForMyProgram = data.isForMyProgram === true;
     if (isForMyProgram) {
         chrome.storage.local.get(jobId, function(result){
             result[jobId]["isForMyProgram"] = isForMyProgram;
@@ -282,10 +296,12 @@ function scrapeJobTableRowEntry(tr, data, callback) {
     const formObj = JSON.parse(formObjStr);
 
     // open the job posting, and scrape it
-    const onLoad = (event, data) => {
+    const onLoad = (event, data2) => {
         var htmlDoc = $.parseHTML(event.currentTarget.response);
         var postingScrape = scrapeJobPosting(htmlDoc);
-        queueJobWorkTermRatingTabRequest(htmlDoc, jobId);
+        if (data.isViewed || !scrapeViewed) {
+            queueJobWorkTermRatingTabRequest(htmlDoc, jobId);
+        }
 
         // get data from the table row
         const jobTitle = $(tr).find('td:nth-child(4)').attr('data-totitle');
@@ -517,6 +533,7 @@ function scrapeWorkTermRatings(htmlDoc) {
                     };
     
                     const title = graphObj.title.text
+                                    .replace(ratingData[dataKeyOrg], "") // org name
                                     .replace(ratingData[dataKeyDiv], "") // division name
                                     .replace("<br>", " ") // newlines
                                     .replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, ""); // trim non alphanumeric chars
