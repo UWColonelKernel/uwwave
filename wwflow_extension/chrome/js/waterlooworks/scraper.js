@@ -106,12 +106,12 @@ function runSearch() {
 
     switch (runState) {
         case 0:
-            console.log("Scraping all jobs");
+            console.log(`${runState}) Scraping jobs available from default search`);
             const searchAction = $(coopHomeDoc).find('#widgetSearch input[name="action"]').attr('value');
             sendForm({action: searchAction, page: 1}, onLoadPostingsTable, 5);
             break;
         case 1:
-            console.log("Scraping to find For My Program jobs")
+            console.log(`${runState}) Scraping to find For My Program jobs`)
 
             // Load and scrape "For my program"
             function onLoadQuickSearchesForMyProgram(event, data) {
@@ -127,7 +127,7 @@ function runSearch() {
             sendForm({action: reloadQuickSearchCountsAction}, onLoadQuickSearchesForMyProgram, 5);
             break;
         case 2:
-            console.log("Scraping to find Viewed jobs");
+            console.log(`${runState}) Scraping to find Viewed jobs`);
 
             // Load and scrape "Viewed"
             /*
@@ -152,7 +152,7 @@ function runSearch() {
 
             break;
         case 3:
-            console.log("Scraping work term ratings");
+            console.log(`${runState}) Scraping work term ratings`);
 
             stateTarget[3] = workTermRatingRequests.length;
 
@@ -160,18 +160,23 @@ function runSearch() {
                 stateProgress[3] += 1;
                 updateProgressBar();
                 if (stateProgress[3] === stateTarget[3]) {
-                    console.log(`Done scraping work term ratings.`);
+                    console.log(`${runState}) Done scraping work term ratings.`);
                     runState += 1;
+                    runSearch();
                 }
             }
 
-            workTermRatingRequests.forEach((wtrForm) => {
-                openJobWorkTermRatings(wtrForm.formObj, wtrForm.jobId, doneScrapeRating);
-            });
+            setTimeout(() => {  
+                workTermRatingRequests.forEach((wtrForm) => {
+                    openJobWorkTermRatings(wtrForm.formObj, wtrForm.jobId, doneScrapeRating);
+                });
+            }, 1000);
+
 
             break;
         default:
             // done, update before resetting variables
+            window.dispatchEvent(new Event('ck_loadJobCount'));
             updateProgressBar();
             runState = -1;
             return;
@@ -209,7 +214,7 @@ function getActionFromQuickSearchLink(link) {
 function onLoadPostingsTable(event, data) {
     const tempRunState = runState; // save before it gets changed
 
-    console.log(`Scraping page ${data["page"]}`);
+    console.log(`${tempRunState}) Scraping page ${data["page"]}`);
 
     var htmlDoc = $.parseHTML(event.currentTarget.response);
 
@@ -217,12 +222,9 @@ function onLoadPostingsTable(event, data) {
     const pageNumber = pageNumberElem.attr('value');
 
     if (pageNumber != data["page"]) { // not strict equality
-        console.log(`No more pages to scrape. Actual page ${pageNumber}. Requested page ${data["page"]}.`);
+        console.log(`${tempRunState}) No more pages to scrape. Actual page ${pageNumber}. Requested page ${data["page"]}.`);
         return;
     }
-
-    // Need to load pages individually as the server can only serve one page at a time
-    sendForm({...data, page: data["page"] + 1}, onLoadPostingsTable, 5);
 
     const startCount = $(htmlDoc).find('#totalOverAllDocs').text();
     const endCount = $(htmlDoc).find('#totalOverAllPacks').text();
@@ -236,12 +238,16 @@ function onLoadPostingsTable(event, data) {
         stateProgress[tempRunState] += 1;
         updateProgressBar();
         if (postingsToScrape === 0) {
-            console.log(`Done scraping page ${pageNumber}.`);
+            console.log(`${tempRunState}) Done scraping page ${pageNumber}.`);
         }
         if (stateProgress[tempRunState] === stateTarget[tempRunState]) {
-            console.log(`Done scraping for stage ${tempRunState}`)
+            console.log(`${tempRunState}) Done scraping jobs in this stage.`)
             runState += 1;
             runSearch();
+        }
+        else if (postingsToScrape === 0) {
+            // Need to load pages individually as the server can only serve one page at a time
+            sendForm({...data, page: data["page"] + 1}, onLoadPostingsTable, 5);
         }
     }
 
@@ -381,7 +387,7 @@ function queueJobWorkTermRatingTabRequest(htmlDoc, jobId) {
 }
 
 function openJobWorkTermRatings(formObj, jobId, callback) {
-    function onLoadWorkTermRatingsTab(event, data) {
+    const onLoadWorkTermRatingsTab = (event, data) => {
         var workTermRatingContainerHtmlDoc = $.parseHTML(event.currentTarget.response, document, true);  // last param true to include scripts
 
         var reportHolder = "";
@@ -409,11 +415,18 @@ function openJobWorkTermRatings(formObj, jobId, callback) {
             }
         });
 
+        if (reportHolder === "" || reportHolderId === "" || reportHolderField === "" || workTermRatingAction === "") {
+            if (callback) {
+                callback();
+            }
+            return;
+        }
+
         const workTermRatingFormObj = {
             reportHolder, 
             reportHolderId, 
             reportHolderField, 
-            actions: workTermRatingAction
+            action: workTermRatingAction
         };
 
         // open the work term rating, and scrape it
@@ -423,8 +436,6 @@ function openJobWorkTermRatings(formObj, jobId, callback) {
 
             const storeData = {};
             storeData["division_" + reportHolderId] = workTermRatingScrape;
-
-            console.log(storeData);
 
             chrome.storage.local.set(storeData, () => {
                 // update the job's division field (company)
@@ -447,34 +458,76 @@ function openJobWorkTermRatings(formObj, jobId, callback) {
 }
 
 function scrapeWorkTermRatings(htmlDoc) {
-    const ratingData = {};
-
-    $(htmlDoc).find('table').each((i, d) => {
-        console.log($(d).text());
-    })
+    const ratingData = {graphs: {}};
 
     $(htmlDoc).find('div.boxContent > div.row').each((index, dataRow) => {
-        // Hiring History
-        console.log(dataRow);
-        if (index == 2) {
+        const dataKeyOrg = "organization";
+        const dataKeyDiv = "division";
+        const dataKeyHireHistory = "hire_history";
+        if (index === 0) {
+            const searchStr = "Organization:";
+            const labelText = $(dataRow).find('div strong').parent().text();
+            ratingData[dataKeyOrg] = labelText.substring(labelText.indexOf(searchStr) + searchStr.length).trim();
+        }
+        else if (index === 1) {
+            const searchStr = "Division:";
+            const labelText = $(dataRow).find('div strong').parent().text();
+            const orgAndDiv = labelText.substring(labelText.indexOf(searchStr) + searchStr.length).trim();
+            ratingData[dataKeyDiv] = orgAndDiv.substring(ratingData[dataKeyOrg].length).replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, "");
+        }
+        else if (index === 2) {
+            ratingData[dataKeyHireHistory] = {};
             var hireHistoryHeaders = [];
             var hireHistoryOrganization = [];
             var hireHistoryDivision = [];
             $(dataRow).find('table thead th').each((i, dataPoint) => {
-                hireHistoryHeaders.push(dataPoint);
+                hireHistoryHeaders.push($(dataPoint).text());
             });
             $(dataRow).find('table tbody tr:nth-child(1) td').each((i, dataPoint) => {
-                hireHistoryOrganization.push(dataPoint);
+                hireHistoryOrganization.push($(dataPoint).text());
             });
             $(dataRow).find('table tbody tr:nth-child(2) td').each((i, dataPoint) => {
-                hireHistoryDivision.push(dataPoint);
+                hireHistoryDivision.push($(dataPoint).text());
             });
             for (var i = 2; i < hireHistoryHeaders.length; i += 1) {
-                ratingData["hire_history"][hireHistoryHeaders[i]] = {
+                ratingData[dataKeyHireHistory][hireHistoryHeaders[i]] = {
                     organization: hireHistoryOrganization[i],
                     division: hireHistoryDivision[i]
                 }
             }
+        }
+        else if (index >= 3) {
+            $(dataRow).find('script').each((i, script) => {
+                const text = $(script).text();
+                const searchStr = "orbisChart(";
+                const start = text.indexOf(searchStr) + searchStr.length;
+                const end = text.indexOf(");", start);
+                const objStr = text.substring(start, end);
+
+                const plotOptionsStart = objStr.indexOf("plotOptions:");
+                const plotOptionsEnd = objStr.indexOf("credits:");
+
+                const fixed = objStr.substring(0, plotOptionsStart) + objStr.substring(plotOptionsEnd);
+
+                const graphObj = JSON5.parse(fixed);
+
+                if (graphObj !== undefined && graphObj.series !== undefined) {
+                    const dataObj = {
+                        series: graphObj.series
+                    };
+    
+                    const title = graphObj.title.text
+                                    .replace(ratingData[dataKeyDiv], "") // division name
+                                    .replace("<br>", " ") // newlines
+                                    .replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, ""); // trim non alphanumeric chars
+                    if (graphObj.xAxis !== undefined && graphObj.xAxis.categories !== undefined) {
+                        dataObj.categories = graphObj.xAxis.categories;
+                    }
+
+                    ratingData.graphs[title] = dataObj;
+                }
+
+            });
         }
     });
 
