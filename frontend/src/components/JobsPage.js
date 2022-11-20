@@ -86,15 +86,18 @@ export default function JobsPage() {
     useEffect(() => {
         console.log("ext raw data updated");
         console.log(extensionRawData);
-        var newData = [];
-        for (const [key, value] of Object.entries(extensionRawData)) {
-            newData.push({
-                id: key,
-                companyName: value["Posting List Data"].company,
-                jobName: value["Posting List Data"].jobTitle,
-            })
+        // Temporary fix (seems to constantly replace data even no data exists)
+        if (Object.entries(extensionRawData).length > 0){
+            var newData = [];
+            for (const [key, value] of Object.entries(extensionRawData)) {
+                newData.push({
+                    id: key,
+                    companyName: value["Posting List Data"].company,
+                    jobName: value["Posting List Data"].jobTitle,
+                })
+            }
+            setData(newData);
         }
-        setData(newData);
     }, [extensionRawData]);
     
     return (
