@@ -37,7 +37,8 @@
                 "js/waterlooworks/runner.js",
                 "js/waterlooworks/scraper.js",
                 "js/waterlooworks/constants.js",
-                "js/waterlooworks/data_reader.js"
+                "js/waterlooworks/data_reader.js",
+                "js/waterlooworks/job_nav.js"
             ],
             "css": [
                 "css/ww_styles.css",
