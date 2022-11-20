@@ -7,7 +7,7 @@ import { Container, Row, Col } from 'react-bootstrap'
 
 export default function Footer() {
   return (
-    <Container className="fixed-bottom" style={{ padding: "10px",background: "#F1F6FA", marginLeft: "0px", maxWidth: "100%" }} fluid >
+    <Container style={{ padding: "10px",background: "#F1F6FA", marginLeft: "0px", maxWidth: "100%" }} fluid >
         <Row>
             <Col className='col-md-10'>
                 <a href='/' style={{marginLeft: "15px"}}>
