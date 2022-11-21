@@ -44,7 +44,7 @@ const MainWrapper = styled(Paper)`
 `
 
 const ImageWrapper = styled.img`
-    width; 80px;
+    width: 80px;
     height: 80px;
     border: 1px solid black;
 `
