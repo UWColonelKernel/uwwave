@@ -1,128 +1,143 @@
 import React from 'react'
-import JobEntry from './JobEntry';
-import { useState, useEffect } from 'react';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import {Box, Button} from '@mui/material';
+import { Color } from "../styles/color";
 import SearchBar from './SearchBar';
-import { Container, Row, Col } from 'react-bootstrap';
-import { Pagination } from 'react-bootstrap';
+
+const columns = [
+    { id: 'companyName', label: 'Company', width: '20%' },
+    { id: 'jobName', label: 'Job Name', width: '60%' },
+    {
+      id: 'shortlistAndApply',
+      label: '',
+      width: '20%',
+    },
+  ];
+
+  const rows = [
+    {
+        id: 1,
+        companyName: "Apple",
+        jobName: "Software Engineer Intern"
+    },
+    {
+        id: 2,
+        companyName: "Apple",
+        jobName: "Machine Learning Engineer Intern"
+    },
+    {
+        id: 3,
+        companyName: "Apple",
+        jobName: "Data Scientist Intern"
+    },
+    {
+        id: 4,
+        companyName: "Apple",
+        jobName: "Watch System Tool Engineer Intern"
+    },
+    {
+        id: 5,
+        companyName: "Amazon",
+        jobName: "Software Engineering Intern"
+    },
+    {
+        id: 6,
+        companyName: "Datadog",
+        jobName: "Product Design Intern"
+    },
+    {
+        id: 7,
+        companyName: "Datadog",
+        jobName: "Software Engineering Intern"
+    },
+    {
+        id: 8,
+        companyName: "Microsoft",
+        jobName: "Software Engineering Intern"
+    }
+  ];
 
 export default function JobsPage() {
-    const [data, setData] = useState([
-        {
-            id: 1,
-            companyName: "Apple",
-            jobName: "Software Engineer Intern"
-        },
-        {
-            id: 2,
-            companyName: "Apple",
-            jobName: "Machine Learning Engineer Intern"
-        },
-        {
-            id: 3,
-            companyName: "Apple",
-            jobName: "Data Scientist Intern"
-        },
-        {
-            id: 4,
-            companyName: "Apple",
-            jobName: "Watch System Tool Engineer Intern"
-        },
-        {
-            id: 5,
-            companyName: "Amazon",
-            jobName: "Software Engineering Intern"
-        },
-        {
-            id: 6,
-            companyName: "Datadog",
-            jobName: "Product Design Intern"
-        },
-        {
-            id: 7,
-            companyName: "Datadog",
-            jobName: "Software Engineering Intern"
-        },
-        {
-            id: 8,
-            companyName: "Microsoft",
-            jobName: "Software Engineering Intern"
-        }
-    ]);
-
-    const [extensionRawData, setExtensionRawData] = useState({});
-
-    const receiveExtensionMessage = (event) => {
-        // We only accept messages from ourselves
-        if (event.source !== window) {
-            return;
-        }
-        if (!event.data.type) {
-            return;
-        }
-
-        if (event.data.type === "WWFLOW_EXT_LOADED") {
-            console.log("React app received: " + event.data.text);
-            window.postMessage({ type: "WWFLOW_FROM_PAGE", req_type: "get_data", text: "Requesting data" }, "*");
-        }
-        if (event.data.type === "WWFLOW_EXT_RESP") {
-            if (!event.data.req_type) {
-                console.warn("Extension response does not contain req_type.");
-                return;
-            }
-            if (event.data.req_type === "get_data") {
-                setExtensionRawData(event.data.resp);
-            }
-        }
-    }
-
-    useEffect(() => {
-        window.addEventListener("message", receiveExtensionMessage, false);
-        // Specify how to clean up after this effect:
-        return function cleanup() {
-            window.removeEventListener("message", receiveExtensionMessage);
-        };
-    });
-
-    useEffect(() => {
-        console.log("ext raw data updated");
-        console.log(extensionRawData);
-        // Temporary fix (seems to constantly replace data even no data exists)
-        if (Object.entries(extensionRawData).length > 0){
-            const newData = [];
-            for (const [key, value] of Object.entries(extensionRawData)) {
-                newData.push({
-                    id: key,
-                    companyName: value["Posting List Data"].company,
-                    jobName: value["Posting List Data"].jobTitle,
-                })
-            }
-            setData(newData);
-        }
-    }, [extensionRawData]);
-    
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  
+    const handleChangePage = (event, newPage) => {
+      setPage(newPage);
+    };
+  
+    const handleChangeRowsPerPage = (event) => {
+      setRowsPerPage(+event.target.value);
+      setPage(0);
+    };
+  
     return (
-        <Container >
-            <SearchBar/>
-            <Row className="align-items-center" style={{marginBottom: "10px"}}>
-                <Col className='col-md-2 text-primary'> Company </Col>
-                <Col className='col-md-10 text-primary'> Job Name </Col>
-            </Row>
-            {data.map((item, index) => (
-                <JobEntry companyName={item.companyName} jobName={item.jobName} key={item.id}></JobEntry>
-            ))}
-            <Pagination style={{ marginTop: "10px", display: "flex", justifyContent:"center"}}>
-                <Pagination.First />
-                <Pagination.Prev />
-                <Pagination.Item active>{1}</Pagination.Item>
-                <Pagination.Item>{2}</Pagination.Item>
-                <Pagination.Item>{3}</Pagination.Item>
-                <Pagination.Item>{4}</Pagination.Item>
-                <Pagination.Item>{5}</Pagination.Item>
-                <Pagination.Item>{6}</Pagination.Item>
-                <Pagination.Ellipsis />
-                <Pagination.Next />
-                <Pagination.Last />
-            </Pagination>
-        </Container>
-    )
+      <Paper sx={{ overflow: 'hidden', m: 1 }}>
+        <SearchBar/>
+        <TableContainer sx={{ m: 1 }}>
+          <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    align={column.align}
+                    style={{ width: column.width, color: Color.primary,fontWeight: "bold", fontSize: "1.1rem" }}
+                  >
+                    {column.label}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row) => {
+                  return (
+                    <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                      {columns.map((column, index) => {
+                        const value = row[column.id];
+                        return (
+                          <TableCell key={column.id} align={column.align}>
+                            {column.format && typeof value === 'number'
+                              ? column.format(value)
+                              : value}
+                              {column.id === 'shortlistAndApply' &&
+                                <Box>
+                                    <Button variant="contained" sx={{m:0.5}}>Shortlist</Button>
+                                    <Button variant="contained" sx={{m:0.5}}>Apply</Button>
+                                </Box>
+                              }
+                          </TableCell>
+
+                        );
+                      })}
+                    </TableRow>
+                  );
+                })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[10, 25, 100]}
+          component="div"
+          count={rows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          sx={{
+            ".MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows": {
+                m:1
+              }
+          }}
+        />
+      </Paper>
+    );
 }
