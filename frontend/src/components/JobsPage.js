@@ -88,7 +88,7 @@ export default function JobsPage() {
         console.log(extensionRawData);
         // Temporary fix (seems to constantly replace data even no data exists)
         if (Object.entries(extensionRawData).length > 0){
-            var newData = [];
+            const newData = [];
             for (const [key, value] of Object.entries(extensionRawData)) {
                 newData.push({
                     id: key,
