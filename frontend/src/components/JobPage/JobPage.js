@@ -1,4 +1,3 @@
-import {useState} from 'react';
 import Container from '@mui/material/Container';
 import { Typography } from "../MUI/Typography";
 import { Color } from "../../styles/color";
@@ -10,19 +9,49 @@ import Grid from '@mui/material/Grid';
 import styled from "styled-components";
 import { Button } from "../MUI/Button"
 
-const DUMMY_DESCRIPTION = [
-    {
-        title: "Job responsibilites",
-        text: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non dui sit amet neque viverra sollicitudin. Nulla sagittis malesuada magna. Ut scelerisque, urna a bibendum ullamcorper, augue ipsum semper metus, et eleifend turpis ante vel diam. Phasellus semper lacus tortor, quis rutrum lectus cursus sed. Nunc dictum dignissim lobortis. Sed sit amet placerat dui. Nam ullamcorper a tellus id lobortis. Integer fermentum vel urna nec posuere.
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non dui sit amet neque viverra sollicitudin. Nulla sagittis malesuada magna. Ut scelerisque, urna a bibendum ullamcorper, augue ipsum semper metus, et eleifend turpis ante vel diam. Phasellus semper lacus tortor, quis rutrum lectus cursus sed. Nunc dictum dignissim lobortis. Sed sit amet placerat dui. Nam ullamcorper a tellus id lobortis. Integer fermentum vel urna nec posuere. `
-    }
-]
-export default function JobPage() {
+
+//seperate paragraphs with new line characters:
+// interface TextBody{
+//     title: tring
+//     text: string
+// }
+
+// interface ICompanyCard{
+//     imageURl: string
+//     companyName: string
+//     reviewCount?: number
+//     ratingValue?: number
+//     subtitle?: string 
+//     positionTitle?: string
+// }
+
+// interface IJobPage{ (props)
+//     textBody: TextBody[]
+//     companyCard: ICompanyCard
+//     shortlistHref: string
+//     applyHref: string
+// }
+
+export const JobPage = (props) => {
     const {
         primary
     } = Color;
 
-    const [description] = useState(DUMMY_DESCRIPTION);
+    const {
+        textBody,
+        companyCard,
+        shortlistHref,
+        applyHref
+    } = props;
+
+    const {
+        imageURL,
+        companyName,
+        reviewCount,
+        ratingValue,
+        subtitle,
+        positionTitle
+    } = companyCard;
 
     const Search = () => (
         <>
@@ -38,12 +67,12 @@ export default function JobPage() {
         <>
         <Grid item xs={12} md={8}>
              <CompanyCard
-                imageURL="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/1200px-Google_%22G%22_Logo.svg.png"
-                companyName="Google"
-                reviewCount={52}
-                ratingValue={4.8}
-                subtitle="Available Jobs Mention: Software Engineering"
-                positionTitle="Software Engineering Intern"
+                imageURL={imageURL}
+                companyName={companyName}
+                reviewCount={reviewCount}
+                ratingValue={ratingValue}
+                subtitle={subtitle}
+                positionTitle={positionTitle}
             />
         </Grid>
          <Grid item xs={12} md={4}>
@@ -64,7 +93,7 @@ export default function JobPage() {
     )
 
     const Description = () => (
-        description.map(item=>(
+        textBody.map(item=>(
             <div key={item.title}>
                 <Typography fontWeight="bold" variant="h5">{item.title}</Typography><br/>
                 {
@@ -82,8 +111,8 @@ export default function JobPage() {
             <>
             <ButtonsWrapper>
                 <ButtonsInnerWrapper>
-                    <Button width={120}>Shortlist</Button>
-                    <Button width={120}>Apply</Button>
+                    <Button width={120} href={shortlistHref}>Shortlist</Button>
+                    <Button width={120} apply={applyHref}>Apply</Button>
                 </ButtonsInnerWrapper>
                 <Typography variant="subtitle2">(Takes you to WaterlooWorks)</Typography>
             </ButtonsWrapper>
@@ -100,7 +129,6 @@ export default function JobPage() {
                 <Header/>
                 <Body/>
             </Grid>
-           
         </Container>
     )
 }
