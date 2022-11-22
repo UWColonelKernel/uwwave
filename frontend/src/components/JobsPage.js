@@ -53,7 +53,7 @@ export default function JobsPage() {
 
     const receiveExtensionMessage = (event) => {
         // We only accept messages from ourselves
-        if (event.source != window) {
+        if (event.source !== window) {
             return;
         }
         if (!event.data.type) {

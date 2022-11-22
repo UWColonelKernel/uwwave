@@ -6,7 +6,7 @@ export default function NavigationBar() {
   return (
     <Navbar expand="lg" style={{marginLeft: "25px"}}>
       <Navbar.Brand href="/">
-        <img src={logo} style={{height: "28px", width: "150px"}}/>
+        <img src={logo} style={{height: "28px", width: "150px"}} alt="Logo"/>
       </Navbar.Brand>
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto">
