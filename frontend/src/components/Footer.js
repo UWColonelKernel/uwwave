@@ -8,7 +8,7 @@ export default function Footer() {
         <Row>
             <Col className='col-md-10'>
                 <a href='/' style={{marginLeft: "15px"}}>
-                    <img src={logo} style={{height: "28px", width: "150px"}} alt="Logo"/>
+                    <img src={logo} style={{height: "35px", width: "200px"}} alt="logo"/>
                 </a>
                 <a href='/about-us' className='align-bottom' style={{marginLeft: "30px", textDecoration: 'none'}}>
                     About Us
