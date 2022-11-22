@@ -8,6 +8,6 @@ jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
-      - run: cd frontend
-      - run: yarn build
-      - run: yarn deploy
+      - working-directory: ./frontend
+        run: yarn build
+        run: yarn deploy
