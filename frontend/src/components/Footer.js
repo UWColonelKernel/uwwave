@@ -11,7 +11,7 @@ export default function Footer() {
         <Row>
             <Col className='col-md-10'>
                 <a href='/' style={{marginLeft: "15px"}}>
-                    <img src={logo} style={{height: "28px", width: "150px"}}/>
+                    <img src={logo} style={{height: "28px", width: "150px"}} alt="Logo"/>
                 </a>
                 <a href='/about-us' style={{marginLeft: "25px", textDecoration: 'none'}}>
                     About Us
@@ -19,13 +19,13 @@ export default function Footer() {
             </Col>
             <Col>
                 <a href='/' style={{marginLeft: "15px"}}>
-                    <img src={fbLogo} style={{height: "40px", width: "40px"}}/>
+                    <img src={fbLogo} style={{height: "40px", width: "40px"}} alt="FacebookLogo"/>
                 </a>
                 <a href='/' style={{marginLeft: "15px"}}>
-                    <img src={twitterLogo} style={{height: "40px", width: "40px"}}/>
+                    <img src={twitterLogo} style={{height: "40px", width: "40px"}} alt="TwitterLogo"/>
                 </a>
                 <a href='/' style={{marginLeft: "15px"}}>
-                    <img src={linkedinLogo} style={{height: "40px", width: "40px"}}/>
+                    <img src={linkedinLogo} style={{height: "40px", width: "40px"}} alt="LinkedInLogo"/>
                 </a>
             </Col>
         </Row>
