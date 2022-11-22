@@ -21,7 +21,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "deploy": "aws s3 sync build/ s3://www.uwwave.com",
+    "deploy": "aws s3 sync build/ s3://uwwave.ca",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
