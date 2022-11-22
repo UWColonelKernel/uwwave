@@ -7,6 +7,7 @@ import JobsPage from './components/JobsPage';
 import { Job } from './views/Page';
 import AboutPage from './components/AboutPage';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Spacer } from "./components/Spacer/Spacer";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path = '/about-us' element={<AboutPage/>}/>
         </Routes>
       </BrowserRouter>
+      <Spacer height={50}/>
       <Footer />
     </div>
   );
