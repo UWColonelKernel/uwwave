@@ -7,7 +7,9 @@ on:
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./app
     steps:
-      - working-directory: ./frontend
-        run: yarn build
-        run: yarn deploy
+      - run: yarn build
+      - run: yarn deploy
