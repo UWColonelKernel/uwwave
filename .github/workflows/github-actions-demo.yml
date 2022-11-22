@@ -8,6 +8,7 @@ jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       # - name: Use Node.js 18
       #   uses: actions/setup-node@v2
       #   with:
@@ -15,8 +16,8 @@ jobs:
       #     cache: "yarn"
       #     cache-dependency-path: frontend/package.json
       - run: yarn install
-        working-directory: ./frontend
+        working-directory: frontend
       - run: yarn build
-        working-directory: ./frontend
+        working-directory: frontend
       - run: yarn deploy
-        working-directory: ./frontend
+        working-directory: frontend
