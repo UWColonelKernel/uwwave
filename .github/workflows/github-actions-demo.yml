@@ -16,6 +16,7 @@ jobs:
         with:
           node-version: "18"
           cache: "yarn"
+          cache-dependency-path: frontend/package.json
       - run: yarn install
       - run: yarn build
       - run: yarn deploy
