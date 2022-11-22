@@ -10,8 +10,8 @@ export default function NavigationBar() {
       </Navbar.Brand>
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto">
-          <Nav.Link href="/dashboard" className="text-primary">Dashboard</Nav.Link>
-          <Nav.Link href="/trending" className="text-primary">Trending</Nav.Link>
+{/*           <Nav.Link href="/dashboard" className="text-primary">Dashboard</Nav.Link>
+          <Nav.Link href="/trending" className="text-primary">Trending</Nav.Link> */}
           <Nav.Link href="/companies" className="text-primary">Companies</Nav.Link>
           <Nav.Link href="/jobs" className="text-primary">Jobs</Nav.Link>
         </Nav>
