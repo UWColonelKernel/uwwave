@@ -8,8 +8,8 @@ jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     defaults:
-    run:
-      working-directory: frontend
+      run:
+        working-directory: frontend
     steps:
       - uses: actions/checkout@v2
       - run: yarn install
