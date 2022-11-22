@@ -1,7 +1,7 @@
 import React from 'react'
 import { Container, Row, Col, Button } from 'react-bootstrap'
 
-export default function (props) {
+const JobEntry = (props) => {
   return (
     <Container style={{border: "1px solid blue", borderRadius: "5px", padding: "5px", marginTop: "2px", marginBottom: "2px"}}>
         <Row className="align-items-center">
@@ -21,3 +21,5 @@ export default function (props) {
     </Container>
   )
 }
+
+export default JobEntry;

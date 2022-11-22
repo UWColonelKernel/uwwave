@@ -1,6 +1,5 @@
 import React from 'react'
 import { Container, Button, Form, Row, Col } from 'react-bootstrap'
-import { useState, useEffect } from 'react';
 
 export default function SearchBar() {
   return (
