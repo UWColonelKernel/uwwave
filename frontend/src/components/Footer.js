@@ -4,13 +4,13 @@ import { Container, Row, Col } from 'react-bootstrap'
 
 export default function Footer() {
   return (
-    <Container style={{ padding: "20px",background: "#F1F6FA", marginLeft: "0px", maxWidth: "100%" }} fluid >
+    <Container className="fixed-bottom" style={{ padding: "20px",background: "#F1F6FA", marginLeft: "0px", maxWidth: "100%" }} fluid >
         <Row>
             <Col className='col-md-10'>
                 <a href='/' style={{marginLeft: "15px"}}>
                     <img src={logo} style={{height: "35px", width: "200px"}} alt="logo"/>
                 </a>
-                <a href='/about-us' className='align-bottom' style={{marginLeft: "30px", textDecoration: 'none'}}>
+                <a href='/about-us' className='align-bottom' style={{marginLeft: "30px", textDecoration: 'none', fontSize:'1.5em'}}>
                     About Us
                 </a>
             </Col>
