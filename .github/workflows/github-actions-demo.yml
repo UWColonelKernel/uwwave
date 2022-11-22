@@ -8,5 +8,5 @@ jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
-      - run: npm build
-      - run: npm deploy
+      - run: yarn build
+      - run: yarn deploy
