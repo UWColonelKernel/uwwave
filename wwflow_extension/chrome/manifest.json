@@ -47,7 +47,11 @@
             ]
         },
         {
-            "matches": ["*://127.0.0.1/*", "*://localhost/*"],
+            "matches": [
+                "*://uwwave.ca/*",
+                "*://127.0.0.1/*", 
+                "*://localhost/*"
+            ],
             "js": [
                 "js/wwflow_website/data_service.js"
             ],
