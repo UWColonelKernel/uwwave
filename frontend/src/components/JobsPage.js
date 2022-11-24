@@ -27,12 +27,11 @@ const columns = [
 
 export default function JobsPage() {
     const [data, setData] = useState([{}]);
-    const apiCallbacks = {
-        "get_job_list": setData
-    };
 
     useEffect(() => {
-        const receiveExtensionMessage = buildExtensionApiListener(apiCallbacks);
+        const receiveExtensionMessage = buildExtensionApiListener({
+          "get_job_list": setData
+        });
 
         window.addEventListener("message", receiveExtensionMessage, false);
         // Specify how to clean up after this effect:
