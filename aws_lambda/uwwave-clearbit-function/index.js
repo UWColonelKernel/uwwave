@@ -53,21 +53,17 @@ exports.handler = async (event, context) => {
         //   .promise();
         // body = `Put item ${requestJSON.company}`;
 
-        var company = await clearbit.Domains.find({
-          name: requestJSON.company,
-        }).promise();
+        // var response = await clearbit.Domains.find({
+        //   domain: requestJSON["company"],
+        // }).promise();
 
         await dynamo
           .put({
             TableName: "uwwave-clearbit-items",
-            Item: {
-              company: company.name,
-              url: company.domain,
-              logo: company.logo,
-            },
+            Item: requestJSON,
           })
           .promise();
-        body = `Put item ${company}`;
+        body = `Put item ${requestJSON["name"]}`;
         break;
       default:
         throw new Error(`Unsupported route: "${event.routeKey}"`);
