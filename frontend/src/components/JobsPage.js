@@ -12,6 +12,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { Color } from '../styles/color';
 import SearchBar from './SearchBar';
+import { buildExtensionApiListener } from '../util/extension_api';
 
 const columns = [
     { id: 'companyName', label: 'Company', width: '20%' },
@@ -25,59 +26,19 @@ const columns = [
 
 
 export default function JobsPage() {
-  const [extensionRawData, setExtensionRawData] = useState({});
-  const [data, setData] = useState([{}]);
-  const receiveExtensionMessage = (event) => {
-      // We only accept messages from ourselves
-      if (event.source !== window) {
-          return;
-      }
-      if (!event.data.type) {
-          return;
-      }
+    const [data, setData] = useState([{}]);
 
-      if (event.data.type === "WWFLOW_EXT_LOADED") {
-          console.log("React app received: " + event.data.text);
-          window.postMessage({ type: "WWFLOW_FROM_PAGE", req_type: "get_data", text: "Requesting data" }, "*");
-      }
-      if (event.data.type === "WWFLOW_EXT_RESP") {
-          if (!event.data.req_type) {
-              console.warn("Extension response does not contain req_type.");
-              return;
-          }
-          if (event.data.req_type === "get_data") {
-              setExtensionRawData(event.data.resp);
-          }
-      }
-  }
+    useEffect(() => {
+        const receiveExtensionMessage = buildExtensionApiListener({
+            "get_job_list": setData
+        });
 
-  useEffect(() => {
-      window.addEventListener("message", receiveExtensionMessage, false);
-      // Specify how to clean up after this effect:
-      return function cleanup() {
-          window.removeEventListener("message", receiveExtensionMessage);
-      };
-  });
-
-  useEffect(() => {
-      console.log("ext raw data updated");
-      console.log(extensionRawData);
-      // Temporary fix (seems to constantly replace data even no data exists)
-      if (Object.entries(extensionRawData).length > 0){
-          const newData = [];
-          for (const [key, value] of Object.entries(extensionRawData)) {
-              if (isNaN(key)) {
-                continue;
-              }
-              newData.push({
-                  id: key,
-                  companyName: value["Posting List Data"].company,
-                  jobName: value["Posting List Data"].jobTitle,
-              })
-          }
-          setData(newData);
-      }
-  }, [extensionRawData]);
+        window.addEventListener("message", receiveExtensionMessage, false);
+        // Specify how to clean up after this effect:
+        return function cleanup() {
+            window.removeEventListener("message", receiveExtensionMessage);
+        };
+    });
   
     const {
         primary
