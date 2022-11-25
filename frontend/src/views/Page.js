@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState }from "react";
 import { useParams } from "react-router-dom";
 import { convertRawJobForJobPage } from "util/extension_adapter";
 import { buildExtensionApiListener } from "util/extension_api";
