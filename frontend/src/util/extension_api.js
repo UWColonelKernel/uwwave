@@ -12,7 +12,7 @@ export function buildExtensionApiListener(requests) {
     
         if (event.data.type === "CK_EXT_LOADED") {
             Object.keys(requests).forEach((req_id) => {
-                window.postMessage({ type: "CK_FROM_PAGE", req_id, ...requests[req_id] }, "*");
+                window.postMessage({ type: "CK_FROM_PAGE", req_id, ...requests[req_id].req }, "*");
             });
         }
         if (event.data.type === "CK_EXT_RESP") {

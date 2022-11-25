@@ -13,6 +13,7 @@ import Button from '@mui/material/Button';
 import { Color } from '../styles/color';
 import SearchBar from './SearchBar';
 import { buildExtensionApiListener } from '../util/extension_api';
+import { convertRawJobsForJobList, convertRawJobForJobPage } from 'util/extension_adapter';
 
 const columns = [
     { id: 'companyName', label: 'Company', width: '20%' },
@@ -27,19 +28,21 @@ const columns = [
 
 export default function JobsPage() {
     const [data, setData] = useState([{}]);
-    
-    function printJob(resp) {
-      console.log(resp);
-    }
 
     useEffect(() => {
         const receiveExtensionMessage = buildExtensionApiListener({
-          "get_job_list": { 
-            callback: setData 
+          "get_all_jobs_raw": { 
+            callback: (resp) => {
+              setData(convertRawJobsForJobList(resp));
+            }
           },
-          "get_job_page": { 
-            callback: printJob,
-            jobid: 123456
+          "get_job_raw": { 
+            callback: (resp) => {
+              console.log(convertRawJobForJobPage(resp));
+            },
+            req: {
+              jobid: "291618"
+            }
           }
         });
 
