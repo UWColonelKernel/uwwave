@@ -26,6 +26,10 @@ const columns = [
 
 
 export default function JobsPage() {
+    useEffect(() => {
+      document.title = 'Jobs';
+    }, []);
+
     const [data, setData] = useState([{}]);
 
     useEffect(() => {

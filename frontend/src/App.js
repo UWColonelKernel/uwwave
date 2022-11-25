@@ -22,7 +22,7 @@ function App() {
           <Route path = '/about-us' element={<AboutPage/>}/>
         </Routes>
       </BrowserRouter>
-      <Spacer height={50}/>
+      <Spacer height={56}/>
       <Footer />
     </div>
   );

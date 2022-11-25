@@ -1,8 +1,12 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Container, Row, Col } from 'react-bootstrap'
 import { Spacer } from "./Spacer/Spacer";
 
 export default function AboutPage() {
+  useEffect(() => {
+    document.title = 'UW Wave - About Us';
+  }, []);
+
   return (
     <Container>
       <Row className='justify-content-center' style={{fontSize: '1.5em'}}>

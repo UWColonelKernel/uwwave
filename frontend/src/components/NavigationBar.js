@@ -1,12 +1,12 @@
 import React from 'react'
 import { Nav, Navbar } from 'react-bootstrap'
-import logo from '../WW Flow.png'
+import logo from '../logo/logo_text_1.png'
 
 export default function NavigationBar() {
   return (
     <Navbar expand="lg" style={{marginLeft: "25px"}}>
       <Navbar.Brand href="/">
-        <img src={logo} style={{height: "28px", width: "150px"}} alt="Logo"/>
+        <img src={logo} style={{height: "60px", width: "150px"}} alt="Logo"/>
       </Navbar.Brand>
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto">
