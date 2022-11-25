@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react';
 import Container from '@mui/material/Container';
 import SearchBar from "../SearchBar"
 import styled from "styled-components";
@@ -8,6 +8,10 @@ import { Color } from "../../styles/color";
 import { Tiles } from "./Tiles/Tiles";
 
 export default function HomePage() {
+  useEffect(() => {
+    document.title = 'UW Wave';
+  }, []);
+
   return (
     <>
     <HeroWrapper>

@@ -1,5 +1,5 @@
 import React from 'react'
-import logo from '../WW Flow.png'
+import logo from '../logo/logo_text_1.png'
 import { Container, Row, Col } from 'react-bootstrap'
 
 export default function Footer() {
@@ -8,7 +8,7 @@ export default function Footer() {
         <Row>
             <Col className='col-md-10'>
                 <a href='/' style={{marginLeft: "15px"}}>
-                    <img src={logo} style={{height: "35px", width: "200px"}} alt="logo"/>
+                    <img src={logo} style={{height: "45px", width: "112.5px"}} alt="logo"/>
                 </a>
                 <a href='/about-us' className='align-bottom' style={{marginLeft: "30px", textDecoration: 'none', fontSize:'1.5em'}}>
                     About Us

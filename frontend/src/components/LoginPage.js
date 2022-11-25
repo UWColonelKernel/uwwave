@@ -1,8 +1,12 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import { Container, Button, Form, Row, Col } from 'react-bootstrap'
 import SearchBar from './SearchBar'
 
 export default function LoginPage() {
+  useEffect(() => {
+    document.title = 'UW Wave - Login';
+  }, []);
+
   return (
     <Container style={{display: "flex", alignItems: "center", justifyContent: "center", height: "80vh"}}>
       <Row>
