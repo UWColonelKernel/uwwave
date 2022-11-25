@@ -1,7 +1,8 @@
 req_id_to_response = {
     "get_all_jobs_raw": get_all_jobs_raw,
     "get_job_raw": get_job_raw,
-    "get_job_list": get_job_list
+    "get_job_list": get_job_list,
+    "get_job_page": get_job_page
 }
 
 function get_all_jobs_raw(data) {

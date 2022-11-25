@@ -27,10 +27,20 @@ const columns = [
 
 export default function JobsPage() {
     const [data, setData] = useState([{}]);
+    
+    function printJob(resp) {
+      console.log(resp);
+    }
 
     useEffect(() => {
         const receiveExtensionMessage = buildExtensionApiListener({
-          "get_job_list": setData
+          "get_job_list": { 
+            callback: setData 
+          },
+          "get_job_page": { 
+            callback: printJob,
+            jobid: 123456
+          }
         });
 
         window.addEventListener("message", receiveExtensionMessage, false);
