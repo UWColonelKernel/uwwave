@@ -40,10 +40,15 @@ export const Job = () => {
             "get_job_raw": { 
               callback: (resp) => {
                 setData(convertRawJobForJobPage(resp));
-                const name = resp[jobId]["Company Information"]["Organization"];
+                const name = resp["Company Information"]["Organization"];
                 axios.get(`https://842gb0w279.execute-api.ca-central-1.amazonaws.com/items/${name}`)
-                    .then((res) => setImageURL(res["logo"]))
+                    .then((res) => {
+                        console.log(res);
+                        setImageURL(res.data["Item"]["logo"]);
+                    })
                     .catch((err) => console.error(err));
+                    
+
               },
               req: {
                 jobid: jobId
