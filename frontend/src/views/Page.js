@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { convertRawJobForJobPage } from "util/extension_adapter";
 import { buildExtensionApiListener } from "util/extension_api";
 import { JobPage } from "../components/JobPage/JobPage";
-
+import axios from 'axios';
 const DUMMY_DESCRIPTION = [
     {
         title: "Job responsibilites",
@@ -31,14 +32,24 @@ const DUMMY_COMPANY_CARD = {
 export const Job = () => {
     const { jobId } = useParams();
     const [data, setData] = useState({});
+    const [imageURL, setImageURL] = useState("");
 
 
     useEffect(() => {
-        // setData({jobid: jobId});
         const receiveExtensionMessage = buildExtensionApiListener({
-            "get_job_raw": setData,
-
-        });
+            "get_job_raw": { 
+              callback: (resp) => {
+                setData(convertRawJobForJobPage(resp));
+                const name = resp[jobId]["Company Information"]["Organization"];
+                axios.get(`https://842gb0w279.execute-api.ca-central-1.amazonaws.com/items/${name}`)
+                    .then((res) => setImageURL(res["logo"]))
+                    .catch((err) => console.error(err));
+              },
+              req: {
+                jobid: jobId
+              }
+            }
+          });
 
         window.addEventListener("message", receiveExtensionMessage, false);
         // Specify how to clean up after this effect:
@@ -73,39 +84,40 @@ export const Job = () => {
     //     }
     // ]
     const getCompanyCard = () => {
-        if (!Object.hasOwn(data, jobId)) return {};
+        if (Object.keys(data).length === 0) return {};
         return {
-            companyName: data[jobId]["Company Information"]["Organization"],
-            positionTitle: data[jobId]["Job Posting Information"]["Job Title"],
-            jobOpenings: data[jobId]["Job Posting Information"]["Job Title"]
+            imageURL: imageURL,
+            companyName: data["companyName"],
+            positionTitle: data["positionTitle"],
+            jobOpenings: data["jobOpenings"]
         };
     }
     const getTextBody = () => {
-        if (!Object.hasOwn(data, jobId)) return [];
+        if (Object.keys(data).length === 0) return [];
 
         const textBody = []
-        if (Object.hasOwn(data[jobId]["Job Posting Information"], "Job Summary")) {
+        if (data["jobSummary"]) {
             textBody.push({
                 title: "Job Summary",
-                text: data[jobId]["Job Posting Information"]["Job Summary"]
+                text: data["jobSummary"]
             });
         }
-        if (Object.hasOwn(data[jobId]["Job Posting Information"], "Job Responsibilites")) {
+        if (data["jobResponsibilities"]) {
             textBody.push({
-                title: "Job Summary",
-                text: data[jobId]["Job Posting Information"]["Job Responsibilites"]
+                title: "Job Responsibilities",
+                text: data["jobResponsibilities"]
             });
         }
-        if (Object.hasOwn(data[jobId]["Job Posting Information"], "Required Skills")) {
+        if (data["requiredSkills"]) {
             textBody.push({
-                title: "Job Summary",
-                text: data[jobId]["Job Posting Information"]["Required Skills"]
+                title: "Required Skills",
+                text: data["requiredSkills"]
             });
         }
-        if (Object.hasOwn(data[jobId]["Job Posting Information"], "Compensation and Benefits")) {
+        if (data["compensation"]) {
             textBody.push({
-                title: "Job Summary",
-                text: data[jobId]["Job Posting Information"]["Compensation and Benefits"]
+                title: "Compensation and Benefits",
+                text: data["compensation"]
             });
         }
         return textBody;

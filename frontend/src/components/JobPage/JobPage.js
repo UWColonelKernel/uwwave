@@ -8,8 +8,7 @@ import { CompanyCard } from "../CompanyCard/CompanyCard";
 import Grid from '@mui/material/Grid';
 import styled from "styled-components";
 import { Button } from "../MUI/Button"
-
-
+import ReactHtmlParser from 'react-html-parser';
 //seperate paragraphs with new line characters:
 // interface TextBody{
 //     title: tring
@@ -65,8 +64,8 @@ export const JobPage = (props) => {
         <Grid item xs={12} md={8}>
              <CompanyCard
                 imageURL={imageURL}
-                companyName={companyName}
-                positionTitle={positionTitle}
+                companyName={ReactHtmlParser(companyName)}
+                positionTitle={ReactHtmlParser(positionTitle)}
             />
         </Grid>
          <Grid item xs={12} md={4}>
@@ -88,15 +87,20 @@ export const JobPage = (props) => {
 
     const Description = () => (
         textBody && textBody.map(item=> (
+
             <div key={item.title}>
+
                 <Typography fontWeight="bold" variant="h5">{item.title}</Typography><br/>
                 {
                     item.text.split("\n").map(item2=>(
-                        <DescriptionTypography key={item2}>{item2}<br/><br/></DescriptionTypography>
+                        <DescriptionTypography key={item2}>
+                            <div>{ReactHtmlParser(item2)}</div>
+                        </DescriptionTypography>
                     ))
                 }
-                
+                <br/>
             </div>
+            
         ))
     )
 

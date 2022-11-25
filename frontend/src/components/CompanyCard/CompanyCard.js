@@ -4,6 +4,7 @@ import { Typography } from "../MUI/Typography";
 import { Spacer } from "../Spacer/Spacer";
 import { Star } from "../icons/Star";
 import { Color } from '../../styles/color';
+import defaultIcon from '../icons/companyDefaultLogo.png'
 
 export const CompanyCard = ({
     imageURL,
@@ -16,7 +17,10 @@ export const CompanyCard = ({
 }) => {
     return (
         <MainWrapper variant={isOutlined ? "outlined" : "elevation"} elevation={0}>
-            <ImageWrapper src={imageURL}/>
+            <ImageWrapper src={imageURL} onError={({ currentTarget }) => {
+                currentTarget.onerror = null;
+                currentTarget.src = defaultIcon;
+            }}/>
             <Spacer width={8}/>
             <NameWrapper>
                 {reviewCount ? <Typography variant="subtitle2" > {`${reviewCount} Reviews`}</Typography> : null}
