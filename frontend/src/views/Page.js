@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { buildExtensionApiListener } from "util/extension_api";
 import { JobPage } from "../components/JobPage/JobPage";
 
 const DUMMY_DESCRIPTION = [
@@ -25,15 +28,95 @@ const DUMMY_COMPANY_CARD = {
     positionTitle:"Software Engineering Intern"
 }
 
-//TODO: change to use api request
-
 export const Job = () => {
+    const { jobId } = useParams();
+    const [data, setData] = useState({});
+
+
+    useEffect(() => {
+        // setData({jobid: jobId});
+        const receiveExtensionMessage = buildExtensionApiListener({
+            "get_job_raw": setData,
+
+        });
+
+        window.addEventListener("message", receiveExtensionMessage, false);
+        // Specify how to clean up after this effect:
+        return function cleanup() {
+            window.removeEventListener("message", receiveExtensionMessage);
+        };
+    }, []);
+
+    // const comapnyCard = 
+    // {
+    //     companyName: data["Company Information"]["Organization"],
+    //     positionTitle: data["Job Posting Information"]["Job Title"],
+    //     jobOpenings: data["Job Posting Information"]["Job Title"]
+    // }
+    // const JobDescrptionCard =
+    // [
+    //     {
+    //         title: "Job Summary",
+    //         text: data["Job Posting Information"]["Job Summary"]
+    //     },
+    //     {
+    //         title: "Job Responsibilites",
+    //         text: data["Job Posting Information"]["Job Responsibilites"]
+    //     },
+    //     {
+    //         title: "Required Skills",
+    //         text: data["Job Posting Information"]["Required Skills"]
+    //     },
+    //     {
+    //         title: "Compensation and Benefits",
+    //         text: data["Job Posting Information"]["Compensation and Benefits"]
+    //     }
+    // ]
+    const getCompanyCard = () => {
+        if (!Object.hasOwn(data, jobId)) return {};
+        return {
+            companyName: data[jobId]["Company Information"]["Organization"],
+            positionTitle: data[jobId]["Job Posting Information"]["Job Title"],
+            jobOpenings: data[jobId]["Job Posting Information"]["Job Title"]
+        };
+    }
+    const getTextBody = () => {
+        if (!Object.hasOwn(data, jobId)) return [];
+
+        const textBody = []
+        if (Object.hasOwn(data[jobId]["Job Posting Information"], "Job Summary")) {
+            textBody.push({
+                title: "Job Summary",
+                text: data[jobId]["Job Posting Information"]["Job Summary"]
+            });
+        }
+        if (Object.hasOwn(data[jobId]["Job Posting Information"], "Job Responsibilites")) {
+            textBody.push({
+                title: "Job Summary",
+                text: data[jobId]["Job Posting Information"]["Job Responsibilites"]
+            });
+        }
+        if (Object.hasOwn(data[jobId]["Job Posting Information"], "Required Skills")) {
+            textBody.push({
+                title: "Job Summary",
+                text: data[jobId]["Job Posting Information"]["Required Skills"]
+            });
+        }
+        if (Object.hasOwn(data[jobId]["Job Posting Information"], "Compensation and Benefits")) {
+            textBody.push({
+                title: "Job Summary",
+                text: data[jobId]["Job Posting Information"]["Compensation and Benefits"]
+            });
+        }
+        return textBody;
+    }
+
     return (
         <JobPage
-            textBody={DUMMY_DESCRIPTION}
-            companyCard={DUMMY_COMPANY_CARD}
+            companyCard={getCompanyCard()}
+            textBody={getTextBody()}
             shortlistHref="/"
-            applyHref="/"
+            applyHref={`https://waterlooworks.uwaterloo.ca/myAccount/co-op/coop-postings.htm?ck_jobid=${jobId}`}
         />
     )
 }   

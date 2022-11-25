@@ -47,9 +47,6 @@ export const JobPage = (props) => {
     const {
         imageURL,
         companyName,
-        reviewCount,
-        ratingValue,
-        subtitle,
         positionTitle
     } = companyCard;
 
@@ -69,9 +66,6 @@ export const JobPage = (props) => {
              <CompanyCard
                 imageURL={imageURL}
                 companyName={companyName}
-                reviewCount={reviewCount}
-                ratingValue={ratingValue}
-                subtitle={subtitle}
                 positionTitle={positionTitle}
             />
         </Grid>
@@ -93,7 +87,7 @@ export const JobPage = (props) => {
     )
 
     const Description = () => (
-        textBody.map(item=>(
+        textBody && textBody.map(item=> (
             <div key={item.title}>
                 <Typography fontWeight="bold" variant="h5">{item.title}</Typography><br/>
                 {
@@ -112,9 +106,8 @@ export const JobPage = (props) => {
             <ButtonsWrapper>
                 <ButtonsInnerWrapper>
                     <Button width={120} href={shortlistHref}>Shortlist</Button>
-                    <Button width={120} apply={applyHref}>Apply</Button>
+                    <Button width={120} apply={applyHref}>Open on WW</Button>
                 </ButtonsInnerWrapper>
-                <Typography variant="subtitle2">(Takes you to WaterlooWorks)</Typography>
             </ButtonsWrapper>
             </>
         )

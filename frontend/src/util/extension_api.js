@@ -9,7 +9,7 @@ export function buildExtensionApiListener(req_id_to_callback) {
         if (!event.data || !event.data.type) {
             return;
         }
-    
+        
         if (event.data.type === "CK_EXT_LOADED") {
             Object.keys(req_id_to_callback).forEach((req_id) => {
                 window.postMessage({ type: "CK_FROM_PAGE", req_id }, "*");
