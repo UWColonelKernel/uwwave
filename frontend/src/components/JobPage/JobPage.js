@@ -8,8 +8,7 @@ import { CompanyCard } from "../CompanyCard/CompanyCard";
 import Grid from '@mui/material/Grid';
 import styled from "styled-components";
 import { Button } from "../MUI/Button"
-
-
+import ReactHtmlParser from 'react-html-parser';
 //seperate paragraphs with new line characters:
 // interface TextBody{
 //     title: tring
@@ -47,9 +46,6 @@ export const JobPage = (props) => {
     const {
         imageURL,
         companyName,
-        reviewCount,
-        ratingValue,
-        subtitle,
         positionTitle
     } = companyCard;
 
@@ -68,11 +64,8 @@ export const JobPage = (props) => {
         <Grid item xs={12} md={8}>
              <CompanyCard
                 imageURL={imageURL}
-                companyName={companyName}
-                reviewCount={reviewCount}
-                ratingValue={ratingValue}
-                subtitle={subtitle}
-                positionTitle={positionTitle}
+                companyName={ReactHtmlParser(companyName)}
+                positionTitle={ReactHtmlParser(positionTitle)}
             />
         </Grid>
          <Grid item xs={12} md={4}>
@@ -93,16 +86,21 @@ export const JobPage = (props) => {
     )
 
     const Description = () => (
-        textBody.map(item=>(
+        textBody && textBody.map(item=> (
+
             <div key={item.title}>
+
                 <Typography fontWeight="bold" variant="h5">{item.title}</Typography><br/>
                 {
-                    item.text.split("\n").map(item2=>(
-                        <DescriptionTypography key={item2}>{item2}<br/><br/></DescriptionTypography>
-                    ))
+                    // item.text.replace("<br>", "").replace("&nbsp;", "").split("\n").map(item2=>(
+                    //     <DescriptionTypography key={item2}>
+                            <div>{ReactHtmlParser(item.text)}</div>
+                    //     </DescriptionTypography>
+                    // ))
                 }
-                
+                <br/>
             </div>
+            
         ))
     )
 
@@ -112,9 +110,8 @@ export const JobPage = (props) => {
             <ButtonsWrapper>
                 <ButtonsInnerWrapper>
                     <Button width={120} href={shortlistHref}>Shortlist</Button>
-                    <Button width={120} apply={applyHref}>Apply</Button>
+                    <Button width={120} apply={applyHref}>Open on WW</Button>
                 </ButtonsInnerWrapper>
-                <Typography variant="subtitle2">(Takes you to WaterlooWorks)</Typography>
             </ButtonsWrapper>
             </>
         )
