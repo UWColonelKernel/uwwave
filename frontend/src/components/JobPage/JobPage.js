@@ -92,11 +92,11 @@ export const JobPage = (props) => {
 
                 <Typography fontWeight="bold" variant="h5">{item.title}</Typography><br/>
                 {
-                    item.text.split("\n").map(item2=>(
-                        <DescriptionTypography key={item2}>
-                            <div>{ReactHtmlParser(item2)}</div>
-                        </DescriptionTypography>
-                    ))
+                    // item.text.replace("<br>", "").replace("&nbsp;", "").split("\n").map(item2=>(
+                    //     <DescriptionTypography key={item2}>
+                            <div>{ReactHtmlParser(item.text)}</div>
+                    //     </DescriptionTypography>
+                    // ))
                 }
                 <br/>
             </div>

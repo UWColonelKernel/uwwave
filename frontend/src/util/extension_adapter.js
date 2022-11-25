@@ -1,14 +1,13 @@
 export function convertRawJobForJobPage(rawJob) {
-    const jobId = Object.keys(rawJob)[0]
     const respData = {
-        jobId: jobId,
-        companyName: rawJob[jobId]["Company Information"]["Organization"],
-        positionTitle: rawJob[jobId]["Job Posting Information"]["Job Title"],
-        jobOpenings: rawJob[jobId]["Job Posting Information"]["Job Openings"],
-        jobSummary: rawJob[jobId]["Job Posting Information"]["Job Summary"],
-        jobResponsibilities: rawJob[jobId]["Job Posting Information"]["Job Responsibilities"],
-        requiredSkills: rawJob[jobId]["Job Posting Information"]["Required Skills"],
-        compensation: rawJob[jobId]["Job Posting Information"]["Compensation and Benefits Information"]
+        jobId: rawJob.jobid,
+        companyName: rawJob["Company Information"]["Organization"],
+        positionTitle: rawJob["Job Posting Information"]["Job Title"],
+        jobOpenings: rawJob["Job Posting Information"]["Job Openings"],
+        jobSummary: rawJob["Job Posting Information"]["Job Summary"],
+        jobResponsibilities: rawJob["Job Posting Information"]["Job Responsibilities"],
+        requiredSkills: rawJob["Job Posting Information"]["Required Skills"],
+        compensation: rawJob["Job Posting Information"]["Compensation and Benefits Information"]
     }
     return respData;
 }
