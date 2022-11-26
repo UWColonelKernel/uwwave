@@ -73,8 +73,11 @@ export default function JobsPage() {
     };
   
     return (
+      <>
       <Paper sx={{ overflow: 'hidden', m: 1 }}>
         <SearchBar/>
+      </Paper>
+      <Paper sx={{ overflow: 'hidden', m: 1 }}>
         <TableContainer sx={{ m: 1 }}>
           <Table stickyHeader aria-label="sticky table">
             <TableHead>
@@ -127,5 +130,6 @@ export default function JobsPage() {
           }}
         />
       </Paper>
+      </>
     );
 }
