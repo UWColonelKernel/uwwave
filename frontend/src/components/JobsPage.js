@@ -11,7 +11,7 @@ import TableRow from '@mui/material/TableRow';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { Color } from '../styles/color';
-import SearchBar from './SearchBar';
+import SearchBar from './SearchBar/SearchBar';
 import { buildExtensionApiListener } from '../util/extension_api';
 import { convertRawJobsForJobList, convertRawJobForJobPage } from 'util/extension_adapter';
 

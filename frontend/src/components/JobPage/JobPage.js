@@ -1,7 +1,7 @@
 import Container from '@mui/material/Container';
 import { Typography } from "../MUI/Typography";
 import { Color } from "../../styles/color";
-import SearchBar from '../SearchBar';
+import SearchBar from '../SearchBar/SearchBar';
 import { Spacer } from "../Spacer/Spacer";
 import { Divider } from '../MUI/Divider';
 import { CompanyCard } from "../CompanyCard/CompanyCard";

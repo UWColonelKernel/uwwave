@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react'
 import { Container, Button, Form, Row, Col } from 'react-bootstrap'
-import SearchBar from './SearchBar'
+import SearchBar from './SearchBar/SearchBar'
 
 export default function LoginPage() {
   useEffect(() => {
