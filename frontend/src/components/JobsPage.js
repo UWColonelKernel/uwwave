@@ -11,9 +11,10 @@ import TableRow from '@mui/material/TableRow';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { Color } from '../styles/color';
-import SearchBar from './SearchBar/SearchBar';
+import { SearchBarJobsList } from 'components/SearchBar/variants/SearchBarJobsList';
 import { buildExtensionApiListener } from '../util/extension_api';
 import { convertRawJobsForJobList, convertRawJobForJobPage } from 'util/extension_adapter';
+import Container from '@mui/material/Container';
 
 const columns = [
     { id: 'companyName', label: 'Company', width: '20%' },
@@ -75,7 +76,7 @@ export default function JobsPage() {
     return (
       <>
       <Paper sx={{ overflow: 'hidden', m: 1 }}>
-        <SearchBar/>
+        <SearchBarJobsList/>
       </Paper>
       <Paper sx={{ overflow: 'hidden', m: 1 }}>
         <TableContainer sx={{ m: 1 }}>
