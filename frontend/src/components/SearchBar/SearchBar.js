@@ -66,7 +66,7 @@ const StyledButton = styled(Button)`
 `
 
 const ListWrapper = styled.div`
-  width: calc(100% - 4px);
+  width: 100%;
   position: absolute;
   border-right: 1.6px solid #bbb;
   border-bottom: 1.6px solid #bbb;
