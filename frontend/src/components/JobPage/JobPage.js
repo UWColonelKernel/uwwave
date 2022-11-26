@@ -92,11 +92,7 @@ export const JobPage = (props) => {
 
                 <Typography fontWeight="bold" variant="h5">{item.title}</Typography><br/>
                 {
-                    // item.text.replace("<br>", "").replace("&nbsp;", "").split("\n").map(item2=>(
-                    //     <DescriptionTypography key={item2}>
-                            <div>{ReactHtmlParser(item.text)}</div>
-                    //     </DescriptionTypography>
-                    // ))
+                    <div>{ReactHtmlParser(item.text)}</div>
                 }
                 <br/>
             </div>
@@ -145,10 +141,4 @@ const ButtonsWrapper = styled.div`
     justify-content: end;
     flex-direction: column;
     gap: 8px;
-`
-
-const DescriptionTypography = styled(Typography)`
-    && {
-        white-space: pre-line;
-    }
 `
