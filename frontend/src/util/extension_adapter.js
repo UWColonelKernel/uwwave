@@ -7,7 +7,7 @@ export function convertRawJobForJobPage(rawJob) {
         jobSummary: rawJob["Job Posting Information"]["Job Summary"],
         jobResponsibilities: rawJob["Job Posting Information"]["Job Responsibilities"],
         requiredSkills: rawJob["Job Posting Information"]["Required Skills"],
-        compensation: rawJob["Job Posting Information"]["Compensation and Benefits Information"]
+        compensation: rawJob["Job Posting Information"]["Compensation and Benefits Information"],
     }
     return respData;
 }
@@ -25,6 +25,8 @@ export function convertRawJobsForJobList(jobs) {
             location: value["Posting List Data"].location,
             openings: value["Posting List Data"].openings,
             level: value["Posting List Data"].level,
+            appDeadline: value["Posting List Data"].deadline,
+            division: value["Posting List Data"].division
         })
     }
     return jobList;

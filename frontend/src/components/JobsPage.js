@@ -1,31 +1,53 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import { Color } from '../styles/color';
 import SearchBar from './SearchBar/SearchBar';
 import { buildExtensionApiListener } from '../util/extension_api';
 import { convertRawJobsForJobList } from 'util/extension_adapter';
+import { DataGrid } from '@mui/x-data-grid';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { Link } from '@mui/material';
+
+const headerComponent = (headerData) =>
+  <strong style={{fontSize: "1.1rem", color: Color.primary}}>
+    {headerData.colDef.headerName}
+  </strong>;
 
 const columns = [
-    { id: 'companyName', label: 'Company', width: '20%' },
-    { id: 'jobName', label: 'Job Name', width:'30%'},
-    { id: 'location', label: 'Location', width: '15%'},
-    { id: 'openings', label: 'Openings', width: 'calc(30% - 300px)', align: 'center'},
-    {
-      id: 'shortlistAndApply',
-      label: '',
-      width: '300px',
-    },
-  ];
+  { field: 'companyName', headerName: 'Company', flex: 0.3, renderHeader: headerComponent, 
+    renderCell: (rowData) => 
+    <div style={{ margin: '2px'}}>
+      {rowData.row.companyName}<br/>
+      <div style={{color:'grey', fontSize: '0.7rem'}}>
+        {rowData.row.division}
+      </div>
+    </div>
+  },
+  { field: 'jobName', headerName: 'Job Name', flex: 0.3, renderHeader: headerComponent,
+    renderCell: (rowData) => 
+    <div style={{ margin: '2px'}}>
+      <a href={`/jobs/${rowData.id}`}>{rowData.row.jobName}</a><br/>
+      {rowData.row.level}
+    </div>
+  },
+
+  { field: 'location', headerName: 'Location', flex: 0.1, renderHeader: headerComponent },
+  { field: 'openings', headerName: 'Openings', flex: 0.1, align: 'center', headerAlign: 'center', renderHeader: headerComponent },
+  { field: 'appDeadline', headerName: 'App Deadline', flex: 0.12, align: 'center', headerAlign: 'center', renderHeader: headerComponent },
+
+  { field: 'shortlistAndApply', headerName: '', flex: 0.08, align: 'center',
+    renderCell: (rowData) => 
+      <>
+        <BookmarkBorderIcon sx={{m:0.5, color: Color.primary }} />
+        <Link href={`https://waterlooworks.uwaterloo.ca/myAccount/co-op/coop-postings.htm?ck_jobid=${rowData.id}`} target={"_blank"} sx={{m:0.5, color: Color.primary}}>
+          <OpenInNewIcon/>
+        </Link>
+      </>
+    
+  },
+];
 
 
 export default function JobsPage() {
@@ -51,83 +73,35 @@ export default function JobsPage() {
         };
     }, []);
   
-    const {
-        primary
-    } = Color;
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  
-    const handleChangePage = (event, newPage) => {
-      setPage(newPage);
-    };
-  
-    const handleChangeRowsPerPage = (event) => {
-      setRowsPerPage(+event.target.value);
-      setPage(0);
-    };
-  
+    const [pageSize, setPageSize] = React.useState(10);
+
     return (
       <>
-      <Paper sx={{ overflow: 'hidden', m: 1 }}>
-        <SearchBar/>
-      </Paper>
-      <Paper sx={{ overflow: 'hidden', m: 1 }}>
-        <TableContainer sx={{ m: 1 }}>
-          <Table stickyHeader aria-label="sticky table">
-            <TableHead>
-              <TableRow>
-                {columns.map((column) => (
-                  <TableCell
-                    color={primary}
-                    align={column.align}
-                    style={{ width: column.width, fontWeight: "bold", fontSize: "1.1rem" }}
-                  >
-                    {column.label}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row) => {
-                  return (
-                    <TableRow hover>
-                      <TableCell>{row['companyName']}</TableCell>
-                      <TableCell style={{maxWidth: columns[1].width}}>
-                        <a href={`/jobs/${row.id}`}>{row['jobName']}</a><br/>
-                        {row['level']} <br/>
-                      </TableCell>
-                      <TableCell>{row['location']}</TableCell>
-                      <TableCell sx={{textAlign: 'center'}}>{row['openings']}</TableCell>
-                      <TableCell>
-                        <Box>
-                          <Button variant="contained" sx={{m:0.5, backgroundColor: Color.primary}}>Shortlist</Button>
-                          <Button variant="contained" href={`https://waterlooworks.uwaterloo.ca/myAccount/co-op/coop-postings.htm?ck_jobid=${row.id}`} target={"_blank"} sx={{m:0.5, backgroundColor: Color.primary}}>Open on WW</Button>
-                        </Box>
-                      </TableCell>
-                      
-                    </TableRow>
-                  );
-                })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
-          component="div"
-          count={data.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          sx={{
-            ".MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows": {
-                m:1
-              }
-          }}
-        />
-      </Paper>
-      </>
+        <Box sx={{ m:2 }}>
+          <SearchBar/>
+        </Box>
+        <Box sx={{ width: 'calc(100% - 32px)', m:2, mb:0 }}>
+          <DataGrid
+            rows={data}
+            columns={columns}
+            pageSize={pageSize}
+            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+            rowsPerPageOptions={[10, 25, 50]}
+            pagination
+            autoHeight
+            rowHeight={100}
+            disableSelectionOnClick
+            sx={{
+              ".MuiDataGrid-root, .MuiDataGrid-cell":{
+                  whiteSpace: 'normal !important',
+                  wordWrap: 'break-all !important'
+                }, 
+                ".MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows": {
+                  m:1
+                }
+            }}
+          />
+        </Box>   
+      </>  
     );
 }
