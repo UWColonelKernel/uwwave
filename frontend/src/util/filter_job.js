@@ -1,9 +1,12 @@
-// 
+
 export function getFilterUniqueValuesByCategory (tagCategoriesByJobID){
     const filters = {};
 
     for (const [jobid, tagCategories] of Object.entries(tagCategoriesByJobID)){
         for (const [categoryName, tags] of Object.entries(tagCategories)){
+            if (categoryName === "keywords"){
+                continue;
+            }
             if (!(categoryName in filters)) {
                 filters[categoryName] = new Set();
             }

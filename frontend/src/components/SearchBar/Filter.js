@@ -13,57 +13,115 @@ import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { Color } from 'styles/color';
 
-// interface ISearchPar{
-//   width: string, //css string
-//   minWidth: string //css string
-//   listItems: any[],
-//   Component: React.FC<any> //should take listItem's type as props
-//   onSearchValChange : (val: string)=>{} // val is the value of the search field
-// }
 
-export default function Filter() {
+const [checkStates, setCheckStates] = useState({});
 
-  const [checked, setChecked] = useState([false,false]);
+export function getFilterBoolean(){
+  let formula = {bool_op: 'AND', operands: []};
 
-  const handleChange1 = (event) => {
-    setChecked([event.target.checked, checked[1]]);
-  };
+  for (const [category, tags] of Object.entries(checkStates)){
+    let subFormula = {bool_op: 'AND', operands: []};
+    let orFormula = {bool_op: 'OR', operands: []};
+    let orNotFormula = {bool_op: 'OR', operands: []};
 
-  const handleChange2 = (event) => {
-    setChecked([checked[0], event.target.checked]);
+    tags.forEach((tag) => {
+      if (checkStates[category][tag] != null){
+        let term = {category: {category}, value: {tag}};
+        if (!!checkStates[category][tag]){
+          orFormula.operands.push(term);
+        }
+        else {
+          orNotFormula.operands.push(term);
+        }
+      }
+    })
+
+    let notFormula = {bool_op: 'NOT', operands: [orNotFormula]};
+    subFormula.operands.push(orFormula);
+    subFormula.operands.push(notFormula);
+
+    formula.operands.push(subFormula);
+  }
+
+  return formula;
+}
+
+export default function Filter(props) {
+
+  const {
+    width,
+    filters
+  } = props;
+
+  useEffect(() => {
+    let initialState = {};
+    for (const [category, tags] of Object.entries(filters)){
+      initialState[category] = {};
+
+      tags.forEach((tag) => {
+        initialState[category][tag] = null;
+      })
+    }
+    setCheckStates(initialState);
+  }, []);
+
+
+  const handleChange = (event) => {
+    let newStates = checkStates;
+    let oldState = checkStates[event.target.value[0]][event.target.value[1]];
+
+    let nextState;
+    if (oldState === false) {
+      nextState = null;
+    } else if (oldState === true) {
+      nextState = false;
+    } else {
+      nextState = true;
+    }
+
+    newStates[event.target.value[0]][event.target.value[1]] = nextState;
+
+    setCheckStates(newStates);
   };
 
   return (
-    <MainWrapper>
+    <MainWrapper width={width}>
       <Accordion>
         <AccordionSummary sx={{backgroundColor: Color.primary}}
-          expandIcon={<ExpandMoreIcon />}
-        >
-          <Typography>Advanced Search Filters</Typography>
+          expandIcon={<ExpandMoreIcon />}>
+          <Typography color="common.white">Advanced Search Filters</Typography>
         </AccordionSummary>
         <AccordionDetails>
         <Grid container spacing={2}>
-            <Grid item xs={4}>
-              <Item>
-                <Typography variant='subtitle1'>Documents</Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', ml: 3 }}>
-                  <FormControlLabel
-                    label="Transcript"
-                    control={<Checkbox checked={checked[0]} onChange={handleChange1} />}
-                  />
-                  <FormControlLabel
-                    label="No Cover Letter"
-                    control={<Checkbox checked={checked[1]} onChange={handleChange2} />}
-                  />
-                </Box>
-              </Item>
-            </Grid>
-            <Grid item xs={4}>
-              <Item>something</Item>
-            </Grid>
-            <Grid item xs={4}>
-              <Item>something</Item>
-            </Grid>
+          {
+            // I don't know how iterate and render the map 
+            Object.entries(filters).map(([category, tags]) => (
+              <Grid item md={4} xs={6}>
+                <Item>
+                  <Typography variant='h4'>{category}</Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', ml: 3 }}>
+                    {
+                      tags.map((tag) => { 
+                        return ( 
+                          <FormControlLabel
+                            label={tag}
+                            control={
+                              <Checkbox
+                                value = {[category,tag]}
+                                checked={!!checkStates[category][tag]}
+                                indeterminate={checkStates[category][tag] == null}
+                                onChange={handleChange}
+                                color={checkStates[category][tag] == null ? "secondary" : "primary"}
+                              />
+                            }
+                          />
+                        );
+                      })}
+                    </Box>
+                </Item>
+              </Grid>
+            ))
+          }
           </Grid>
         </AccordionDetails>
       </Accordion>
@@ -79,5 +137,5 @@ const Item = styled(Paper)`
 
 const MainWrapper = styled.div`
   position: relative;
-  width: 100%;
+  width: ${props=>props.width ?? "initial"};
 `

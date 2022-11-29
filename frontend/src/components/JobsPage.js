@@ -14,6 +14,7 @@ import { Color } from '../styles/color';
 import SearchBar from './SearchBar/SearchBar';
 import { buildExtensionApiListener } from '../util/extension_api';
 import { convertRawJobsForJobList, convertRawJobForJobPage } from 'util/extension_adapter';
+import Filter from 'components/SearchBar/Filter';
 
 const columns = [
     { id: 'companyName', label: 'Company', width: '20%' },
@@ -76,6 +77,12 @@ export default function JobsPage() {
       <>
       <Paper sx={{ overflow: 'hidden', m: 1 }}>
         <SearchBar/>
+        {
+          /*
+          Need to pass in filters from calling filter_jobs
+          */
+        }
+        <Filter width="80%"/>
       </Paper>
       <Paper sx={{ overflow: 'hidden', m: 1 }}>
         <TableContainer sx={{ m: 1 }}>
