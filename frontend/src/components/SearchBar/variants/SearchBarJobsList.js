@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import { Button } from "components/MUI/Button"
 import SearchIcon from '@mui/icons-material/Search';
 import TextField from '@mui/material/TextField';
@@ -14,11 +14,15 @@ import MUIButton from "@mui/material/Button";
 //     searchType: SearchTypes,
 //     searchVal: string
 // }
-// interface ISearchBarJobsList{
+// interface ISearchBarJobsListInner{
 //   chips: ISearchChip[],
-//   onSearch : (val: string, type:SearchTypes)=>{} // callback
+//   onSearch : (val: string, type:SearchTypes): string => {} // callback
 //   onDeleteChip : (index: number) => {} //callback
 //   onClearChips: () => {}
+// }
+
+// interface ISearchBarJobsList{
+//   onSearchUpdated: (chips: ISearchChip[]) => {}
 // }
 
 const SearchBarJobsListInner = (props) => {
@@ -38,8 +42,8 @@ const SearchBarJobsListInner = (props) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    onSearch(searchType, searchValue);
-    setSearchValue("");
+    const afterSearchVal = onSearch(searchType, searchValue);
+    setSearchValue(afterSearchVal);
   }
 
   const Chips = () => {
@@ -100,26 +104,45 @@ const SearchBarJobsListInner = (props) => {
 
 //Example use case
 //TODO: Add implementation
-export const SearchBarJobsList = () => {
-    const [chips, setChips] = useState([])
+export const SearchBarJobsList = (props) => {
+    const [chips, setChips] = useState([]);
+
+    useEffect(() => {
+      props.onSearchUpdated(chips);
+    }, [props, chips])
 
     const onClearChips = () => {
         setChips([])
     }
-    const onSearch = (type, val)=>{
-        if(type === SearchTypes.All || !val){
-            return;
+    const onSearch = (type, val) => {
+        const newChip = {
+          searchType: type,
+          searchVal: val
+        };
+
+        var found = false;
+        const newChips = chips.map((chip) => {
+          if (chip.searchType === type) {
+            found = true;
+            return newChip;
+          }
+          else {
+            return chip;
+          }
+        });
+        if (!found) {
+          newChips.push(newChip);
         }
-        setChips([...chips, {
-            searchType: type,
-            searchVal: val
-        }])
+
+        setChips(newChips);
+        return "";
     } 
     const onDeleteChip = (index) => {
         const tempChips = [...chips];
-        tempChips.splice(index, 1)
-        setChips(tempChips)
+        tempChips.splice(index, 1);
+        setChips(tempChips);
     } 
+
     return (
         <SearchBarJobsListInner
             chips={chips}

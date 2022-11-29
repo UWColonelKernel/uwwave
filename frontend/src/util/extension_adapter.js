@@ -13,12 +13,13 @@ export function convertRawJobForJobPage(rawJob) {
 }
 
 export function convertRawJobsForJobList(jobs) {
-    const jobList = [];
+    const jobList = {};
     for (const [key, value] of Object.entries(jobs)) {
         if (isNaN(key)) {
             continue;
         }
-        jobList.push({
+
+        jobList[key] = {
             id: key,
             companyName: value["Posting List Data"].company,
             jobName: value["Posting List Data"].jobTitle,
@@ -26,8 +27,38 @@ export function convertRawJobsForJobList(jobs) {
             openings: value["Posting List Data"].openings,
             level: value["Posting List Data"].level,
             appDeadline: value["Posting List Data"].deadline,
-            division: value["Posting List Data"].division
-        })
+            division: value["Posting List Data"].division,
+        };
+
+        const jobPostingInfo = value["Job Posting Information"];
+        if (jobPostingInfo !== undefined) {
+            jobList[key].jobSummary = jobPostingInfo["Job Summary"];
+            jobList[key].jobResponsibilities = jobPostingInfo["Job Responsibilities"];
+            jobList[key].requiredSkills = jobPostingInfo["Required Skills"];
+        }
+    }
+    return jobList;
+}
+
+export function convertRawJobsForJobListSearch(jobs) {
+    const jobList = {};
+    for (const [key, value] of Object.entries(jobs)) {
+        if (isNaN(key)) {
+            continue;
+        }
+
+        jobList[key] = {
+            id: key,
+            companyName: value["Posting List Data"].company,
+            jobName: value["Posting List Data"].jobTitle,
+        };
+
+        const jobPostingInfo = value["Job Posting Information"];
+        if (jobPostingInfo !== undefined) {
+            jobList[key].jobSummary = jobPostingInfo["Job Summary"];
+            jobList[key].jobResponsibilities = jobPostingInfo["Job Responsibilities"];
+            jobList[key].requiredSkills = jobPostingInfo["Required Skills"];
+        }
     }
     return jobList;
 }
