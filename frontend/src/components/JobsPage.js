@@ -78,7 +78,7 @@ export default function JobsPage() {
     return (
       <>
         <Box sx={{ m:2 }}>
-          <SearchBar/>
+          <SearchBarJobsList/>
         </Box>
         <Box sx={{ width: 'calc(100% - 32px)', m:2, mb:0 }}>
           <DataGrid
