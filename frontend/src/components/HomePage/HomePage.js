@@ -6,6 +6,7 @@ import { Spacer } from "../Spacer/Spacer";
 import { Typography }from '../MUI/Typography';
 import { Color } from "../../styles/color";
 import { Tiles } from "./Tiles/Tiles";
+import Filter from 'components/SearchBar/Filter';
 
 //EXMAPLE OF SEARCH BAR COMPONENT PROPS
 //TODO: Replace
@@ -69,6 +70,7 @@ export default function HomePage() {
         Component={DummyListItem}
         onSearchValChange={onSearchValChange}
       />
+      <Filter/>
     </Hero>
     </HeroWrapper>
     <Tiles/>
