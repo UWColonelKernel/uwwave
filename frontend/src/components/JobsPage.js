@@ -5,7 +5,7 @@ import { Color } from '../styles/color';
 import { SearchBarJobsList } from 'components/SearchBar/variants/SearchBarJobsList';
 import { buildExtensionApiListener } from '../util/extension_api';
 import { convertRawJobsForJobList, convertRawJobsForJobListSearch } from 'util/extension_adapter';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Link } from '@mui/material';
@@ -13,7 +13,7 @@ import lunr from 'lunr';
 import { getSearchTypeField, SearchTypes } from 'util/search/search';
 
 const headerComponent = (headerData) =>
-  <strong style={{fontSize: "1.1rem", color: Color.primary}}>
+  <strong style={{fontSize: "1rem", color: Color.primary}}>
     {headerData.colDef.headerName}
   </strong>;
   
@@ -39,7 +39,7 @@ const columns = [
   { field: 'openings', headerName: 'Openings', flex: 0.1, align: 'center', headerAlign: 'center', renderHeader: headerComponent },
   { field: 'appDeadline', headerName: 'App Deadline', flex: 0.12, align: 'center', headerAlign: 'center', renderHeader: headerComponent },
 
-  { field: 'shortlistAndApply', headerName: '', flex: 0.08, align: 'center',
+  { field: 'shortlistAndApply', headerName: 'Actions', flex: 0.08, align: 'center', headerAlign: 'center', renderHeader: headerComponent, sortable: false,
     renderCell: (rowData) => 
       <>
         <BookmarkBorderIcon sx={{m:0.5, color: Color.primary }} />
@@ -135,8 +135,9 @@ export default function JobsPage() {
             columns={columns}
             pageSize={pageSize}
             loading={isTableLoading}
+            disableColumnMenu
             onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-            rowsPerPageOptions={[10, 25, 50]}
+            rowsPerPageOptions={[5, 10, 25, 50, 100]}
             pagination
             autoHeight
             rowHeight={100}
@@ -149,6 +150,9 @@ export default function JobsPage() {
                 ".MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows": {
                   m:1
                 }
+            }}
+            components={{
+              Toolbar: GridToolbar,
             }}
           />
         </Box>   
