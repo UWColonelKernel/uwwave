@@ -1,4 +1,4 @@
-import { useEffect, useState }from "react";
+import { useCallback, useEffect, useState }from "react";
 import { useParams } from "react-router-dom";
 import { convertRawJobForJobPage } from "util/extension_adapter";
 import { buildExtensionApiListener } from "util/extension_api";
@@ -13,12 +13,13 @@ export const Job = () => {
     const [extraInfo, setExtraInfo] = useState([]);
     const [imageURL, setImageURL] = useState("");
 
-    function getJobRawCallback(resp) {
+    // use callback to prevent reupdating the function every time the component is rerendered
+    const getJobRawCallback = useCallback((resp) => {
         const parsedData = convertRawJobForJobPage(resp);
         setCompanyCard(getCompanyCard(parsedData));
         setTextBody(getTextBody(parsedData));
 
-        const name = resp["Company Information"]["Organization"];
+        const name = parsedData.companyName;
         axios.get(`https://842gb0w279.execute-api.ca-central-1.amazonaws.com/items/${name}`)
             .then((res) => {
                 if (res.data["Item"]) {
@@ -44,7 +45,7 @@ export const Job = () => {
                 }
             })
             .catch((err) => console.error(err));
-    }
+    }, []);
 
     useEffect(() => {
         const receiveExtensionMessage = buildExtensionApiListener({
@@ -61,7 +62,7 @@ export const Job = () => {
         return function cleanup() {
             window.removeEventListener("message", receiveExtensionMessage);
         };
-    }, [jobId]);
+    }, [jobId, getJobRawCallback]);
 
     const getCompanyCard = (parsedData) => {
         if (Object.keys(parsedData).length === 0) return {};
