@@ -4,19 +4,44 @@ import { convertRawJobForJobPage } from "util/extension_adapter";
 import { buildExtensionApiListener } from "util/extension_api";
 import { JobPage } from "../components/JobPage/JobPage";
 import axios from 'axios';
+import defaultIcon from '../components/icons/companyDefaultLogo.png'
 
 export const Job = () => {
     const { jobId } = useParams();
-    const [data, setData] = useState({});
+    const [companyCard, setCompanyCard] = useState({});
+    const [textBody, setTextBody] = useState([]);
+    const [extraInfo, setExtraInfo] = useState([]);
     const [imageURL, setImageURL] = useState("");
 
     function getJobRawCallback(resp) {
-        setData(convertRawJobForJobPage(resp));
+        const parsedData = convertRawJobForJobPage(resp);
+        setCompanyCard(getCompanyCard(parsedData));
+        setTextBody(getTextBody(parsedData));
+
         const name = resp["Company Information"]["Organization"];
         axios.get(`https://842gb0w279.execute-api.ca-central-1.amazonaws.com/items/${name}`)
             .then((res) => {
-                console.log(res);
-                setImageURL(res.data["Item"]["logo"]);
+                if (res.data["Item"]) {
+                    setImageURL(res.data["Item"]["logo"]);
+                    
+                    const dashIndex = res.data["Item"]["salary"].indexOf('-');
+                    let salary = '$' + res.data["Item"]["salary"];
+                    if (dashIndex >= 0) salary = salary.slice(0, dashIndex + 2) + '$' + salary.slice(dashIndex + 2);
+                    if (res.data["Item"]["Currency"]) salary += " " + res.data["Item"]["Currency"];
+
+                    setExtraInfo([
+                        {
+                            title: "Salary",
+                            text: salary
+                        },
+                        {
+                            title: "Company Website",
+                            text: "<a href=//" + res.data["Item"]["domain"] + " target='_blank'>" + res.data["Item"]["domain"] + "</a>"
+                        }
+                    ]);
+                } else {
+                    setImageURL(defaultIcon);
+                }
             })
             .catch((err) => console.error(err));
     }
@@ -38,50 +63,49 @@ export const Job = () => {
         };
     }, [jobId]);
 
-    const getCompanyCard = () => {
-        if (Object.keys(data).length === 0) return {};
+    const getCompanyCard = (parsedData) => {
+        if (Object.keys(parsedData).length === 0) return {};
         return {
-            imageURL: imageURL,
-            companyName: data["companyName"],
-            positionTitle: data["positionTitle"],
-            jobOpenings: data["jobOpenings"]
+            companyName: parsedData["companyName"],
+            positionTitle: parsedData["positionTitle"],
+            jobOpenings: parsedData["jobOpenings"]
         };
     }
-    const getTextBody = () => {
-        if (Object.keys(data).length === 0) return [];
-
-        const textBody = []
-        if (data["jobSummary"]) {
-            textBody.push({
+    const getTextBody = (parsedData) => {
+        if (Object.keys(parsedData).length === 0) return [];
+        
+        const currTextBody = [];
+        if (parsedData["jobSummary"]) {
+            currTextBody.push({
                 title: "Job Summary",
-                text: data["jobSummary"]
+                text: parsedData["jobSummary"]
             });
         }
-        if (data["jobResponsibilities"]) {
-            textBody.push({
+        if (parsedData["jobResponsibilities"]) {
+            currTextBody.push({
                 title: "Job Responsibilities",
-                text: data["jobResponsibilities"]
+                text: parsedData["jobResponsibilities"]
             });
         }
-        if (data["requiredSkills"]) {
-            textBody.push({
+        if (parsedData["requiredSkills"]) {
+            currTextBody.push({
                 title: "Required Skills",
-                text: data["requiredSkills"]
+                text: parsedData["requiredSkills"]
             });
         }
-        if (data["compensation"]) {
-            textBody.push({
+        if (parsedData["compensation"]) {
+            currTextBody.push({
                 title: "Compensation and Benefits",
-                text: data["compensation"]
+                text: parsedData["compensation"]
             });
         }
-        return textBody;
+        return currTextBody;
     }
 
     return (
         <JobPage
-            companyCard={getCompanyCard()}
-            textBody={getTextBody()}
+            companyCard={{...companyCard, imageURL}}
+            textBody={[...textBody, ...extraInfo]}
             shortlistHref="/"
             applyHref={`https://waterlooworks.uwaterloo.ca/myAccount/co-op/coop-postings.htm?ck_jobid=${jobId}`}
         />

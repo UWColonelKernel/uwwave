@@ -86,7 +86,7 @@ export const JobPage = (props) => {
     )
 
     const Description = () => (
-        textBody && textBody.map(item=> (
+        textBody && textBody.map(item => (
 
             <div key={item.title}>
 
