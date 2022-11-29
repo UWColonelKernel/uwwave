@@ -22,6 +22,9 @@ export function convertRawJobsForJobList(jobs) {
             id: key,
             companyName: value["Posting List Data"].company,
             jobName: value["Posting List Data"].jobTitle,
+            location: value["Posting List Data"].location,
+            openings: value["Posting List Data"].openings,
+            level: value["Posting List Data"].level,
         })
     }
     return jobList;

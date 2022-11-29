@@ -13,15 +13,17 @@ import Button from '@mui/material/Button';
 import { Color } from '../styles/color';
 import SearchBar from './SearchBar/SearchBar';
 import { buildExtensionApiListener } from '../util/extension_api';
-import { convertRawJobsForJobList, convertRawJobForJobPage } from 'util/extension_adapter';
+import { convertRawJobsForJobList } from 'util/extension_adapter';
 
 const columns = [
     { id: 'companyName', label: 'Company', width: '20%' },
-    { id: 'jobName', label: 'Job Name', width: '60%' },
+    { id: 'jobName', label: 'Job Name', width:'30%'},
+    { id: 'location', label: 'Location', width: '15%'},
+    { id: 'openings', label: 'Openings', width: 'calc(30% - 300px)', align: 'center'},
     {
       id: 'shortlistAndApply',
       label: '',
-      width: '20%',
+      width: '300px',
     },
   ];
 
@@ -31,21 +33,13 @@ export default function JobsPage() {
       document.title = 'Jobs';
     }, []);
 
-    const [data, setData] = useState([{}]);
+    const [data, setData] = useState([]);
 
     useEffect(() => {
         const receiveExtensionMessage = buildExtensionApiListener({
           "get_all_jobs_raw": { 
             callback: (resp) => {
               setData(convertRawJobsForJobList(resp));
-            }
-          },
-          "get_job_raw": { 
-            callback: (resp) => {
-              console.log(convertRawJobForJobPage(resp));
-            },
-            req: {
-              jobid: "291618"
             }
           }
         });
@@ -84,9 +78,8 @@ export default function JobsPage() {
               <TableRow>
                 {columns.map((column) => (
                   <TableCell
-                    key={column.id}
-                    align={column.align}
                     color={primary}
+                    align={column.align}
                     style={{ width: column.width, fontWeight: "bold", fontSize: "1.1rem" }}
                   >
                     {column.label}
@@ -99,10 +92,15 @@ export default function JobsPage() {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => {
                   return (
-                    <TableRow hover key={row.id}>
-                      <TableCell key="companyName">{row['companyName']}</TableCell>
-                      <TableCell key="jobName"><a href={`/jobs/${row.id}`}>{row['jobName']}</a></TableCell>
-                      <TableCell key="shortlistAndApply">
+                    <TableRow hover>
+                      <TableCell>{row['companyName']}</TableCell>
+                      <TableCell style={{maxWidth: columns[1].width}}>
+                        <a href={`/jobs/${row.id}`}>{row['jobName']}</a><br/>
+                        {row['level']} <br/>
+                      </TableCell>
+                      <TableCell>{row['location']}</TableCell>
+                      <TableCell sx={{textAlign: 'center'}}>{row['openings']}</TableCell>
+                      <TableCell>
                         <Box>
                           <Button variant="contained" sx={{m:0.5, backgroundColor: Color.primary}}>Shortlist</Button>
                           <Button variant="contained" href={`https://waterlooworks.uwaterloo.ca/myAccount/co-op/coop-postings.htm?ck_jobid=${row.id}`} target={"_blank"} sx={{m:0.5, backgroundColor: Color.primary}}>Open on WW</Button>

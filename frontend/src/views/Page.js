@@ -4,6 +4,7 @@ import { convertRawJobForJobPage } from "util/extension_adapter";
 import { buildExtensionApiListener } from "util/extension_api";
 import { JobPage } from "../components/JobPage/JobPage";
 import axios from 'axios';
+import defaultIcon from '../components/icons/companyDefaultLogo.png'
 
 export const Job = () => {
     const { jobId } = useParams();
@@ -15,8 +16,10 @@ export const Job = () => {
         const name = resp["Company Information"]["Organization"];
         axios.get(`https://842gb0w279.execute-api.ca-central-1.amazonaws.com/items/${name}`)
             .then((res) => {
-                console.log(res);
-                setImageURL(res.data["Item"]["logo"]);
+                if (res.data["Item"])
+                    setImageURL(res.data["Item"]["logo"]);
+                else
+                    setImageURL(defaultIcon);
             })
             .catch((err) => console.error(err));
     }
