@@ -47,7 +47,6 @@ export default function SearchBar(props) {
 const StyledTextField = styled(TextField)`
   flex: 1;
   background-color: white;
-  margin-right: -4px !important;
 `
 const SearchInputWrapper = styled.div`
   display: flex;
@@ -61,12 +60,13 @@ const MainWrapper = styled.div`
 const StyledButton = styled(Button)`
   && {
     position: relative;
+    right: 4px;
     border-radius: 0 4px 0 0;
   }
 `
 
 const ListWrapper = styled.div`
-  width: 100%;
+  width: calc(100% - 4px);
   position: absolute;
   border-right: 1.6px solid #bbb;
   border-bottom: 1.6px solid #bbb;
