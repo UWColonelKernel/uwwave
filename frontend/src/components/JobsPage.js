@@ -11,6 +11,11 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Link } from '@mui/material';
 import lunr from 'lunr';
 import { getSearchTypeField, SearchTypes } from 'util/search/search';
+import Filter from 'components/SearchBar/Filter';
+
+// @ts-ignore
+import JOB_TAGS_FILE from '../ww_data_tags.json'; // TODO load this from somewhere else or generate it with a function
+import { getFilterUniqueValuesByCategory, isJobMatched } from 'util/filter_job';
 
 const headerComponent = (headerData) =>
   <strong style={{fontSize: "1rem", color: Color.primary}}>
@@ -65,6 +70,9 @@ export default function JobsPage() {
 
     const [searchIndex, setSearchIndex] = useState(lunr(() => {}));
 
+    const [jobTagData] = useState(JOB_TAGS_FILE);
+    const [filterFormula, setFilterFormula] = useState({});
+
     useEffect(() => {
       setSearchIndex(lunr(function () {
         this.ref('id')
@@ -110,17 +118,23 @@ export default function JobsPage() {
         queryString += chip.searchVal;
       });
 
+      var jobs = Object.values(data);
       if (queryString !== "") {
         const searchRankings = searchIndex.search(queryString);
-        const jobs = searchRankings.map((searchResult) => {
+        jobs = searchRankings.map((searchResult) => {
           return data[searchResult.ref];
         });
-        setTableData(jobs);
       }
-      else {
-        setTableData(Object.values(data));
-      }
-    }, [data, searchIndex, searchChips])
+      
+      jobs = jobs.filter((job) => isJobMatched(job.id, filterFormula, jobTagData));
+      console.log(jobs);
+
+      setTableData(jobs);
+    }, [data, searchIndex, searchChips, filterFormula, jobTagData]);
+
+    // useEffect(() => {
+    //   console.log(filterFormula);
+    // }, [filterFormula]);
   
     const [pageSize, setPageSize] = React.useState(10);
 
@@ -128,10 +142,19 @@ export default function JobsPage() {
       <>
         <Box sx={{ m:2 }}>
           <SearchBarJobsList onSearchUpdated={setSearchChips}/>
+          {
+            /*
+            Need to pass in filters from calling filter_jobs
+            */
+          }
+          <Filter  
+            onFormulaChange={setFilterFormula} 
+            filters={getFilterUniqueValuesByCategory(jobTagData)}/>
         </Box>
         <Box sx={{ width: 'calc(100% - 32px)', m:2, mb:0 }}>
           <DataGrid
             rows={tableData}
+            // @ts-ignore
             columns={columns}
             pageSize={pageSize}
             loading={isTableLoading}

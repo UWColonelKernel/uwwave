@@ -15,6 +15,7 @@ export function convertRawJobForJobPage(rawJob) {
 export function convertRawJobsForJobList(jobs) {
     const jobList = {};
     for (const [key, value] of Object.entries(jobs)) {
+        // @ts-ignore
         if (isNaN(key)) {
             continue;
         }
@@ -43,6 +44,7 @@ export function convertRawJobsForJobList(jobs) {
 export function convertRawJobsForJobListSearch(jobs) {
     const jobList = {};
     for (const [key, value] of Object.entries(jobs)) {
+        // @ts-ignore
         if (isNaN(key)) {
             continue;
         }
