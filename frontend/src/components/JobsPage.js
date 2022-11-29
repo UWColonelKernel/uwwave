@@ -2,7 +2,7 @@ import React from 'react'
 import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import { Color } from '../styles/color';
-import SearchBar from './SearchBar/SearchBar';
+import { SearchBarJobsList } from 'components/SearchBar/variants/SearchBarJobsList';
 import { buildExtensionApiListener } from '../util/extension_api';
 import { convertRawJobsForJobList } from 'util/extension_adapter';
 import { DataGrid } from '@mui/x-data-grid';
@@ -14,7 +14,7 @@ const headerComponent = (headerData) =>
   <strong style={{fontSize: "1.1rem", color: Color.primary}}>
     {headerData.colDef.headerName}
   </strong>;
-
+  
 const columns = [
   { field: 'companyName', headerName: 'Company', flex: 0.3, renderHeader: headerComponent, 
     renderCell: (rowData) => 
