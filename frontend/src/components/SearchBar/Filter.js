@@ -16,7 +16,7 @@ import { Color } from 'styles/color';
 
 const [checkStates, setCheckStates] = useState({});
 
-export function getFilterBoolean(){
+export function getFormula(){
   let formula = {bool_op: 'AND', operands: []};
 
   for (const [category, tags] of Object.entries(checkStates)){
@@ -94,7 +94,6 @@ export default function Filter(props) {
         <AccordionDetails>
         <Grid container spacing={2}>
           {
-            // I don't know how iterate and render the map 
             Object.entries(filters).map(([category, tags]) => (
               <Grid item md={4} xs={6}>
                 <Item>
