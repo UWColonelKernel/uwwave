@@ -1,10 +1,11 @@
+import { TagCategories } from "./extension_adapter";
 
 export function getFilterUniqueValuesByCategory (tagCategoriesByJobID){
     const filters = {};
 
     Object.values(tagCategoriesByJobID).forEach(tagCategories => {
         for (const [categoryName, tags] of Object.entries(tagCategories)){
-            if (categoryName === "keywords"){
+            if (!Object.keys(TagCategories).includes(categoryName)){
                 continue;
             }
             if (!(categoryName in filters)) {
@@ -22,7 +23,7 @@ export function getFilterUniqueValuesByCategory (tagCategoriesByJobID){
     });
 
     Object.keys(filters).forEach(category => {
-        filters[category] = Array.from(filters[category]);
+        filters[category] = Array.from(filters[category]).sort();
     });
     
     return filters;
