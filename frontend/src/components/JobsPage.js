@@ -70,7 +70,7 @@ export default function JobsPage() {
 
     const [searchIndex, setSearchIndex] = useState(lunr(() => {}));
 
-    const [jobTagData, setJobTagData] = useState(JOB_TAGS_FILE);
+    const [jobTagData] = useState(JOB_TAGS_FILE);
     const [filterFormula, setFilterFormula] = useState({});
 
     useEffect(() => {
@@ -126,12 +126,11 @@ export default function JobsPage() {
         });
       }
       
-      console.log(jobs);
       jobs = jobs.filter((job) => isJobMatched(job.id, filterFormula, jobTagData));
       console.log(jobs);
 
       setTableData(jobs);
-    }, [data, searchIndex, searchChips, filterFormula]);
+    }, [data, searchIndex, searchChips, filterFormula, jobTagData]);
 
     // useEffect(() => {
     //   console.log(filterFormula);
@@ -148,8 +147,7 @@ export default function JobsPage() {
             Need to pass in filters from calling filter_jobs
             */
           }
-          <Filter 
-            width="80%" 
+          <Filter  
             onFormulaChange={setFilterFormula} 
             filters={getFilterUniqueValuesByCategory(jobTagData)}/>
         </Box>

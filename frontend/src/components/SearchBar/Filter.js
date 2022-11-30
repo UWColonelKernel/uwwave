@@ -49,13 +49,11 @@ function getFormula(checkStates){
 }
 
 // interface ISearchPar{
-//   width: string, //css string
 //   filters: { string: string[] },  // category: [tags]
 //   onFormulaChange: (formula: {}) => {}  // formula is a boolean algebra formula tree
 // }
 export default function Filter(props) {
   const {
-    width,
     filters,
     onFormulaChange,
   } = props;
@@ -76,7 +74,7 @@ export default function Filter(props) {
 
   useEffect(() => {
     onFormulaChange(getFormula(checkStates));
-  }, [checkStates]);
+  }, [checkStates, onFormulaChange]);
 
   const handleChange = (event) => {
     const category = event.target.value.split(',')[0];

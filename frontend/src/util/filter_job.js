@@ -2,7 +2,7 @@
 export function getFilterUniqueValuesByCategory (tagCategoriesByJobID){
     const filters = {};
 
-    for (const [jobid, tagCategories] of Object.entries(tagCategoriesByJobID)){
+    Object.values(tagCategoriesByJobID).forEach(tagCategories => {
         for (const [categoryName, tags] of Object.entries(tagCategories)){
             if (categoryName === "keywords"){
                 continue;
@@ -19,7 +19,7 @@ export function getFilterUniqueValuesByCategory (tagCategoriesByJobID){
                 })
             }
         }
-    }
+    });
 
     Object.keys(filters).forEach(category => {
         filters[category] = Array.from(filters[category]);
@@ -36,22 +36,10 @@ export function isJobMatched (jobID, formula, tagCategoriesByJobID){
 
     if ('bool_op' in formula){
         if (formula.bool_op === "AND"){
-            formula.operands.forEach((operand) => {
-                if (!isJobMatched(jobID, operand, tagCategoriesByJobID)){
-                    return false;
-                }
-            })
-
-            return true;
+            return formula.operands.every((operand) => isJobMatched(jobID, operand, tagCategoriesByJobID));
         }
         else if (formula.bool_op === "OR"){
-            formula.operands.forEach((operand) => {
-                if (isJobMatched(jobID, operand, tagCategoriesByJobID)){
-                    return true;
-                }
-            })
-
-            return false;
+            return formula.operands.some((operand) => isJobMatched(jobID, operand, tagCategoriesByJobID));
         }
         else if (formula.bool_op === "NOT") {
             if (formula.operands.length !== 1){
@@ -64,7 +52,7 @@ export function isJobMatched (jobID, formula, tagCategoriesByJobID){
             throw new Error("invalid bool operator");
         }
     } 
-    else { // Terminal
+    else if ('category' in formula) { // Terminal
         const jobTags = tagCategoriesByJobID[jobID];
         // formula.category === formula["category"]
         const tags = jobTags[formula.category];
@@ -74,5 +62,8 @@ export function isJobMatched (jobID, formula, tagCategoriesByJobID){
         else { // it's an array
             return tags.includes(formula.value);
         }
+    }
+    else { // formula not loaded yet, just an empty object
+        return true;
     }
 }
