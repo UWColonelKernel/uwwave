@@ -106,7 +106,7 @@ export const JobPage = (props) => {
             <ButtonsWrapper>
                 <ButtonsInnerWrapper>
                     <Button width={120} href={shortlistHref}>Shortlist</Button>
-                    <Button width={120} apply={applyHref}>Open on WW</Button>
+                    <Button width={120} href={applyHref} target={"_blank"}>Open on WW</Button>
                 </ButtonsInnerWrapper>
             </ButtonsWrapper>
             </>

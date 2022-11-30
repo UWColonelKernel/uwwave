@@ -37,7 +37,7 @@ const columns = [
 
   { field: 'location', headerName: 'Location', flex: 0.1, renderHeader: headerComponent },
   { field: 'openings', headerName: 'Openings', flex: 0.1, align: 'center', headerAlign: 'center', renderHeader: headerComponent },
-  { field: 'appDeadline', headerName: 'App Deadline', flex: 0.12, align: 'center', headerAlign: 'center', renderHeader: headerComponent },
+  { field: 'appDeadline', headerName: 'App Deadline', flex: 0.12, align: 'center', headerAlign: 'center', renderHeader: headerComponent, sortComparator: (date1, date2) => Date.parse(date1) - Date.parse(date2) },
 
   { field: 'shortlistAndApply', headerName: 'Actions', flex: 0.08, align: 'center', headerAlign: 'center', renderHeader: headerComponent, sortable: false,
     renderCell: (rowData) => 
