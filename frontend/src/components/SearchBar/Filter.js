@@ -11,12 +11,8 @@ import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
 import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { Color } from 'styles/color';
 
-
-const [checkStates, setCheckStates] = useState({});
-
-export function getFormula(){
+function getFormula(checkStates){
   let formula = {bool_op: 'AND', operands: []};
 
   for (const [category, tags] of Object.entries(checkStates)){
@@ -24,85 +20,103 @@ export function getFormula(){
     let orFormula = {bool_op: 'OR', operands: []};
     let orNotFormula = {bool_op: 'OR', operands: []};
 
-    tags.forEach((tag) => {
-      if (checkStates[category][tag] != null){
-        let term = {category: {category}, value: {tag}};
-        if (!!checkStates[category][tag]){
+    for (const [tag, value] of Object.entries(tags)){
+      if (value !== false){ // false is blank checkbox
+        let term = {category: category, value: tag};
+        if (!!value){
           orFormula.operands.push(term);
         }
         else {
           orNotFormula.operands.push(term);
         }
       }
-    })
+    }
 
-    let notFormula = {bool_op: 'NOT', operands: [orNotFormula]};
-    subFormula.operands.push(orFormula);
-    subFormula.operands.push(notFormula);
+    if (orFormula.operands.length > 0) {
+      subFormula.operands.push(orFormula);
+    }
+    if (orNotFormula.operands.length > 0) {
+      let notFormula = {bool_op: 'NOT', operands: [orNotFormula]};
+      subFormula.operands.push(notFormula);
+    }
 
-    formula.operands.push(subFormula);
+    if (subFormula.operands.length > 0) {
+      formula.operands.push(subFormula);
+    }
   }
 
   return formula;
 }
 
+// interface ISearchPar{
+//   width: string, //css string
+//   filters: { string: string[] },  // category: [tags]
+//   onFormulaChange: (formula: {}) => {}  // formula is a boolean algebra formula tree
+// }
 export default function Filter(props) {
-
   const {
     width,
-    filters
+    filters,
+    onFormulaChange,
   } = props;
 
-  useEffect(() => {
+  const getInitialState = () => {
     let initialState = {};
     for (const [category, tags] of Object.entries(filters)){
       initialState[category] = {};
 
       tags.forEach((tag) => {
-        initialState[category][tag] = null;
+        initialState[category][tag] = false;
       })
     }
-    setCheckStates(initialState);
-  }, []);
+    return initialState;
+  };
 
+  const [checkStates, setCheckStates] = useState(getInitialState());
+
+  useEffect(() => {
+    onFormulaChange(getFormula(checkStates));
+  }, [checkStates]);
 
   const handleChange = (event) => {
-    let newStates = checkStates;
-    let oldState = checkStates[event.target.value[0]][event.target.value[1]];
+    const category = event.target.value.split(',')[0];
+    const tagValue = event.target.value.split(',')[1];
+    let newStates = {...checkStates}; // copy object to trigger a rerender
+    let oldState = checkStates[category][tagValue];
 
     let nextState;
     if (oldState === false) {
-      nextState = null;
-    } else if (oldState === true) {
-      nextState = false;
-    } else {
       nextState = true;
+    } else if (oldState === true) {
+      nextState = null;
+    } else {
+      nextState = false;
     }
 
-    newStates[event.target.value[0]][event.target.value[1]] = nextState;
+    newStates[category][tagValue] = nextState;
 
     setCheckStates(newStates);
   };
 
   return (
-    <MainWrapper width={width}>
-      <Accordion>
-        <AccordionSummary sx={{backgroundColor: Color.primary}}
-          expandIcon={<ExpandMoreIcon />}>
-          <Typography color="common.white">Advanced Search Filters</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
+    <Accordion>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}>
+        <Typography>Advanced Filters</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
         <Grid container spacing={2}>
           {
-            Object.entries(filters).map(([category, tags]) => (
-              <Grid item md={4} xs={6}>
+            checkStates && Object.entries(filters).map(([category, tags]) => (
+              <Grid key={category} item md={4} xs={6}>
                 <Item>
-                  <Typography variant='h4'>{category}</Typography>
+                  <Typography sx={{ paddingLeft: "16px", paddingTop: "8px" }} variant='subtitle1'>{category}</Typography>
                   <Box sx={{ display: 'flex', flexDirection: 'column', ml: 3 }}>
                     {
                       tags.map((tag) => { 
                         return ( 
                           <FormControlLabel
+                            key={tag}
                             label={tag}
                             control={
                               <Checkbox
@@ -121,20 +135,14 @@ export default function Filter(props) {
               </Grid>
             ))
           }
-          </Grid>
-        </AccordionDetails>
-      </Accordion>
-    </MainWrapper>
+        </Grid>
+      </AccordionDetails>
+    </Accordion>
   )
 }
 
 const Item = styled(Paper)`
-  textAlign: 'center';
-  justifyContent:'center';
-  alignItems:'center';
-`
-
-const MainWrapper = styled.div`
-  position: relative;
-  width: ${props=>props.width ?? "initial"};
+textAlign: 'center';
+justifyContent:'center';
+alignItems:'center';
 `

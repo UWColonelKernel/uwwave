@@ -20,11 +20,20 @@ export function getFilterUniqueValuesByCategory (tagCategoriesByJobID){
             }
         }
     }
+
+    Object.keys(filters).forEach(category => {
+        filters[category] = Array.from(filters[category]);
+    });
     
     return filters;
 }
 
 export function isJobMatched (jobID, formula, tagCategoriesByJobID){
+    // TODO remove this, all jobs should have tags
+    if (tagCategoriesByJobID[jobID] === undefined) {
+        return true;
+    }
+
     if ('bool_op' in formula){
         if (formula.bool_op === "AND"){
             formula.operands.forEach((operand) => {
@@ -49,7 +58,7 @@ export function isJobMatched (jobID, formula, tagCategoriesByJobID){
                 throw new Error("invalid number of operands for NOT");
             }
 
-            return isJobMatched(jobID, formula.operands[0], tagCategoriesByJobID);
+            return !isJobMatched(jobID, formula.operands[0], tagCategoriesByJobID);
         }
         else {
             throw new Error("invalid bool operator");
@@ -63,7 +72,7 @@ export function isJobMatched (jobID, formula, tagCategoriesByJobID){
             return tags === formula.value;
         }
         else { // it's an array
-            return tags.contains(formula.value);
+            return tags.includes(formula.value);
         }
     }
 }
