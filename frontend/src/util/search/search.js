@@ -39,6 +39,30 @@ export const getSearchTypeName = (type) => {
     }
 }
 
+export const getSearchTypeField = (type) => {
+    const {
+        JobTitle,
+        CompanyName,
+        JobSummary,
+        JobResponsibilities,
+        RequiredSkills
+    } = SearchTypes
+    switch(type){
+        case JobTitle:
+            return "jobName"
+        case CompanyName:
+            return "companyName"
+        case JobSummary:
+            return "jobSummary" // TODO
+        case JobResponsibilities:
+            return "jobResponsibilities" // TODO
+        case RequiredSkills:
+            return "requiredSkills" // TODO
+        default:
+            return ""
+    }
+}
+
 export const getSearchTypeIcon = (type) => {
     const {
         JobTitle,

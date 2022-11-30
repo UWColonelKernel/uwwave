@@ -4,14 +4,16 @@ import Box from '@mui/material/Box';
 import { Color } from '../styles/color';
 import { SearchBarJobsList } from 'components/SearchBar/variants/SearchBarJobsList';
 import { buildExtensionApiListener } from '../util/extension_api';
-import { convertRawJobsForJobList } from 'util/extension_adapter';
-import { DataGrid } from '@mui/x-data-grid';
+import { convertRawJobsForJobList, convertRawJobsForJobListSearch } from 'util/extension_adapter';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Link } from '@mui/material';
+import lunr from 'lunr';
+import { getSearchTypeField, SearchTypes } from 'util/search/search';
 
 const headerComponent = (headerData) =>
-  <strong style={{fontSize: "1.1rem", color: Color.primary}}>
+  <strong style={{fontSize: "1rem", color: Color.primary}}>
     {headerData.colDef.headerName}
   </strong>;
   
@@ -37,7 +39,7 @@ const columns = [
   { field: 'openings', headerName: 'Openings', flex: 0.1, align: 'center', headerAlign: 'center', renderHeader: headerComponent },
   { field: 'appDeadline', headerName: 'App Deadline', flex: 0.12, align: 'center', headerAlign: 'center', renderHeader: headerComponent },
 
-  { field: 'shortlistAndApply', headerName: '', flex: 0.08, align: 'center',
+  { field: 'shortlistAndApply', headerName: 'Actions', flex: 0.08, align: 'center', headerAlign: 'center', renderHeader: headerComponent, sortable: false,
     renderCell: (rowData) => 
       <>
         <BookmarkBorderIcon sx={{m:0.5, color: Color.primary }} />
@@ -55,13 +57,34 @@ export default function JobsPage() {
       document.title = 'Jobs';
     }, []);
 
-    const [data, setData] = useState([]);
+    const [data, setData] = useState({});
+    const [searchData, setSearchData] = useState({});
+    const [tableData, setTableData] = useState([]);
+    const [searchChips, setSearchChips] = useState([]);
+    const [isTableLoading, setIsTableLoading] = useState(true);
+
+    const [searchIndex, setSearchIndex] = useState(lunr(() => {}));
+
+    useEffect(() => {
+      setSearchIndex(lunr(function () {
+        this.ref('id')
+        Object.values(SearchTypes).forEach((typeNum) => {
+          this.field(getSearchTypeField(typeNum));
+        }, this);
+
+        Object.values(searchData).forEach((doc) => {
+          this.add(doc);
+        }, this);
+      }));
+    }, [searchData]);
 
     useEffect(() => {
         const receiveExtensionMessage = buildExtensionApiListener({
           "get_all_jobs_raw": { 
             callback: (resp) => {
               setData(convertRawJobsForJobList(resp));
+              setSearchData(convertRawJobsForJobListSearch(resp));
+              setIsTableLoading(false);
             }
           }
         });
@@ -72,21 +95,49 @@ export default function JobsPage() {
             window.removeEventListener("message", receiveExtensionMessage);
         };
     }, []);
+
+    useEffect(() => {
+      var queryString = "";
+      searchChips.forEach(chip => {
+        if (queryString !== "") {
+          queryString += " ";
+        }
+        queryString += "+";
+        const typeName = getSearchTypeField(chip.searchType);
+        if (typeName !== "") {
+          queryString += typeName + ":";
+        }
+        queryString += chip.searchVal;
+      });
+
+      if (queryString !== "") {
+        const searchRankings = searchIndex.search(queryString);
+        const jobs = searchRankings.map((searchResult) => {
+          return data[searchResult.ref];
+        });
+        setTableData(jobs);
+      }
+      else {
+        setTableData(Object.values(data));
+      }
+    }, [data, searchIndex, searchChips])
   
     const [pageSize, setPageSize] = React.useState(10);
 
     return (
       <>
         <Box sx={{ m:2 }}>
-          <SearchBarJobsList/>
+          <SearchBarJobsList onSearchUpdated={setSearchChips}/>
         </Box>
         <Box sx={{ width: 'calc(100% - 32px)', m:2, mb:0 }}>
           <DataGrid
-            rows={data}
+            rows={tableData}
             columns={columns}
             pageSize={pageSize}
+            loading={isTableLoading}
+            disableColumnMenu
             onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-            rowsPerPageOptions={[10, 25, 50]}
+            rowsPerPageOptions={[5, 10, 25, 50, 100]}
             pagination
             autoHeight
             rowHeight={100}
@@ -99,6 +150,9 @@ export default function JobsPage() {
                 ".MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows": {
                   m:1
                 }
+            }}
+            components={{
+              Toolbar: GridToolbar,
             }}
           />
         </Box>   
