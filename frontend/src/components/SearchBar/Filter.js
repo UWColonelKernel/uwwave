@@ -11,6 +11,7 @@ import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
 import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import { tagCategoryToDisplayName } from 'util/extension_adapter';
 
 function getFormula(checkStates){
   let formula = {bool_op: 'AND', operands: []};
@@ -70,11 +71,15 @@ export default function Filter(props) {
     return initialState;
   };
 
-  const [checkStates, setCheckStates] = useState(getInitialState());
+  const [checkStates, setCheckStates] = useState({});
 
   useEffect(() => {
     onFormulaChange(getFormula(checkStates));
   }, [checkStates, onFormulaChange]);
+
+  useEffect(() => {
+    setCheckStates(getInitialState());
+  }, [filters]);
 
   const handleChange = (event) => {
     const category = event.target.value.split(',')[0];
@@ -108,10 +113,10 @@ export default function Filter(props) {
             checkStates && Object.entries(filters).map(([category, tags]) => (
               <Grid key={category} item md={4} xs={6}>
                 <Item>
-                  <Typography sx={{ paddingLeft: "16px", paddingTop: "8px" }} variant='subtitle1'>{category}</Typography>
+                  <Typography sx={{ paddingLeft: "16px", paddingTop: "8px" }} variant='subtitle1'>{tagCategoryToDisplayName(category)}</Typography>
                   <Box sx={{ display: 'flex', flexDirection: 'column', ml: 3 }}>
                     {
-                      tags.map((tag) => { 
+                      checkStates[category] !== undefined && tags.map((tag) => { 
                         return ( 
                           <FormControlLabel
                             key={tag}

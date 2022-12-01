@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import { Color } from '../styles/color';
 import { SearchBarJobsList } from 'components/SearchBar/variants/SearchBarJobsList';
 import { buildExtensionApiListener } from '../util/extension_api';
-import { convertRawJobsForJobList, convertRawJobsForJobListSearch } from 'util/extension_adapter';
+import { convertRawJobsForJobList, convertRawJobsForJobListFilter, convertRawJobsForJobListSearch } from 'util/extension_adapter';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
@@ -70,7 +70,8 @@ export default function JobsPage() {
 
     const [searchIndex, setSearchIndex] = useState(lunr(() => {}));
 
-    const [jobTagData] = useState(JOB_TAGS_FILE);
+    const [jobTagData, setJobTagData] = useState({});
+    const [filterCategories, setFilterCategories] = useState({});
     const [filterFormula, setFilterFormula] = useState({});
 
     useEffect(() => {
@@ -87,11 +88,16 @@ export default function JobsPage() {
     }, [searchData]);
 
     useEffect(() => {
+      setFilterCategories(getFilterUniqueValuesByCategory(jobTagData));
+    }, [jobTagData]);
+
+    useEffect(() => {
         const receiveExtensionMessage = buildExtensionApiListener({
           "get_all_jobs_raw": { 
             callback: (resp) => {
               setData(convertRawJobsForJobList(resp));
               setSearchData(convertRawJobsForJobListSearch(resp));
+              setJobTagData(convertRawJobsForJobListFilter(resp, JOB_TAGS_FILE));
               setIsTableLoading(false);
             }
           }
@@ -127,7 +133,6 @@ export default function JobsPage() {
       }
       
       jobs = jobs.filter((job) => isJobMatched(job.id, filterFormula, jobTagData));
-      console.log(jobs);
 
       setTableData(jobs);
     }, [data, searchIndex, searchChips, filterFormula, jobTagData]);
@@ -149,7 +154,7 @@ export default function JobsPage() {
           }
           <Filter  
             onFormulaChange={setFilterFormula} 
-            filters={getFilterUniqueValuesByCategory(jobTagData)}/>
+            filters={filterCategories}/>
         </Box>
         <Box sx={{ width: 'calc(100% - 32px)', m:2, mb:0 }}>
           <DataGrid
