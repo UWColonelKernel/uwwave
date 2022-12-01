@@ -50,7 +50,7 @@ const columns = [
         />
     </div>
   },
-  { field: 'keywords', headerName: 'Keywords', flex: 0.2, renderHeader: headerComponent,
+  { field: 'keywords', headerName: 'Keywords', flex: 0.24, renderHeader: headerComponent,
     renderCell: (rowData) => 
       <div style={{ margin: '2px'}}>
         { rowData.row.keywords && rowData.row.keywords.map((keyword) => {
@@ -65,8 +65,8 @@ const columns = [
         }) }
       </div>
   },
-  { field: 'openings', headerName: 'Openings', flex: 0.1, align: 'center', headerAlign: 'center', renderHeader: headerComponent },
-  { field: 'appDeadline', headerName: 'App Deadline', flex: 0.12, align: 'center', headerAlign: 'center', renderHeader: headerComponent, sortComparator: (date1, date2) => Date.parse(date1) - Date.parse(date2) },
+  { field: 'openings', headerName: 'Openings', flex: 0.08, align: 'center', headerAlign: 'center', renderHeader: headerComponent },
+  { field: 'appDeadline', headerName: 'App Deadline', flex: 0.10, align: 'center', headerAlign: 'center', renderHeader: headerComponent, sortComparator: (date1, date2) => Date.parse(date1) - Date.parse(date2) },
 
   { field: 'shortlistAndApply', headerName: 'Actions', flex: 0.08, align: 'center', headerAlign: 'center', renderHeader: headerComponent, sortable: false,
     renderCell: (rowData) => 
