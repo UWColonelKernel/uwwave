@@ -12,6 +12,7 @@ import { Link } from '@mui/material';
 import lunr from 'lunr';
 import { getSearchTypeField, SearchTypes } from 'util/search/search';
 import Filter from 'components/SearchBar/Filter';
+import Chip from '@mui/material/Chip';
 
 // @ts-ignore
 import JOB_TAGS_FILE from '../ww_data_tags_industry.json'; // TODO load this from somewhere else or generate it with a function
@@ -23,24 +24,47 @@ const headerComponent = (headerData) =>
   </strong>;
   
 const columns = [
-  { field: 'companyName', headerName: 'Company', flex: 0.3, renderHeader: headerComponent, 
+  { field: 'companyName', headerName: 'Company', flex: 0.25, renderHeader: headerComponent, 
     renderCell: (rowData) => 
     <div style={{ margin: '2px'}}>
       {rowData.row.companyName}<br/>
       <div style={{color:'grey', fontSize: '0.7rem'}}>
-        {rowData.row.division}
+        {rowData.row.division}<br/>
+      </div>
+      <div style={{color:'blue', fontSize: '0.7rem'}}>
+        {rowData.row.city && `${rowData.row.city}, `}{rowData.row.country}
       </div>
     </div>
   },
-  { field: 'jobName', headerName: 'Job Name', flex: 0.3, renderHeader: headerComponent,
+  { field: 'jobName', headerName: 'Job Name', flex: 0.25, renderHeader: headerComponent,
     renderCell: (rowData) => 
     <div style={{ margin: '2px'}}>
       <a href={`/jobs/${rowData.id}`}>{rowData.row.jobName}</a><br/>
-      {rowData.row.level}
+       <Chip
+            size="small"
+            label={`Industry: ${rowData.row.industry_tags}`}
+            key={rowData.row.industry_tags}
+            sx={{
+              margin: "2px"
+            }}
+        />
     </div>
   },
-
-  { field: 'location', headerName: 'Location', flex: 0.1, renderHeader: headerComponent },
+  { field: 'keywords', headerName: 'Keywords', flex: 0.2, renderHeader: headerComponent,
+    renderCell: (rowData) => 
+      <div style={{ margin: '2px'}}>
+        { rowData.row.keywords && rowData.row.keywords.map((keyword) => {
+          return ( <Chip
+              size="small"
+              label={`${keyword}`}
+              key={keyword}
+              sx={{
+                margin: "2px"
+              }}
+          /> );
+        }) }
+      </div>
+  },
   { field: 'openings', headerName: 'Openings', flex: 0.1, align: 'center', headerAlign: 'center', renderHeader: headerComponent },
   { field: 'appDeadline', headerName: 'App Deadline', flex: 0.12, align: 'center', headerAlign: 'center', renderHeader: headerComponent, sortComparator: (date1, date2) => Date.parse(date1) - Date.parse(date2) },
 
@@ -81,11 +105,16 @@ export default function JobsPage() {
           this.field(getSearchTypeField(typeNum));
         }, this);
 
-        Object.values(searchData).forEach((doc) => {
+        const indexedData = {...searchData};
+        for (const [key, value] of Object.entries(jobTagData)) {
+          indexedData[key] = {...indexedData[key], ...value};
+        }
+
+        Object.values(indexedData).forEach((doc) => {
           this.add(doc);
         }, this);
       }));
-    }, [searchData]);
+    }, [searchData, jobTagData]);
 
     useEffect(() => {
       setFilterCategories(getFilterUniqueValuesByCategory(jobTagData));
@@ -133,6 +162,10 @@ export default function JobsPage() {
       }
       
       jobs = jobs.filter((job) => isJobMatched(job.id, filterFormula, jobTagData));
+
+      jobs = jobs.map((job) => {
+        return {...job, ...jobTagData[job.id]};
+      })
 
       setTableData(jobs);
     }, [data, searchIndex, searchChips, filterFormula, jobTagData]);

@@ -4,6 +4,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import NotesIcon from '@mui/icons-material/Notes';
 import HandshakeIcon from '@mui/icons-material/Handshake';
 import StarBorderPurple500Icon from '@mui/icons-material/StarBorderPurple500';
+import FactoryIcon from '@mui/icons-material/Factory';
 
 //simulate enum
 export const SearchTypes = {
@@ -12,7 +13,8 @@ export const SearchTypes = {
     "CompanyName": 2,
     "JobSummary": 3,
     "JobResponsibilities": 4,
-    "RequiredSkills": 5
+    "RequiredSkills": 5,
+    "Industry": 6,
 }
 
 export const getSearchTypeName = (type) => {
@@ -21,7 +23,8 @@ export const getSearchTypeName = (type) => {
         CompanyName,
         JobSummary,
         JobResponsibilities,
-        RequiredSkills
+        RequiredSkills,
+        Industry,
     } = SearchTypes
     switch(type){
         case JobTitle:
@@ -34,6 +37,8 @@ export const getSearchTypeName = (type) => {
             return "Responsibilities"
         case RequiredSkills:
             return "Skills"
+        case Industry:
+            return "Industry"
         default:
             return "All"
     }
@@ -45,7 +50,8 @@ export const getSearchTypeField = (type) => {
         CompanyName,
         JobSummary,
         JobResponsibilities,
-        RequiredSkills
+        RequiredSkills,
+        Industry
     } = SearchTypes
     switch(type){
         case JobTitle:
@@ -53,11 +59,13 @@ export const getSearchTypeField = (type) => {
         case CompanyName:
             return "companyName"
         case JobSummary:
-            return "jobSummary" // TODO
+            return "jobSummary"
         case JobResponsibilities:
-            return "jobResponsibilities" // TODO
+            return "jobResponsibilities"
         case RequiredSkills:
-            return "requiredSkills" // TODO
+            return "requiredSkills"
+        case Industry:
+            return "industry_tags"
         default:
             return ""
     }
@@ -69,7 +77,8 @@ export const getSearchTypeIcon = (type) => {
         CompanyName,
         JobSummary,
         JobResponsibilities,
-        RequiredSkills
+        RequiredSkills,
+        Industry
     } = SearchTypes
     switch(type){
         case JobTitle:
@@ -82,6 +91,8 @@ export const getSearchTypeIcon = (type) => {
             return <HandshakeIcon/>
         case RequiredSkills:
             return <StarBorderPurple500Icon/>
+        case Industry:
+            return <FactoryIcon/>
         default:
             return null
     }

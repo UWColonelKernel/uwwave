@@ -33,9 +33,8 @@ export function convertRawJobsForJobList(jobs) {
 
         const jobPostingInfo = value["Job Posting Information"];
         if (jobPostingInfo !== undefined) {
-            jobList[key].jobSummary = jobPostingInfo["Job Summary"];
-            jobList[key].jobResponsibilities = jobPostingInfo["Job Responsibilities"];
-            jobList[key].requiredSkills = jobPostingInfo["Required Skills"];
+            jobList[key].city = jobPostingInfo["Job - City"];
+            jobList[key].country = jobPostingInfo["Job - Country"];
         }
     }
     return jobList;
@@ -91,14 +90,14 @@ export const TagCategories = {
     "app_docs_tags" : 0,
     "duration_tags": 1,
     "special_reqs_tags": 2,
-    "industry_tags": 3,
+    // "industry_tags": 3,
 }
 export function tagCategoryToDisplayName(category) {
     const {
         app_docs_tags,
         duration_tags,
         special_reqs_tags,
-        industry_tags,
+        // industry_tags,
     } = TagCategories
     switch(TagCategories[category]){
         case app_docs_tags:
@@ -107,8 +106,8 @@ export function tagCategoryToDisplayName(category) {
             return "Work Term Duration"
         case special_reqs_tags:
             return "Special Requirements"
-        case industry_tags:
-            return "Industry"
+        // case industry_tags:
+        //     return "Industry"
         default:
             return category
     }
