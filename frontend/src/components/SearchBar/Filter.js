@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { useState, useEffect } from 'react';
 import styled from "styled-components"
 import Accordion from '@mui/material/Accordion';
@@ -59,7 +59,7 @@ export default function Filter(props) {
     onFormulaChange,
   } = props;
 
-  const getInitialState = () => {
+  const getInitialState = useCallback(() => {
     let initialState = {};
     for (const [category, tags] of Object.entries(filters)){
       initialState[category] = {};
@@ -69,7 +69,7 @@ export default function Filter(props) {
       })
     }
     return initialState;
-  };
+  }, [filters]);
 
   const [checkStates, setCheckStates] = useState({});
 
@@ -79,7 +79,7 @@ export default function Filter(props) {
 
   useEffect(() => {
     setCheckStates(getInitialState());
-  }, [filters]);
+  }, [filters, getInitialState]);
 
   const handleChange = (event) => {
     const category = event.target.value.split(',')[0];

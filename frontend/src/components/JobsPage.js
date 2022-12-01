@@ -14,7 +14,7 @@ import { getSearchTypeField, SearchTypes } from 'util/search/search';
 import Filter from 'components/SearchBar/Filter';
 
 // @ts-ignore
-import JOB_TAGS_FILE from '../ww_data_tags.json'; // TODO load this from somewhere else or generate it with a function
+import JOB_TAGS_FILE from '../ww_data_tags_industry.json'; // TODO load this from somewhere else or generate it with a function
 import { getFilterUniqueValuesByCategory, isJobMatched } from 'util/filter_job';
 
 const headerComponent = (headerData) =>

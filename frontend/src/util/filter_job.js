@@ -15,6 +15,8 @@ export function getFilterUniqueValuesByCategory (tagCategoriesByJobID){
                 filters[categoryName].add(tags);
             }
             else { // it's an array
+                console.log(categoryName);
+                console.log(tags);
                 tags.forEach((tag) => {
                     filters[categoryName].add(tag);
                 })
