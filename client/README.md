@@ -1,46 +1,143 @@
-# Getting Started with Create React App
+<h1 align="center">
+    <img alt="template-react-ts" src="https://res.cloudinary.com/zagatti/image/upload/v1595947810/readme/react-ts-template/Al9qmDn_j0eiug.png" />
+    <br>
+    React Typescript Template
+</h1>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<p align="center">
+  <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/azagatti/template-react-typescript?style=plastic">
 
-## Available Scripts
+  <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/azagatti/template-react-typescript?style=plastic">
 
-In the project directory, you can run:
+  <img alt="Repo size" src="https://img.shields.io/github/repo-size/azagatti/template-react-typescript?style=plastic">
 
-### `npm start`
+  <a href="https://github.com/AZagatti/template-react-typescript/commits/main">
+    <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/azagatti/template-react-typescript?style=plastic">
+  </a>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+  <a href="https://github.com/AZagatti/template-react-typescript/issues">
+    <img alt="GitHub issues" src="https://img.shields.io/github/issues/azagatti/template-react-typescript?style=plastic">
+  </a>
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+  <a href="https://github.com/AZagatti/template-react-typescript/pulls">
+    <img alt="GitHub pull requests" src="https://img.shields.io/github/issues-pr/azagatti/template-react-typescript?style=plastic">
+  </a>
+</p>
 
-### `npm test`
+<p align="center">
+  <a href="#ℹ%EF%B8%8F-about">About</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  <a href="#-packages">Packages</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  <a href="#-getting-started">Getting started</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  <a href="#%EF%B8%8F-customize">Customize</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  <a href="#-deploy">Deploy</a>
+</p>
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## ℹ️ About
 
-### `npm run build`
+<div align="center">
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+  <p align="center">
+    I recently started using React by creating my own Webpack and configuring the project as I think it looks best, so I created this initial template and I intend to keep it updated.
+  </p>
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+</div>
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 🖥 Packages
 
-### `npm run eject`
+The project was started with the following packages:
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- [Dotenv](http://npmjs.com/package/dotenv)
+- [React](https://pt-br.reactjs.org/)
+- [React DOM](https://pt-br.reactjs.org/docs/react-dom.html)
+- [React Router Dom](https://reacttraining.com/react-router/web/)
+- [Styled Components](https://styled-components.com/)
+- [Typescript](https://www.typescriptlang.org/)
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+In the dev dependencies the Webpack, Jest, Fast Refresh, Eslint and Prettier are configured.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## 🚀 Getting started
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+First of all you need to have `node` and `yarn`(or `npm`) installed on your machine.
 
-## Learn More
+_If you decide to use npm don't forget to delete yarn.lock in folders_
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Press the `Use this template` button on Github and create your own repository.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Clone your repo to your local machine.
+
+1. `git clone my-app`
+2. `cd my-app`
+3. `yarn` or `npm install`
+4. `yarn start` or `npm run start`
+
+To run the tests, after the dependencies are installed, run `yarn test`.
+
+`yarn test:watch` to keep testing observing changes.
+
+`yarn test:coverage` to generate the test coverage report in the files.
+
+## ✏️ Customize
+
+You have the freedom to change everything in your project, from the settings of Webpack, Jest and even create new structures.
+
+Example of a private route:
+
+<details>
+  <summary>Route.tsx</summary>
+
+```ts
+import React from 'react';
+import {
+  Route as ReactDOMRoute,
+  RouteProps as ReactDOMRouteProps,
+  Redirect,
+} from 'react-router-dom';
+
+import { useAuth } from '../hooks/auth';
+
+interface RouteProps extends ReactDOMRouteProps {
+  isPrivate?: boolean;
+  component: React.ComponentType;
+}
+
+const Route: React.FC<RouteProps> = ({
+  isPrivate = false,
+  component: Component,
+  ...rest
+}) => {
+  const { user } = useAuth();
+  // You can store user data in another way and only retrieve it here
+
+  return (
+    <ReactDOMRoute
+      {...rest}
+      render={({ location }) => {
+        return isPrivate === !!user ? (
+          <Component />
+        ) : (
+          <Redirect
+            to={{
+              pathname: isPrivate ? '/' : '/dashboard',
+              state: { from: location },
+            }}
+          />
+        );
+      }}
+    />
+  );
+};
+
+export default Route;
+```
+
+</details>
+
+## ✈️ Deploy
+
+I recommend deploy using `yarn build:server` script, for this your VPS need to
+have installed `docker` and `docker-compose`. This script will up a machina with
+nginx. But you are able to run `yarn build` and make your own deploy.
+
+---
+
+Made with 💟 by André Zagatti 👋 [Talk to me!](https://www.linkedin.com/in/andre-zagatti/)
