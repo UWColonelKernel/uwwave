@@ -7,7 +7,7 @@
     "start": "webpack serve --mode development --open --config webpack.ts",
     "build": "webpack --mode production --config webpack.ts",
     "build:server": "docker-compose build & docker run --name $npm_package_name -p 80:80 -d $npm_package_name\\_nginx",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "test:coverage": "jest --coverage --watchAll=false",
     "test:watch": "jest --watch",
     "prepare": "cd .. && husky install client/.husky"
