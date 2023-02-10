@@ -13,6 +13,11 @@
     "prepare": "cd .. && husky install client/.husky"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@mui/icons-material": "^5.10.16",
+    "@mui/material": "^5.10.14",
+    "@mui/x-data-grid": "^5.17.13",
     "dotenv": "^10.0.0",
     "dotenv-webpack": "^7.0.3",
     "react": "^17.0.2",

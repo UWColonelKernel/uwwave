@@ -39,9 +39,13 @@
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
     "no-use-before-define": "off",
-    "@typescript-eslint/no-use-before-define": ["error"],
+    "@typescript-eslint/no-use-before-define": ["off"],
     "react/jsx-uses-react": "off",
     "react/react-in-jsx-scope": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "react/require-default-props": "off",
+    "react/no-array-index-key": "off",
+    "no-nested-ternary": "off",
     "import/extensions": [
       "error",
       "ignorePackages",
@@ -49,7 +53,8 @@
         "ts": "never",
         "tsx": "never"
       }
-    ]
+    ],
+    "no-shadow": "off"
   },
   "settings": {
     "import/resolver": {
