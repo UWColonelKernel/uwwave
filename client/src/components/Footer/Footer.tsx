@@ -96,7 +96,7 @@ export const Footer = () => {
           </IconWrapper>
         </SocialMediaWrapper>
         <IconWrapper>
-          <WaveLogo />
+          <WaveLogo fill="white" />
         </IconWrapper>
       </FooterWrapper>
       <BottomFooterWrapper>
