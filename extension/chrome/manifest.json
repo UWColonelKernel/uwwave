@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "UW Wave",
-    "short_name": "UW Wave",
-    "description": "Cruise through recruiting season with this powerful WaterlooWorks companion app",
+    "name": "UW Wave (old)",
+    "short_name": "UW Wave (old)",
+    "description": "old JS version of extension",
     "version": "1.0",
     "icons": {
         "16": "images/wave-circle-icon-16.png",

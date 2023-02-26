@@ -1,0 +1,31 @@
+{
+    "manifest_version": 3,
+    "name": "UW Wave",
+    "description": "Cruise through recruiting season with this powerful WaterlooWorks companion app",
+    "version": "1.0",
+    "icons": {
+        "16": "assets/icons/wave-circle-icon-16.png",
+        "32": "assets/icons/wave-circle-icon-32.png",
+        "48": "assets/icons/wave-circle-icon-48.png",
+        "128": "assets/icons/wave-circle-icon-128.png"
+    },
+    "action": {
+        "default_icon": {
+            "16": "assets/icons/wave-circle-icon-16.png",
+            "32": "assets/icons/wave-circle-icon-32.png",
+            "48": "assets/icons/wave-circle-icon-48.png",
+            "128": "assets/icons/wave-circle-icon-128.png"
+        }
+    },
+    "background": {
+        "service_worker": "background/background.ts"
+    },
+    "host_permissions": [
+        "*://waterlooworks.uwaterloo.ca/*"
+    ],
+    "permissions": [
+        "scripting",
+        "storage",
+        "unlimitedStorage"
+    ]
+}
