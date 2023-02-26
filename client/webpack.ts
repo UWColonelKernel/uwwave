@@ -68,6 +68,10 @@ const config = {
         use: ['@svgr/webpack', 'url-loader'],
         type: 'javascript/auto'
       },
+      { 
+        test: /\.(woff|woff2|eot|ttf)$/, 
+        use: ['url-loader?limit=100000'] 
+      },
     ],
   },
   devServer: {
