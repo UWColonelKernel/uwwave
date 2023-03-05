@@ -3,6 +3,7 @@ import { Spacer } from 'components/Spacer/Spacer'
 import { Footer } from 'components/Footer/Footer'
 import { NavigationBar } from 'components/NavigationBar/NavigationBar'
 import { HomePage } from 'views/HomePage/HomePage'
+import JobsPage from 'views/JobsPage'
 import { createTheme, ThemeProvider } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { sendMessageOnLoadAndSetupListenerHook } from 'src/services/extension/extensionService'
@@ -52,8 +53,8 @@ export const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<HomePage />} />
+              <Route path="/jobs" element={<JobsPage />} />
               {/* <Route path = '/login' element={<LoginPage />} />
-              <Route path = '/jobs' element={<JobsPage />} />
               <Route path = '/jobs/:jobId' element={<Job/>} />
               <Route path = '/about-us' element={<AboutPage/>}/> */}
             </Routes>
