@@ -18,7 +18,7 @@
         }
     },
     "background": {
-        "service_worker": "background/background.ts"
+        "service_worker": "main/background/background.ts"
     },
     "host_permissions": [
         "*://waterlooworks.uwaterloo.ca/*"
@@ -27,5 +27,24 @@
         "scripting",
         "storage",
         "unlimitedStorage"
+    ],
+    "content_scripts": [
+        {
+            "matches": ["*://waterlooworks.uwaterloo.ca/*"],
+            "js": [
+                "main/waterlooworks/scraper.ts",
+                "main/waterlooworks/runner.ts"
+            ],
+            "css": [
+                "resources/css/ww_styles.css",
+                "resources/css/ww_imported.css"
+            ]
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [ "resources/html/*.html" ],
+            "matches": [ "*://waterlooworks.uwaterloo.ca/*" ]
+        }
     ]
 }

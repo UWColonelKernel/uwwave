@@ -1,0 +1,21 @@
+.ck_root {
+    padding: 4px 0 16px;
+}
+
+.ck_container {
+    border: 2px solid;
+    border-radius: 12px;
+    padding: 16px 20px;
+}
+
+.ck_title {
+    line-height: inherit;
+}
+
+#ck_scrapeProgressBar.ck_progress-bar {
+    background: rgb(13, 110, 253);
+    height: 100%;
+    border-radius: 4px;
+    min-width: fit-content;
+    padding: 0px 8px;
+}
