@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios'
 import axiosRetry from 'axios-retry';
 
-axiosRetry(axios, { retries: 5 });
+export const AXIOS_RETRY_COUNT = 5
 
 export enum RequestMethod {
     GET = 'GET',
@@ -9,6 +9,15 @@ export enum RequestMethod {
     PUT = 'PUT',
     PATCH = 'PATCH',
     DELETE = 'DELETE',
+}
+
+axiosRetry(axios, {
+    retries: 5,
+    retryCondition: () => true
+});
+
+export function getHttp(url: string): Promise<AxiosResponse<any, any>> {
+    return axios.get(url)
 }
 
 export function sendForm(url: string, method: string, data: object): Promise<AxiosResponse<any, any>> {

@@ -32,6 +32,7 @@
         {
             "matches": ["*://waterlooworks.uwaterloo.ca/*"],
             "js": [
+                "main/waterlooworks/dataReader.ts",
                 "main/waterlooworks/scraper.ts",
                 "main/waterlooworks/runner.ts"
             ],

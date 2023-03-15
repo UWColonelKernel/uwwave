@@ -1,11 +1,20 @@
 import $ from 'jquery'
-import { RequestMethod, sendForm } from '../common/api'
+import { AXIOS_RETRY_COUNT, getHttp, RequestMethod, sendForm } from '../common/api'
 import axios, { AxiosResponse } from 'axios'
 import {
-    scrapeJobBoardHome, scrapeJobTableRowCoop, scrapeJobTableRowFulltime, scrapeJobTableRowOther,
+    scrapeJobBoardHome,
+    scrapeJobPostingForWtrButtonAction,
+    scrapeJobPostingPage,
+    scrapeJobTableRowCoop,
+    scrapeJobTableRowFulltime,
+    scrapeJobTableRowOther,
     scrapePostingsTable,
-    scrapeQuickSearches,
+    scrapeQuickSearches, scrapeWorkTermRating, scrapeWorkTermRatingButton,
 } from './scraperUtil'
+import { updateLocalStorage } from '../common/storage'
+import asyncPool from "tiny-async-pool";
+import { getJobDataKey } from '../common/job'
+import { getCompanyDivisionDataKey } from '../common/company'
 
 const DASHBOARD_URL = "https://waterlooworks.uwaterloo.ca/myAccount/dashboard.htm"
 
@@ -46,11 +55,17 @@ interface PostingsTableRequestData {
     performNewSearch?: boolean
 }
 
+interface WorkTermRatingButtonRequest {
+    formObj: object
+    jobId: number
+}
+
 class Scraper {
     public stage: ScrapeStage = ScrapeStage.standby
     public stageProgress: number = 0
     public stageTarget: number = 1
     public jobBoard: JobBoard = JobBoard.coop
+    public pendingWorkTermRatings: WorkTermRatingButtonRequest[] = []
 
     private advanceStage() {
         this.stageProgress = 0 // progress resets to 0
@@ -80,7 +95,46 @@ class Scraper {
             return
         }
 
+        if (this.stage !== ScrapeStage.forMyProgram) {
+            const jobPostingResp = await this.scraperSendForm(rowScrape.formObj)
+            const jobPostingDoc = $.parseHTML(jobPostingResp.data)
+            const scrapeResult = scrapeJobPostingPage(jobPostingDoc)
+            await updateLocalStorage(getJobDataKey(rowScrape.jobId), {
+                jobId: rowScrape.jobId,
+                postingListData: rowScrape.postingListData,
+                pageData: scrapeResult
+            })
+            const wtrScrapeResult = scrapeJobPostingForWtrButtonAction(jobPostingDoc)
+            if (wtrScrapeResult) {
+                this.pendingWorkTermRatings.push({ jobId: rowScrape.jobId, formObj: wtrScrapeResult })
+            }
+        } else {
+            await updateLocalStorage(getJobDataKey(rowScrape.jobId), { isForMyProgram: true })
+        }
+
         console.log(`Scraped job with ID ${rowScrape.jobId}`)
+    }
+
+    // Must be closure to run in async pool
+    private scrapeWorkTermRating = async (wtrButtonRequest: WorkTermRatingButtonRequest) => {
+        const workTermRatingButtonResp = await this.scraperSendForm(wtrButtonRequest.formObj)
+        const workTermRatingButtonDoc = $.parseHTML(workTermRatingButtonResp.data, document, true)
+        const workTermRatingButtonScrape = scrapeWorkTermRatingButton(workTermRatingButtonDoc)
+        if (!workTermRatingButtonScrape) {
+            return
+        }
+
+        const workTermRatingResp = await this.scraperSendForm(workTermRatingButtonScrape)
+        const workTermRatingDoc = $.parseHTML(workTermRatingResp.data, document, true)
+        const workTermRatingScrape = scrapeWorkTermRating(workTermRatingDoc)
+        if (!workTermRatingScrape) {
+            return
+        }
+
+        await updateLocalStorage(getCompanyDivisionDataKey(workTermRatingButtonScrape.reportHolderId), workTermRatingScrape)
+        await updateLocalStorage(getJobDataKey(wtrButtonRequest.jobId), { divisionId: workTermRatingButtonScrape.reportHolderId })
+
+        console.log(`Scraped company with division ID ${workTermRatingButtonScrape.reportHolderId}`)
     }
 
     private async scrapeAllPages(searchAction: string) {
@@ -116,13 +170,17 @@ class Scraper {
 
             await Promise.all(scrapeJobPromises)
 
+            console.log(`Done scraping page. Progress: ${this.stageProgress}`)
+
             // Next page
             page += 1
         }
     }
 
     public async scrapeJobBoard() {
-        const jobBoardHomeResp = await axios.get(JOB_BOARD_SPEC[this.jobBoard].url)
+        const scrapeViewed = $('#ck_scrapeViewedCheckbox').prop('checked');
+
+        const jobBoardHomeResp = await getHttp(JOB_BOARD_SPEC[this.jobBoard].url)
         const jobBoardHomeDoc = $.parseHTML(jobBoardHomeResp.data, document, true);
 
         this.stage = ScrapeStage.standby
@@ -151,14 +209,23 @@ class Scraper {
         }
 
         this.advanceStage()
-        console.log(`${this.stage}) Scraping Viewed jobs`);
-        if (quickSearchScrape.viewedAction) {
-            console.log(`${this.stage}) "Viewed" action found, scraping`)
-            await this.scrapeAllPages(quickSearchScrape.viewedAction)
+        if (scrapeViewed) {
+            console.log(`${this.stage}) Scrape "Viewed" is checked, scraping "Viewed" jobs`);
+            if (quickSearchScrape.viewedAction) {
+                console.log(`${this.stage}) "Viewed" action found, scraping`)
+                await this.scrapeAllPages(quickSearchScrape.viewedAction)
+            } else {
+                console.warn(`${this.stage}) "Viewed" action not found, skipping`)
+            }
         } else {
-            console.warn(`${this.stage}) "Viewed" action not found, skipping`)
+            console.log(`${this.stage}) Scrape "Viewed" is not checked, skipping`);
         }
 
+        this.advanceStage()
+        console.log(`${this.stage}) Scraping work term ratings`)
+        for await (const result of asyncPool(100, this.pendingWorkTermRatings, this.scrapeWorkTermRating)) { /* empty */ }
+
+        this.advanceStage()
         console.log('Scraping done!');
     }
 }

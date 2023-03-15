@@ -1,9 +1,9 @@
-export enum PostingSections {
-    applicationInformation = 'Application Information',
-    companyInformation = 'Company Information',
-    jobPostingInformation = 'Job Posting Information',
-}
-
+// export enum PostingSections {
+//     applicationInformation = 'Application Information',
+//     companyInformation = 'Company Information',
+//     jobPostingInformation = 'Job Posting Information',
+// }
+//
 // export enum ApplicationInformationFields {
 //     deadline = 'Application Deadline',
 //     documentsRequired = 'Application Documents Required',
@@ -26,6 +26,8 @@ export enum PostingSections {
 //     [PostingSections.companyInformation]: { [key in CompanyInformationFields]: string }
 //     [PostingSections.jobPostingInformation]: { [key in JobPostingInformationFields]: string }
 // }
+
+export const JOB_DATA_IDENTIFIER = 'job_'
 
 export interface PostingListDataCoop {
     jobTitle: string
@@ -72,4 +74,8 @@ export interface JobPosting {
     pageData: PostingPageData
     divisionId?: number
     isForMyProgram?: boolean
+}
+
+export function getJobDataKey(jobId: number) {
+    return `${JOB_DATA_IDENTIFIER}${jobId.toString()}`
 }
