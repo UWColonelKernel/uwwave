@@ -15,6 +15,7 @@ import { updateLocalStorage } from '../common/storage'
 import asyncPool from "tiny-async-pool";
 import { getJobDataKey } from '../common/job'
 import { getCompanyDivisionDataKey } from '../common/company'
+import { JOB_BOARD_SPEC, JobBoard } from '../common/jobBoard'
 
 const DASHBOARD_URL = "https://waterlooworks.uwaterloo.ca/myAccount/dashboard.htm"
 
@@ -25,28 +26,6 @@ enum ScrapeStage {
     viewed,
     workTermRatings,
     finished,
-}
-
-enum JobBoard {
-    coop ,
-    fulltime,
-    other,
-}
-
-interface JobBoardSpec {
-    url: string
-}
-
-const JOB_BOARD_SPEC: { [jobBoard in JobBoard]: JobBoardSpec } = {
-    [JobBoard.coop]: {
-        url: "https://waterlooworks.uwaterloo.ca/myAccount/co-op/coop-postings.htm"
-    },
-    [JobBoard.fulltime]: {
-        url: "https://waterlooworks.uwaterloo.ca/myAccount/hire-waterloo/full-time-jobs/jobs-postings.htm"
-    },
-    [JobBoard.other]: {
-        url: "https://waterlooworks.uwaterloo.ca/myAccount/hire-waterloo/other-jobs/jobs-postings.htm"
-    }
 }
 
 interface PostingsTableRequestData {
