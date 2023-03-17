@@ -1,0 +1,57 @@
+<div id="ck_dashboard">
+  <button href="javascript:void(0)" class="btn btn-primary btn-large"
+          onclick="window.dispatchEvent(new Event('ck_scrapeMain'));"
+  >
+    Auto scrape and set up
+  </button>
+  <br>
+  <br>
+  <div id="ck_scrapeProgress" class="progress" style="display: none">
+    <div
+        id="ck_scrapeProgressBar"
+        class="ck_progress-bar progress-bar progress-bar-animated"
+        role="progressbar"
+        aria-valuenow="75"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        style="width: 0%"></div>
+  </div>
+
+  <h5>Other options</h5>
+  <p>
+    Number of scraped jobs:
+    <span id="ck_scrapeCount"></span>
+    <a href="javascript:void(0)" id="ck_loadJobCountButton"
+       onclick="window.dispatchEvent(new Event('ck_loadJobCount'));"
+    >
+      (Update)
+    </a>
+  </p>
+
+  <div>
+        <span>
+            Also scrape "Viewed":
+        </span>
+    <input id="ck_scrapeViewedCheckbox" type="checkbox" />
+  </div>
+  <br>
+
+  <button href="javascript:void(0)" class="btn btn-primary"
+          onclick="window.dispatchEvent(new Event('ck_exportJSON'));"
+  >
+    Export data to JSON
+  </button>
+
+  <button href="javascript:void(0)" class="btn btn-primary"
+          onclick="window.dispatchEvent(new Event('ck_importJSON'));"
+  >
+    Import JSON data
+  </button>
+  <input id="ck_importJSONpicker" type="file" name="name" style="display: none;" />
+
+  <button href="javascript:void(0)" class="btn btn-primary"
+          onclick="window.dispatchEvent(new Event('ck_clearData'));"
+  >
+    Clear data
+  </button>
+</div>
