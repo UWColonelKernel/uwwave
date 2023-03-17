@@ -41,6 +41,17 @@
                 "resources/css/ww_styles.css",
                 "resources/css/ww_imported.css"
             ]
+        },
+        {
+            "matches": [
+                "*://uwwave.ca/*",
+                "*://127.0.0.1/*",
+                "*://localhost/*"
+            ],
+            "js": [
+                "main/website/service.ts"
+            ],
+            "css": []
         }
     ],
     "web_accessible_resources": [
