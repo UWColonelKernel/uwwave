@@ -4,7 +4,7 @@ import Facebook from 'assets/socials/Facebook.svg'
 import Instagram from 'assets/socials/Instagram.svg'
 import Twitter from 'assets/socials/Twitter.svg'
 import Wave from 'assets/logo/Footer.svg'
-import { Link } from '../MUI/Link'
+import Link from '@mui/material/Link'
 import { Typography } from '../MUI/Typography'
 
 const FooterWrapper = styled.div`
@@ -27,7 +27,6 @@ const BottomFooterWrapper = styled.div`
 
 const StyledLink = styled(Link)`
   && {
-    font-family: Lato-Regular;
     font-size: 1.5rem;
     padding: 5px;
   }
@@ -35,7 +34,6 @@ const StyledLink = styled(Link)`
 
 const StyledTypography = styled(Typography)`
   && {
-    font-family: Lato-Regular;
     font-size: 1rem;
   }
 `
@@ -55,22 +53,36 @@ export const Footer = () => {
   return (
     <>
       <FooterWrapper>
-        <StyledLink href="/jobs" color={Color.textPrimary} underline="none">
-          Jobs List
-        </StyledLink>
-        <StyledLink
-          href="/companies"
-          color={Color.textPrimary}
-          underline="none"
-        >
-          Companies
-        </StyledLink>
-        <StyledLink href="/about" color={Color.textPrimary} underline="none">
-          About
-        </StyledLink>
-        <StyledLink href="/login" color={Color.textPrimary} underline="none">
-          Login
-        </StyledLink>
+        {/* Weird font bug, need to wrap link with typography: https://mui.com/material-ui/api/link */}
+        <Typography>
+          <StyledLink
+            href="/jobs"
+            color={Color.textPrimary}
+            variant="inherit"
+            underline="none"
+          >
+            Jobs List
+          </StyledLink>
+        </Typography>
+        <Typography>
+          <StyledLink
+            href="/companies"
+            color={Color.textPrimary}
+            underline="none"
+          >
+            Companies
+          </StyledLink>
+        </Typography>
+        <Typography>
+          <StyledLink href="/about" color={Color.textPrimary} underline="none">
+            About
+          </StyledLink>
+        </Typography>
+        <Typography>
+          <StyledLink href="/login" color={Color.textPrimary} underline="none">
+            Login
+          </StyledLink>
+        </Typography>
         <SocialMediaWrapper>
           <IconWrapper>
             <img src={Facebook} alt="Facebook" />
