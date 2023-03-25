@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 import { Color } from 'styles/color'
-import Facebook from 'assets/socials/Facebook.svg'
-import Instagram from 'assets/socials/Instagram.svg'
-import Twitter from 'assets/socials/Twitter.svg'
+import FacebookIcon from '@mui/icons-material/Facebook'
+import InstagramIcon from '@mui/icons-material/Instagram'
+import TwitterIcon from '@mui/icons-material/Twitter'
 import Wave from 'assets/logo/Footer.svg'
 import Link from '@mui/material/Link'
 import { Typography } from '../MUI/Typography'
@@ -85,13 +85,13 @@ export const Footer = () => {
         </Typography>
         <SocialMediaWrapper>
           <IconWrapper>
-            <img src={Facebook} alt="Facebook" />
+            <FacebookIcon style={{ color: Color.textPrimary, fontSize: 40 }} />
           </IconWrapper>
           <IconWrapper>
-            <img src={Instagram} alt="Instagram" />
+            <InstagramIcon style={{ color: Color.textPrimary, fontSize: 40 }} />
           </IconWrapper>
           <IconWrapper>
-            <img src={Twitter} alt="Twitter" />
+            <TwitterIcon style={{ color: Color.textPrimary, fontSize: 40 }} />
           </IconWrapper>
         </SocialMediaWrapper>
         <IconWrapper>
