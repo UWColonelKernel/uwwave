@@ -27,55 +27,61 @@
 //     [PostingSections.jobPostingInformation]: { [key in JobPostingInformationFields]: string }
 // }
 
+import { JobBoard } from './jobBoard'
+
 export const JOB_DATA_IDENTIFIER = 'job_'
 
 export interface PostingListDataCoop {
-    jobTitle: string
-    company: string
-    division: string
-    openings: number
-    internalStatus: string
-    location: string
-    level: string
-    applications: number
-    deadline: string
+  jobTitle: string
+  company: string
+  division: string
+  openings: number
+  internalStatus: string
+  location: string
+  level: string
+  applications: number
+  deadline: string
 }
 
 export interface PostingListDataFulltime {
-    jobTitle: string
-    company: string
-    division: string
-    positionType: string
-    internalStatus: string
-    city: string
-    deadline: string
+  jobTitle: string
+  company: string
+  division: string
+  positionType: string
+  internalStatus: string
+  city: string
+  deadline: string
 }
 
 export interface PostingListDataOther {
-    jobTitle: string
-    company: string
-    division: string
-    positionType: string
-    internalStatus: string
-    location: string
-    city: string
-    deadline: string
+  jobTitle: string
+  company: string
+  division: string
+  positionType: string
+  internalStatus: string
+  location: string
+  city: string
+  deadline: string
 }
 
-export type PostingListData = PostingListDataCoop | PostingListDataFulltime | PostingListDataOther
+export type PostingListData =
+  | PostingListDataCoop
+  | PostingListDataFulltime
+  | PostingListDataOther
 
 export interface PostingPageData {
-    [section: string]: { [key: string]: string }
+  [section: string]: { [key: string]: string }
 }
 
 export interface JobPosting {
-    jobId: number
-    postingListData: PostingListData
-    pageData: PostingPageData
-    divisionId?: number
-    isForMyProgram?: boolean
+  jobId: number
+  jobBoard: JobBoard
+  postingListData: PostingListData
+  pageData: PostingPageData
+  divisionId?: number
+  isForMyProgram?: boolean
 }
 
 export function getJobDataKey(jobId: number) {
-    return `${JOB_DATA_IDENTIFIER}${jobId.toString()}`
+  return `${JOB_DATA_IDENTIFIER}${jobId.toString()}`
 }

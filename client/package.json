@@ -10,7 +10,8 @@
     "test": "jest --passWithNoTests",
     "test:coverage": "jest --coverage --watchAll=false",
     "test:watch": "jest --watch",
-    "prepare": "cd .. && husky install client/.husky"
+    "prepare": "cd .. && husky install client/.husky",
+    "lint": "eslint --fix -c ./.eslintrc.json \"src/**/*.ts*\" && prettier --write \"src/**/*.ts*\""
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
