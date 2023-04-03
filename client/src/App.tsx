@@ -5,10 +5,15 @@ import { NavigationBar } from 'components/NavigationBar/NavigationBar'
 import { HomePage } from 'views/HomePage/HomePage'
 import JobsPage from 'views/JobsPage'
 import { createTheme, ThemeProvider } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { sendMessageOnLoadAndSetupListenerHook } from 'src/services/extension/extensionService'
 import { ListenerId } from 'src/services/extension/listenerId'
 import { RequestName } from 'src/shared/extension/dataBridge'
+import {
+  buildCoopJobsListFromExtensionData,
+  buildFulltimeJobsListFromExtensionData,
+} from 'src/util/jobsList'
+import { JobBoard } from 'src/shared/extension/jobBoard'
 
 const theme = createTheme({
   typography: {
@@ -17,7 +22,16 @@ const theme = createTheme({
 })
 
 export const App = () => {
+  const [isDataReady, setIsDataReady] = useState(false)
   const [extensionData, setExtensionData] = useState({})
+  const coopJobsListPageRows = useMemo(
+    () => buildCoopJobsListFromExtensionData(extensionData),
+    [extensionData],
+  )
+  const fulltimeJobsListPageRows = useMemo(
+    () => buildFulltimeJobsListFromExtensionData(extensionData),
+    [extensionData],
+  )
 
   useEffect(() => {
     return sendMessageOnLoadAndSetupListenerHook(
@@ -43,6 +57,7 @@ export const App = () => {
     console.info(
       `Extension data updated: ${Object.values(extensionData).length}`,
     )
+    setIsDataReady(true)
   }, [extensionData])
 
   return (
@@ -53,7 +68,26 @@ export const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<HomePage />} />
-              <Route path="/jobs" element={<JobsPage />} />
+              <Route
+                path="/jobs"
+                element={
+                  <JobsPage
+                    jobs={coopJobsListPageRows}
+                    jobBoard={JobBoard.coop}
+                    loading={!isDataReady}
+                  />
+                }
+              />
+              <Route
+                path="/jobs_fulltime"
+                element={
+                  <JobsPage
+                    jobs={fulltimeJobsListPageRows}
+                    jobBoard={JobBoard.fulltime}
+                    loading={!isDataReady}
+                  />
+                }
+              />
               {/* <Route path = '/login' element={<LoginPage />} />
               <Route path = '/jobs/:jobId' element={<Job/>} />
               <Route path = '/about-us' element={<AboutPage/>}/> */}
