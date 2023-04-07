@@ -65,7 +65,7 @@ const config = {
       },
       {
         test: /\.svg$/,
-        use: ['@svgr/webpack', 'url-loader'],
+        use: ['@svgr/webpack'],
         type: 'javascript/auto'
       },
     ],

@@ -3,8 +3,9 @@ import { Color } from 'styles/color'
 import FacebookIcon from '@mui/icons-material/Facebook'
 import InstagramIcon from '@mui/icons-material/Instagram'
 import TwitterIcon from '@mui/icons-material/Twitter'
-import Wave from 'assets/logo/Footer.svg'
+import WaveLogo from 'assets/logo/Footer.svg'
 import Link from '@mui/material/Link'
+import MUITypography from '@mui/material/Typography'
 import { Typography } from '../MUI/Typography'
 
 const FooterWrapper = styled.div`
@@ -54,7 +55,7 @@ export const Footer = () => {
     <>
       <FooterWrapper>
         {/* Weird font bug, need to wrap link with typography: https://mui.com/material-ui/api/link */}
-        <Typography>
+        <MUITypography>
           <StyledLink
             href="/jobs"
             color={Color.textPrimary}
@@ -63,8 +64,8 @@ export const Footer = () => {
           >
             Jobs List
           </StyledLink>
-        </Typography>
-        <Typography>
+        </MUITypography>
+        <MUITypography>
           <StyledLink
             href="/companies"
             color={Color.textPrimary}
@@ -72,17 +73,17 @@ export const Footer = () => {
           >
             Companies
           </StyledLink>
-        </Typography>
-        <Typography>
+        </MUITypography>
+        <MUITypography>
           <StyledLink href="/about" color={Color.textPrimary} underline="none">
             About
           </StyledLink>
-        </Typography>
-        <Typography>
+        </MUITypography>
+        <MUITypography>
           <StyledLink href="/login" color={Color.textPrimary} underline="none">
             Login
           </StyledLink>
-        </Typography>
+        </MUITypography>
         <SocialMediaWrapper>
           <IconWrapper>
             <FacebookIcon style={{ color: Color.textPrimary, fontSize: 40 }} />
@@ -95,11 +96,11 @@ export const Footer = () => {
           </IconWrapper>
         </SocialMediaWrapper>
         <IconWrapper>
-          <img src={Wave} alt="Wave" />
+          <WaveLogo />
         </IconWrapper>
       </FooterWrapper>
       <BottomFooterWrapper>
-        <StyledTypography color={Color.textPrimary}>
+        <StyledTypography color={Color.textPrimary} fontWeight="normal">
           Lorem Ipsum Sample Text Fill Up Space
         </StyledTypography>
       </BottomFooterWrapper>
