@@ -54,5 +54,5 @@ export interface JobPosting {
 }
 
 export function getJobDataKey(jobId: number, jobBoard: JobBoard) {
-  return `${JOB_DATA_IDENTIFIERS[jobBoard]}}${jobId.toString()}`
+  return `${JOB_DATA_IDENTIFIERS[jobBoard]}${jobId.toString()}`
 }
