@@ -1,35 +1,10 @@
-// export enum PostingSections {
-//     applicationInformation = 'Application Information',
-//     companyInformation = 'Company Information',
-//     jobPostingInformation = 'Job Posting Information',
-// }
-//
-// export enum ApplicationInformationFields {
-//     deadline = 'Application Deadline',
-//     documentsRequired = 'Application Documents Required',
-//     method = 'Application Method',
-//     // TODO
-// }
-//
-// export enum CompanyInformationFields {
-//     division = 'Division',
-//     organization = 'Organization',
-//     // TODO
-// }
-//
-// export enum JobPostingInformationFields {
-//     additionalInfo = 'Additional Information',
-//     // TODO
-// }
-// export interface PostingPageDataCoop {
-//     [PostingSections.applicationInformation]: { [key in ApplicationInformationFields]: string }
-//     [PostingSections.companyInformation]: { [key in CompanyInformationFields]: string }
-//     [PostingSections.jobPostingInformation]: { [key in JobPostingInformationFields]: string }
-// }
-
 import { JobBoard } from './jobBoard'
 
-export const JOB_DATA_IDENTIFIER = 'job_'
+export const JOB_DATA_IDENTIFIERS = {
+    [JobBoard.coop]: 'coopJob_',
+    [JobBoard.fulltime]: 'fulltimeJob_',
+    [JobBoard.other]: 'otherJob_',
+}
 
 export interface PostingListDataCoop {
     jobTitle: string
@@ -69,19 +44,15 @@ export type PostingListData =
     | PostingListDataFulltime
     | PostingListDataOther
 
-export interface PostingPageData {
-    [section: string]: { [key: string]: string }
-}
-
 export interface JobPosting {
     jobId: number
     jobBoard: JobBoard
     postingListData: PostingListData
-    pageData: PostingPageData
+    pageData: any // [section: string]: { [key: string]: string }
     divisionId?: number
     isForMyProgram?: boolean
 }
 
-export function getJobDataKey(jobId: number) {
-    return `${JOB_DATA_IDENTIFIER}${jobId.toString()}`
+export function getJobDataKey(jobId: number, jobBoard: JobBoard) {
+    return `${JOB_DATA_IDENTIFIERS[jobBoard]}}${jobId.toString()}`
 }

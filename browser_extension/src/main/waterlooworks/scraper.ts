@@ -1,11 +1,10 @@
 import $ from 'jquery'
 import {
-    AXIOS_RETRY_COUNT,
     getHttp,
     RequestMethod,
     sendForm,
 } from '../common/api'
-import axios, { AxiosResponse } from 'axios'
+import { AxiosResponse } from 'axios'
 import {
     scrapeJobBoardHome,
     scrapeJobPostingForWtrButtonAction,
@@ -92,7 +91,7 @@ class Scraper {
             const jobPostingResp = await this.scraperSendForm(rowScrape.formObj)
             const jobPostingDoc = $.parseHTML(jobPostingResp.data)
             const scrapeResult = scrapeJobPostingPage(jobPostingDoc)
-            await updateLocalStorage(getJobDataKey(rowScrape.jobId), {
+            await updateLocalStorage(getJobDataKey(rowScrape.jobId, this.jobBoard), {
                 jobId: rowScrape.jobId,
                 jobBoard: this.jobBoard,
                 postingListData: rowScrape.postingListData,
@@ -107,7 +106,7 @@ class Scraper {
                 })
             }
         } else {
-            await updateLocalStorage(getJobDataKey(rowScrape.jobId), {
+            await updateLocalStorage(getJobDataKey(rowScrape.jobId, this.jobBoard), {
                 isForMyProgram: true,
             })
         }
@@ -153,7 +152,7 @@ class Scraper {
             ),
             workTermRatingScrape,
         )
-        await updateLocalStorage(getJobDataKey(wtrButtonRequest.jobId), {
+        await updateLocalStorage(getJobDataKey(wtrButtonRequest.jobId, this.jobBoard), {
             divisionId: workTermRatingButtonScrape.reportHolderId,
         })
 

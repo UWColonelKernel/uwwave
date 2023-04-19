@@ -1,3 +1,10 @@
+import {
+  JobPosting,
+  PostingListDataCoop,
+  PostingListDataFulltime,
+} from 'src/shared/extension/job'
+import { JobBoard } from 'src/shared/extension/jobBoard'
+
 export enum PostingSections {
   applicationInformation = 'Application Information', // for coop
   applicationDelivery = 'Application Delivery', // not for coop
@@ -6,13 +13,13 @@ export enum PostingSections {
   jobPostingInformation = 'Job Posting Information', // for all jobs
 }
 
-export enum CompanyInformationFields {
+export enum CompanyInfoFields {
   division = 'Division',
   organization = 'Organization',
 }
 
 // As of Nov 20, 2022, these are the only fields
-export enum ApplicationInformationFields {
+export enum AppInfoFields {
   deadline = 'Application Deadline',
   documentsRequired = 'Application Documents Required',
   additionalInfo = 'Additional Application Information',
@@ -21,7 +28,7 @@ export enum ApplicationInformationFields {
 
 // As of Nov 20, 2022, these are most of the fields
 // The scraper didn't fully scrape properly, so this will need updating - TODO
-export enum JobPostingInformationFieldsCoop {
+export enum JobInfoFieldsCoop {
   additionalInformation = 'Additional Information',
   additionalJobIdentifiers = 'Additional Job Identifiers',
   affiliation = 'Affiliation',
@@ -72,7 +79,7 @@ export enum JobPostingInformationFieldsCoop {
 }
 
 // As of Mar 17, 2023, these are the only fields
-export enum ApplicationDeliveryFields {
+export enum AppDeliveryFields {
   additionalInfo = 'Additional Application Information',
   deadline = 'Application Deadline',
   delivery = 'Application Delivery',
@@ -82,7 +89,7 @@ export enum ApplicationDeliveryFields {
 }
 
 // As of Mar 17, 2023, these are the only fields
-export enum JobPostingInformationFieldsFulltime {
+export enum JobInfoFieldsFulltime {
   additionalInfo = 'Additional Information',
   careerDevelopmentAndTraining = 'Career Development and Training',
   compensationAndBenefits = 'Compensation and Benefits',
@@ -105,24 +112,36 @@ export enum JobPostingInformationFieldsFulltime {
 
 export interface PostingPageDataCoop {
   [PostingSections.applicationInformation]: {
-    [key in ApplicationInformationFields]: string
+    [key in AppInfoFields]: string
   }
   [PostingSections.companyInformation]: {
-    [key in CompanyInformationFields]: string
+    [key in CompanyInfoFields]: string
   }
   [PostingSections.jobPostingInformation]: {
-    [key in JobPostingInformationFieldsCoop]: string
+    [key in JobInfoFieldsCoop]: string
   }
 }
 
 export interface PostingPageDataFulltime {
   [PostingSections.applicationDelivery]: {
-    [key in ApplicationInformationFields]: string
+    [key in AppInfoFields]: string
   }
   [PostingSections.companyInfo]: {
-    [key in CompanyInformationFields]: string
+    [key in CompanyInfoFields]: string
   }
   [PostingSections.jobPostingInformation]: {
-    [key in JobPostingInformationFieldsFulltime]: string
+    [key in JobInfoFieldsFulltime]: string
   }
+}
+
+export interface JobPostingCoop extends JobPosting {
+  jobBoard: JobBoard.coop
+  postingListData: PostingListDataCoop
+  pageData: PostingPageDataCoop
+}
+
+export interface JobPostingFulltime extends JobPosting {
+  jobBoard: JobBoard.fulltime
+  postingListData: PostingListDataFulltime
+  pageData: PostingPageDataFulltime
 }
