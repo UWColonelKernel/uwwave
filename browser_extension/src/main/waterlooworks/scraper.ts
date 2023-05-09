@@ -1,9 +1,5 @@
 import $ from 'jquery'
-import {
-    getHttp,
-    RequestMethod,
-    sendForm,
-} from '../common/api'
+import { getHttp, RequestMethod, sendForm } from '../common/api'
 import { AxiosResponse } from 'axios'
 import {
     scrapeJobBoardHome,
@@ -91,12 +87,15 @@ class Scraper {
             const jobPostingResp = await this.scraperSendForm(rowScrape.formObj)
             const jobPostingDoc = $.parseHTML(jobPostingResp.data)
             const scrapeResult = scrapeJobPostingPage(jobPostingDoc)
-            await updateLocalStorage(getJobDataKey(rowScrape.jobId, this.jobBoard), {
-                jobId: rowScrape.jobId,
-                jobBoard: this.jobBoard,
-                postingListData: rowScrape.postingListData,
-                pageData: scrapeResult,
-            } as JobPosting)
+            await updateLocalStorage(
+                getJobDataKey(rowScrape.jobId, this.jobBoard),
+                {
+                    jobId: rowScrape.jobId,
+                    jobBoard: this.jobBoard,
+                    postingListData: rowScrape.postingListData,
+                    pageData: scrapeResult,
+                } as JobPosting,
+            )
             const wtrScrapeResult =
                 scrapeJobPostingForWtrButtonAction(jobPostingDoc)
             if (wtrScrapeResult) {
@@ -106,9 +105,12 @@ class Scraper {
                 })
             }
         } else {
-            await updateLocalStorage(getJobDataKey(rowScrape.jobId, this.jobBoard), {
-                isForMyProgram: true,
-            })
+            await updateLocalStorage(
+                getJobDataKey(rowScrape.jobId, this.jobBoard),
+                {
+                    isForMyProgram: true,
+                },
+            )
         }
 
         console.log(`Scraped job with ID ${rowScrape.jobId}`)
@@ -152,9 +154,12 @@ class Scraper {
             ),
             workTermRatingScrape,
         )
-        await updateLocalStorage(getJobDataKey(wtrButtonRequest.jobId, this.jobBoard), {
-            divisionId: workTermRatingButtonScrape.reportHolderId,
-        })
+        await updateLocalStorage(
+            getJobDataKey(wtrButtonRequest.jobId, this.jobBoard),
+            {
+                divisionId: workTermRatingButtonScrape.reportHolderId,
+            },
+        )
 
         console.log(
             `Scraped company with division ID ${workTermRatingButtonScrape.reportHolderId}`,
@@ -227,10 +232,7 @@ class Scraper {
             !jobBoardHomeScrape.searchAction ||
             !jobBoardHomeScrape.reloadQuickSearchAction
         ) {
-            console.error(
-                `Unable to scrape job board home for necessary form actions!`,
-            )
-            return
+            throw `Unable to scrape job board home for necessary form actions`
         }
 
         const quickSearchResp = await this.scraperSendForm({

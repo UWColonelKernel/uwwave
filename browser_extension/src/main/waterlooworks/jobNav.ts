@@ -29,6 +29,7 @@ if (jobId) {
         // @ts-ignore jquery .val() doesn't work, use vanilla js .value
         document.querySelector(
             'form#searchByPostingNumberForm input#postingId',
+            // @ts-ignore since this is not on the same line
         ).value = jobId
 
         // consume job id field so that we don't get stuck in redirect loop
