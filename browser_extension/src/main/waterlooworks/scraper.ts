@@ -309,4 +309,16 @@ const scrapeMain = () => {
     }
 }
 
+const clickScrapeMain = () => {
+    console.log('Clicked scrape main button')
+    // hide the first time screen
+    $("#ck_screen-1").hide()
+
+    // scrapeMain()
+
+    // show completed screen
+    $("#ck_screen-2").show()
+}
+
 window.addEventListener('ck_scrapeMain', scrapeMain)
+window.addEventListener('ck_clickScrapeMain', clickScrapeMain)

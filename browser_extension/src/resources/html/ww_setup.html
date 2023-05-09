@@ -1,0 +1,44 @@
+<div id='ck_outer' class='ck_setup-container'>
+  <div id='ck_display'>
+    <div id='ck_screen-1' class='ck_main-container'>
+      <div class='ck_wave-logo'>
+        <img id='ck_wave-logo-img' alt='logo'>
+      </div>
+      <div class='ck_welcome-text'>
+        <h1>
+          Welcome to UW Wave!
+        </h1>
+        <h2>
+          When you're ready, click on the button below to begin the scraping and setup process.
+        </h2>
+      </div>
+      <div class='ck_go-button'>
+        <button href="javascript:void(0)" class="btn btn-primary btn-large"
+                onclick="window.dispatchEvent(new Event('ck_clickScrapeMain'));"
+        >
+          Let's go!
+        </button>
+      </div>
+    </div>
+    <div id='ck_screen-2' class='ck_main-container' style='display: none'>
+      <div class='ck_welcome-text'>
+        <h1>
+          Setup initiated!
+        </h1>
+        <h2>
+          You can check on the progress by clicking on the UW Wave icon in your extension toolbar (top right).
+        </h2>
+      </div>
+      <div class='ck_wave-logo-toolbar'>
+        <img id='ck_wave-logo-toolbar-img' alt='logo'>
+      </div>
+      <div class='ck_done-button'>
+        <button href="javascript:void(0)" class="btn btn-primary btn-large"
+                onclick="$('#ck_outer').hide()"
+        >
+          Got it
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,35 +1,22 @@
 import $ from 'jquery'
 import {
-    addLocalStorageListener,
-    clearLocalStorage,
     getLocalStorage,
     setLocalStorage,
 } from '../common/storage'
 import { JOB_DATA_IDENTIFIERS } from '../shared/job'
 import { JobBoard } from '../shared/jobBoard'
 
-addLocalStorageListener(function (changes) {
-    $('#ck_loadJobCountButton').show()
-})
-
-function updateJobCount() {
-    getLocalStorage(null).then(results => {
-        const keys = Object.keys(results).filter(
-            key => key.indexOf(JOB_DATA_IDENTIFIERS[JobBoard.coop]) !== -1,
-        )
-        $('#ck_scrapeCount').text(keys.length === 0 ? '0' : keys.length)
-        $('#ck_loadJobCountButton').hide()
-    })
+export async function getJobCount(): Promise<number> {
+    const results = await getLocalStorage(null)
+    const keys = Object.keys(results).filter(
+        key => key.indexOf(JOB_DATA_IDENTIFIERS[JobBoard.coop]) !== -1,
+    )
+    return keys.length
 }
-
-window.addEventListener('ck_exportJSON', exportJSON)
-window.addEventListener('ck_importJSON', importJSON)
-window.addEventListener('ck_clearData', clearData)
-window.addEventListener('ck_loadJobCount', updateJobCount)
 
 let textFile: string | null = null
 
-function exportJSON() {
+export function exportJSON() {
     getLocalStorage(null).then(results => {
         const text = JSON.stringify(results)
 
@@ -59,7 +46,7 @@ function exportJSON() {
     })
 }
 
-function importJSON() {
+export function importJSON() {
     const picker = $('#ck_importJSONpicker')
     picker.change(function (e) {
         // getting a hold of the file reference
@@ -76,16 +63,8 @@ function importJSON() {
             const content = readerEvent.target.result // this is the content!
             // @ts-ignore TODO remove
             const contentObj = JSON.parse(content)
-            setLocalStorage(contentObj).then(() => {
-                updateJobCount()
-            })
+            setLocalStorage(contentObj).then()
         }
     })
     picker.trigger('click')
-}
-
-function clearData() {
-    clearLocalStorage().then(() => {
-        updateJobCount()
-    })
 }
