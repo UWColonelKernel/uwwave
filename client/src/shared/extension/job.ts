@@ -44,11 +44,15 @@ export type PostingListData =
   | PostingListDataFulltime
   | PostingListDataOther
 
+export interface PostingPageData {
+  [section: string]: { [key: string]: string }
+}
+
 export interface JobPosting {
   jobId: number
   jobBoard: JobBoard
   postingListData: PostingListData
-  pageData: any // [section: string]: { [key: string]: string }
+  pageData: any // PostingPageData
   divisionId?: number
   isForMyProgram?: boolean
 }
