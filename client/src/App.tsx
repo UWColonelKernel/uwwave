@@ -13,6 +13,7 @@ import {
   buildFulltimeJobsListFromExtensionData,
 } from 'src/util/jobsList'
 import { JobBoard } from 'src/shared/extension/jobBoard'
+import JobsPage from 'src/views/JobsPage'
 
 const theme = createTheme({
   typography: {

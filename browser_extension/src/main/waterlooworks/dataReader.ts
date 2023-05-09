@@ -15,7 +15,7 @@ addLocalStorageListener(function (changes) {
 function updateJobCount() {
     getLocalStorage(null).then(results => {
         const keys = Object.keys(results).filter(
-            key => key.indexOf(JOB_DATA_IDENTIFIERS[JobBoard.fulltime]) !== -1,
+            key => key.indexOf(JOB_DATA_IDENTIFIERS[JobBoard.coop]) !== -1,
         )
         $('#ck_scrapeCount').text(keys.length === 0 ? '0' : keys.length)
         $('#ck_loadJobCountButton').hide()

@@ -293,7 +293,7 @@ class Scraper {
 }
 
 const scraper = new Scraper()
-scraper.jobBoard = JobBoard.fulltime
+scraper.jobBoard = JobBoard.coop
 
 const scrapeMain = () => {
     if (
