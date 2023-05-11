@@ -23,8 +23,17 @@
   </div>
   <div class='content-box'>
     <div class='content-container'>
+      <div id='loading'>
+        <div class="loader loading-loader"></div>
+      </div>
       <div id='on-ww-first-time'>
-        <button id='scrape-main-button' class='button'>
+        <h1>
+          Welcome!
+        </h1>
+        <h2>
+          When you're ready, click on the button below to begin the scraping and setup process.
+        </h2>
+        <button id='scrape-main-button' class='button' style='margin-top: 4px'>
           Scrape Co-op Jobs
         </button>
       </div>
@@ -36,18 +45,65 @@
           Open WaterlooWorks
         </a>
       </div>
-      <div id='settings'>
+      <div id='ww-scrape-in-progress'>
         <h2>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          Working...
         </h2>
-        <a class='button' href='https://waterlooworks.uwaterloo.ca/waterloo.htm?action=login' target='_blank'>
-          Open WaterlooWorks
+        <div class='progress'>
+          <span id='progress-label' class='progress-label'></span>
+          <div class='progress-pie progress-pie-right'>
+            <div id='progress-circle-right' class='progress-circle'></div>
+          </div>
+          <div class='progress-pie progress-pie-left'>
+            <div id='progress-circle-left' class='progress-circle'></div>
+          </div>
+<!--          <div class='progress-shadow'></div>-->
+          <div class="loader progress-loader"></div>
+        </div>
+        <h2 id='progress-label-message'>
+          Starting...
+        </h2>
+      </div>
+      <div id='ww-scrape-failed'>
+        <h1>
+          Error
+        </h1>
+        <h2>
+          This can happen if you're not logged in.
+        </h2>
+        <button id='scrape-end-button-failed' class='button' style='margin-top: 4px'>
+          Back
+        </button>
+      </div>
+      <div id='ww-scrape-completed'>
+        <h1>
+          You're all set!
+        </h1>
+        <h2>
+          You can now access jobs and companies on UW Wave
+        </h2>
+        <a class='button' target='_blank' href='https://uwwave.ca' style='margin-top: 4px'>
+          Go to uwwave.ca
         </a>
+      </div>
+      <div id='settings'>
+        <h2>UW Wave</h2>
+        <p>Version: <span id='version-number'></span></p>
+        <p>Jobs scraped: <span id='job-count'></span></p>
+        <p>Companies scraped: <span id='company-count'></span></p>
+        <br>
+        <button id='import-data-button' class='button mb-2'>
+          Import data
+        </button>
+        <button id='export-data-button' class='button mb-2'>
+          Export data
+        </button>
       </div>
     </div>
   </div>
 </div>
 
+<input id="ck_importJsonPicker_popup" type="file" name="name" style="display: none;" />
 <script src='../../main/popup/popup.ts' type="module"></script>
 </body>
 </html>

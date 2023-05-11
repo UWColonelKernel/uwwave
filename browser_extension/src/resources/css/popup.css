@@ -14,6 +14,14 @@ body {
     background-color: #0082D5;
 }
 
+.red-bg {
+    background-color: #F44336;
+}
+
+.green-bg {
+    background-color: #4CD137;
+}
+
 .main-container {
     display: flex;
     flex-direction: column;
@@ -56,8 +64,7 @@ body {
 }
 
 .content-container {
-    display: flex;
-    flex-direction: column;
+    display: grid;
     align-items: center;
     justify-content: center;
     text-align: center;
@@ -71,7 +78,6 @@ body {
     background-color: white;
     width: 100%;
     height: 341px;
-    /*padding: 16px;*/
 }
 
 h1 {
@@ -97,4 +103,103 @@ h2 {
 
 .button:hover {
     background-color: #0145AC;
+}
+
+.mb-2 {
+    margin-bottom: 1rem;
+}
+
+.loader {
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #3498db; /* Blue */
+    border-radius: 50%;
+    animation: spin 0.5s linear infinite;
+}
+
+.loading-loader {
+    width: 80px;
+    height: 80px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.progress-circle {
+    height: calc(100% - 20px);
+    width: calc(100% - 20px);
+    border: 10px solid #3498db;
+    border-radius: 50%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    transition: transform 0.5s;
+}
+
+.progress-shadow {
+    height: calc(100% - 20px);
+    width: calc(100% - 20px);
+    border: 10px solid #bdc3c7;
+    border-radius: 50%;
+}
+
+.progress-pie {
+    height: 100%;
+    width: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+}
+
+.progress-loader {
+    height: calc(100% - 40px);
+    width: calc(100% - 40px);
+    left: 10px;
+    top: 10px;
+    border: 10px solid #bdc3c7;
+    border-top: 10px solid #cfcfcf;
+    position: absolute;
+    animation-duration: 2s;
+}
+
+.progress-pie-right {
+    clip-path: inset(0 0 0 50%);
+}
+.progress-pie-right .progress-circle {
+    clip-path: inset(0 50% 0 0);
+}
+
+.progress-pie-left {
+    clip-path: inset(0 50% 0 0);
+}
+.progress-pie-left .progress-circle {
+    clip-path: inset(0 0 0 50%);
+}
+
+.progress {
+    height: 200px;
+    width: 200px;
+    margin: 20px;
+    position: relative;
+}
+
+#ww-scrape-in-progress h2:nth-child(1) {
+    margin-top: 0
+}
+#ww-scrape-in-progress h2:nth-last-child(1) {
+    margin-bottom: 0;
+}
+
+.progress-label {
+    width: 100%;
+    top: 50%;
+    font-size: 40px;
+    line-height: 0;
+    border-radius: 50%;
+    color: #7f8c8d;
+    cursor: default;
+    display: block;
+    position: absolute;
+    text-align: center;
 }

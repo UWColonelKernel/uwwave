@@ -22,14 +22,18 @@ import { JOB_BOARD_SPEC, JobBoard } from '../shared/jobBoard'
 const DASHBOARD_URL =
     'https://waterlooworks.uwaterloo.ca/myAccount/dashboard.htm'
 
-enum ScrapeStage {
+export enum ScrapeStage {
     standby,
     defaultSearch,
     forMyProgram,
     viewed,
     workTermRatings,
     finished,
+    failed,
 }
+
+export const waitingScrapeStages = [ScrapeStage.standby, ScrapeStage.finished, ScrapeStage.failed]
+export const terminalScrapeStages = [ScrapeStage.finished, ScrapeStage.failed]
 
 interface PostingsTableRequestData {
     action: string
@@ -281,12 +285,13 @@ class Scraper {
 
         this.advanceStage()
         console.log(`${this.stage}) Scraping work term ratings`)
+        this.stageTarget = this.pendingWorkTermRatings.length
         for await (const result of asyncPool(
             100,
             this.pendingWorkTermRatings,
             this.scrapeWorkTermRating,
         )) {
-            /* empty */
+            this.stageProgress += 1
         }
 
         this.advanceStage()
@@ -294,16 +299,16 @@ class Scraper {
     }
 }
 
-const scraper = new Scraper()
+export const scraper = new Scraper()
 scraper.jobBoard = JobBoard.coop
 
 const scrapeMain = () => {
-    if (
-        scraper.stage === ScrapeStage.standby ||
-        scraper.stage === ScrapeStage.finished
-    ) {
+    if (waitingScrapeStages.includes(scraper.stage)) {
         console.log('Starting scraper...')
-        scraper.scrapeJobBoard().then(() => {})
+        scraper.scrapeJobBoard().then(() => {}).catch((e) => {
+            console.error(e)
+            scraper.stage = ScrapeStage.failed
+        })
     } else {
         console.log('Scraper still running, please wait...')
     }
@@ -314,7 +319,7 @@ const clickScrapeMain = () => {
     // hide the first time screen
     $("#ck_screen-1").hide()
 
-    // scrapeMain()
+    scrapeMain()
 
     // show completed screen
     $("#ck_screen-2").show()
