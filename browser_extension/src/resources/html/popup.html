@@ -33,7 +33,7 @@
         <h2>
           When you're ready, click on the button below to begin the scraping and setup process.
         </h2>
-        <button id='scrape-main-button' class='button' style='margin-top: 4px'>
+        <button class='button scrape-main-button' style='margin-top: 4px'>
           Scrape Co-op Jobs
         </button>
       </div>
@@ -71,7 +71,7 @@
         <h2>
           This can happen if you're not logged in.
         </h2>
-        <button id='scrape-end-button-failed' class='button' style='margin-top: 4px'>
+        <button id='scrape-failed-button' class='button'>
           Back
         </button>
       </div>
@@ -82,21 +82,41 @@
         <h2>
           You can now access jobs and companies on UW Wave
         </h2>
-        <a class='button' target='_blank' href='https://uwwave.ca' style='margin-top: 4px'>
+        <a class='button' target='_blank' href='https://uwwave.ca'>
           Go to uwwave.ca
         </a>
       </div>
+      <div id='general-status'>
+        <h1>
+          UW Wave
+        </h1>
+        <h2>
+          Quick access
+        </h2>
+        <button id='general-scrape-button' class='button scrape-main-button'>
+          Scrape Co-op Jobs
+        </button>
+        <a id='general-ww-button' class='button' href='https://waterlooworks.uwaterloo.ca/waterloo.htm?action=login' target='_blank'>
+          Open WaterlooWorks
+        </a>
+        <a id='general-uwwave-button' class='button' target='_blank' href='https://uwwave.ca'>
+          Open UW Wave
+        </a>
+      </div>
       <div id='settings'>
-        <h2>UW Wave</h2>
+        <h1>UW Wave</h1>
         <p>Version: <span id='version-number'></span></p>
         <p>Jobs scraped: <span id='job-count'></span></p>
         <p>Companies scraped: <span id='company-count'></span></p>
-        <br>
-        <button id='import-data-button' class='button mb-2'>
-          Import data
+        <h2>Manage your data</h2>
+        <button id='import-data-button' class='button button-rect'>
+          Import
         </button>
-        <button id='export-data-button' class='button mb-2'>
-          Export data
+        <button id='export-data-button' class='button button-rect'>
+          Export
+        </button>
+        <button id='clear-data-button' class='button button-rect'>
+          Clear
         </button>
       </div>
     </div>

@@ -1,18 +1,13 @@
-chrome.runtime.onInstalled.addListener(() => {
-    chrome.storage.session.set({ state: 'OFF' }).then()
+import { addSyncStorageListener } from '../common/storage'
+import { updateBadge } from '../common/icon'
+
+let heartbeatTimeout = setTimeout(updateBadge, 65000)
+
+addSyncStorageListener(async () => {
+    console.log('Sync storage was updated')
+    await updateBadge()
+    clearTimeout(heartbeatTimeout)
+    heartbeatTimeout = setTimeout(updateBadge, 65000)
 })
 
-chrome.action.onClicked.addListener(async () => {
-    chrome.storage.session.get('state', items => {
-        const prevState = items['state']
-        const nextState = prevState === 'OFF' ? 'ON' : 'OFF'
-        chrome.storage.session.set({ state: nextState })
-    })
-})
-
-chrome.storage.session.onChanged.addListener(function () {})
-
-// content script is an untrusted context
-chrome.storage.session
-    .setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' })
-    .then()
+updateBadge().then()

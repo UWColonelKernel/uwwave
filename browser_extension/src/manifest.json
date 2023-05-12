@@ -19,7 +19,8 @@
         "default_popup": "resources/html/popup.html"
     },
     "background": {
-        "service_worker": "main/background/background.ts"
+        "service_worker": "main/background/background.ts",
+        "type": "module"
     },
     "host_permissions": [
         "*://waterlooworks.uwaterloo.ca/*"
@@ -57,7 +58,7 @@
     ],
     "web_accessible_resources": [
         {
-            "resources": [ "resources/html/*.html", "assets/waterlooworks/*" ],
+            "resources": [ "resources/html/*.html", "assets/waterlooworks/*", "assets/icons/*" ],
             "matches": [ "*://waterlooworks.uwaterloo.ca/*" ]
         }
     ]

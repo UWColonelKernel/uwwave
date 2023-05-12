@@ -13,11 +13,14 @@ import {
     scrapeWorkTermRating,
     scrapeWorkTermRatingButton,
 } from './scraperUtil'
-import { updateLocalStorage } from '../common/storage'
+import { setSyncStorage, setSyncStorageByKey, updateLocalStorage } from '../common/storage'
 import asyncPool from 'tiny-async-pool'
 import { getJobDataKey, JobPosting } from '../shared/job'
 import { getCompanyDivisionDataKey } from '../shared/company'
 import { JOB_BOARD_SPEC, JobBoard } from '../shared/jobBoard'
+import { ScrapeStatus, UserSyncStorageKeys } from '../shared/userProfile'
+import moment from 'moment'
+import { getJobCount } from '../popup/dataReader'
 
 const DASHBOARD_URL =
     'https://waterlooworks.uwaterloo.ca/myAccount/dashboard.htm'
@@ -52,6 +55,7 @@ class Scraper {
     public stageTarget: number = 1
     public jobBoard: JobBoard = JobBoard.coop
     public pendingWorkTermRatings: WorkTermRatingButtonRequest[] = []
+    public heartbeatInterval: number | undefined
 
     private advanceStage() {
         this.stageProgress = 0 // progress resets to 0
@@ -218,6 +222,15 @@ class Scraper {
     }
 
     public async scrapeJobBoard() {
+        await setSyncStorage({
+            [UserSyncStorageKeys.LAST_SCRAPE_INITIATED_AT]: this.getUtcNowIsoString(),
+            [UserSyncStorageKeys.LAST_SCRAPE_HEARTBEAT_AT]: this.getUtcNowIsoString(),
+            [UserSyncStorageKeys.LAST_SCRAPE_STATUS]: ScrapeStatus.PENDING,
+        })
+        this.heartbeatInterval = setInterval(() => {
+            setSyncStorageByKey(UserSyncStorageKeys.LAST_SCRAPE_HEARTBEAT_AT, this.getUtcNowIsoString())
+        }, 3000)
+
         const scrapeViewed = $('#ck_scrapeViewedCheckbox').prop('checked')
 
         const jobBoardHomeResp = await getHttp(
@@ -296,6 +309,15 @@ class Scraper {
 
         this.advanceStage()
         console.log('Scraping done!')
+
+        clearInterval(this.heartbeatInterval)
+        // set after clearing interval to avoid race condition
+        await setSyncStorageByKey(UserSyncStorageKeys.LAST_SCRAPE_STATUS, ScrapeStatus.COMPLETED)
+        await setSyncStorageByKey(UserSyncStorageKeys.LAST_SUCCESSFUL_SCRAPE_AT, this.getUtcNowIsoString())
+    }
+
+    private getUtcNowIsoString(): string {
+        return moment().utc().toDate().toISOString()
     }
 }
 
@@ -303,26 +325,29 @@ export const scraper = new Scraper()
 scraper.jobBoard = JobBoard.coop
 
 const scrapeMain = () => {
+    // hide the first time screen
+    $("#ck_screen-1").hide()
+
     if (waitingScrapeStages.includes(scraper.stage)) {
         console.log('Starting scraper...')
         scraper.scrapeJobBoard().then(() => {}).catch((e) => {
             console.error(e)
             scraper.stage = ScrapeStage.failed
+            clearInterval(scraper.heartbeatInterval)
+            // set after clearing interval to avoid race condition
+            setSyncStorageByKey(UserSyncStorageKeys.LAST_SCRAPE_STATUS, ScrapeStatus.FAILED).then()
         })
     } else {
         console.log('Scraper still running, please wait...')
     }
+
+    // show completed screen
+    $("#ck_screen-2").show()
 }
 
 const clickScrapeMain = () => {
     console.log('Clicked scrape main button')
-    // hide the first time screen
-    $("#ck_screen-1").hide()
-
     scrapeMain()
-
-    // show completed screen
-    $("#ck_screen-2").show()
 }
 
 window.addEventListener('ck_scrapeMain', scrapeMain)

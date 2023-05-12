@@ -92,21 +92,26 @@ h2 {
     background-color: #0082D5;
     color: white;
     border: none;
-    padding: 16px 32px;
+    padding: 16px 24px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-    border-radius: 32px;
+    border-radius: 24px;
     cursor: pointer;
+}
+
+.button-rect {
+    padding: 16px 20px;
+    border-radius: 4px;
+}
+
+button, a {
+    margin: 4px;
 }
 
 .button:hover {
     background-color: #0145AC;
-}
-
-.mb-2 {
-    margin-bottom: 1rem;
 }
 
 .loader {
@@ -134,7 +139,7 @@ h2 {
     position: absolute;
     left: 0;
     top: 0;
-    transition: transform 0.5s;
+    transition: transform 0.5s ease-in;
 }
 
 .progress-shadow {
@@ -175,6 +180,8 @@ h2 {
 }
 .progress-pie-left .progress-circle {
     clip-path: inset(0 0 0 50%);
+    transition-delay: .5s;
+    transition-timing-function: ease-out;
 }
 
 .progress {

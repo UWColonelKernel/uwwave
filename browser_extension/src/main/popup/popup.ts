@@ -1,9 +1,10 @@
 import $ from 'jquery'
 import * as browser from 'webextension-polyfill'
-import { addLocalStorageListener, setLocalStorage } from '../common/storage'
+import { addLocalStorageListener, clearLocalStorage, setLocalStorage } from '../common/storage'
 import { exportJSON, getCompanyCount, getJobCount, openJsonPicker, setupJsonPickerHandler } from './dataReader'
 import { getExtensionVersion } from '../common/runtime'
-import { ScrapeStage, terminalScrapeStages } from '../waterlooworks/scraper'
+import { ScrapeStage, terminalScrapeStages, waitingScrapeStages } from '../waterlooworks/scraper'
+import { updateBadge } from '../common/icon'
 
 enum BackgroundColors {
     GREY = 'grey-bg',
@@ -19,7 +20,8 @@ enum Views {
     WW_SCRAPE_FAILED = 'ww-scrape-failed',
     WW_SCRAPE_COMPLETED = 'ww-scrape-completed',
     SETTINGS = 'settings',
-    LOADING = 'loading'
+    LOADING = 'loading',
+    GENERAL_STATUS = 'general-status',
 }
 
 async function trySendMessageToWaterlooWorks(op: string): Promise<any> {
@@ -57,7 +59,7 @@ function setBgColor(bgColor: BackgroundColors) {
 }
 
 function isScrapeActive() {
-    return scraperStatus?.stage !== undefined && scraperStatus.stage !== ScrapeStage.standby
+    return scraperStatus?.stage !== undefined && !waitingScrapeStages.includes(scraperStatus.stage)
 }
 
 function showCurrentView() {
@@ -76,6 +78,11 @@ function showCurrentView() {
     if (isSettingsOpen) {
         // Settings
         showView(Views.SETTINGS)
+
+        const version = getExtensionVersion()
+        $("#version-number").text(version)
+        $("#job-count").text(jobCount)
+        $("#company-count").text(companyCount)
     } else if (isScraping) { // todo just store most recent scrape status and show that
         // Scraping, show progress
         if (scraperStatus?.stage === ScrapeStage.failed) {
@@ -99,7 +106,14 @@ function showCurrentView() {
             }
         } else {
             // Not first time user, need to check staleness of data
-            showView(Views.ON_WW_FIRST_TIME)
+            showView(Views.GENERAL_STATUS)
+            if (isOnWaterlooWorks) {
+                $('#general-scrape-button').show()
+                $('#general-ww-button').hide()
+            } else {
+                $('#general-scrape-button').hide()
+                $('#general-ww-button').show()
+            }
         }
     }
 }
@@ -149,12 +163,14 @@ function updateProgressBar() {
     $('#progress-label-message').text(newMessage)
 }
 
-async function loadDataAndUpdateView(updateCounts = true) {
+async function loadDataAndUpdateView(updateCounts = true, updateScraperStatus = true) {
     if (updateCounts) {
         jobCount = await getJobCount()
         companyCount = await getCompanyCount()
     }
-    scraperStatus = await trySendMessageToWaterlooWorks('status')
+    if (updateScraperStatus) {
+        scraperStatus = await trySendMessageToWaterlooWorks('status')
+    }
 
     showCurrentView()
 }
@@ -188,6 +204,9 @@ let initiatedScrape = false
 const JSON_PICKER_KEY = 'ck_importJsonPicker_popup'
 
 async function main() {
+    // update badge
+    updateBadge().then()
+
     // First hide all and show blank
     resetViews()
     showView(Views.LOADING)
@@ -196,26 +215,23 @@ async function main() {
     // Then pull data and update view
     await loadDataAndUpdateView()
     if (isScrapeActive()) {
+        initiatedScrape = true
         pollScrapeStatus()
     }
-
-    const version = getExtensionVersion()
-    $("#version-number").text(version)
-    $("#job-count").text(jobCount)
-    $("#company-count").text(companyCount)
 }
 
 main().then()
+updateBadge().then()
 
-$("#scrape-main-button").on( "click", async function() {
+$(".scrape-main-button").on( "click", async function() {
     console.log('Triggering scrape main event')
-    await trySendMessageToWaterlooWorks('scrape')
     initiatedScrape = true
     showCurrentView()
     pollScrapeStatus()
+    await trySendMessageToWaterlooWorks('scrape')
 });
 
-$("#scrape-end-button").on( "click", async function() {
+$("#scrape-failed-button").on( "click", async function() {
     console.log('Returning to main screen')
     initiatedScrape = false
     showCurrentView()
@@ -224,24 +240,31 @@ $("#scrape-end-button").on( "click", async function() {
 $("#settings-button").on( "click", async function() {
     console.log('Toggling settings')
     isSettingsOpen = !isSettingsOpen
-    await showCurrentView()
+    showCurrentView()
+    await loadDataAndUpdateView(true, false)
 });
 
 $("#import-data-button").on( "click", async function() {
     console.log('Importing data')
     openJsonPicker(JSON_PICKER_KEY)
 });
+setupJsonPickerHandler(JSON_PICKER_KEY, async function(contentObj) {
+    console.log('Received imported data')
+    await setLocalStorage(contentObj)
+    await loadDataAndUpdateView(true, false)
+    console.log('Done importing data')
+})
 
 $("#export-data-button").on( "click", async function() {
     console.log('Importing data')
     await exportJSON()
 });
 
-setupJsonPickerHandler(JSON_PICKER_KEY, async function(contentObj) {
-    console.log('Received imported data')
-    await setLocalStorage(contentObj)
-    console.log('Done importing data')
-})
+$("#clear-data-button").on( "click", async function() {
+    console.log('Clearing data')
+    await clearLocalStorage()
+    await loadDataAndUpdateView(true, false)
+});
 
 addLocalStorageListener(async function (changes) {
     jobCount = await getJobCount()
