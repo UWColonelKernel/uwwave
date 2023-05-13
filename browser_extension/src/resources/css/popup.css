@@ -22,6 +22,10 @@ body {
     background-color: #4CD137;
 }
 
+.yellow-bg {
+    background-color: #FFC312;
+}
+
 .main-container {
     display: flex;
     flex-direction: column;
@@ -92,7 +96,7 @@ h2 {
     background-color: #0082D5;
     color: white;
     border: none;
-    padding: 16px 24px;
+    padding: 14px 24px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -209,4 +213,11 @@ button, a {
     display: block;
     position: absolute;
     text-align: center;
+}
+
+.last-scrape-icon {
+    height: 20px;
+    margin-left: 4px;
+    margin-bottom: -4px;
+    margin-right: -8px;
 }

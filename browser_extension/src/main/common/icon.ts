@@ -27,8 +27,7 @@ export async function updateBadge() {
     switch (status) {
         case ScrapeStatus.PENDING:
             if (isHeartbeatDead) {
-                // TODO use error icon
-                await setBadgeIcon('non-scrape')
+                await setBadgeIcon('error')
             } else {
                 await setBadgeIcon('loading')
             }
@@ -41,8 +40,7 @@ export async function updateBadge() {
             }
             break
         case ScrapeStatus.FAILED:
-            // TODO use error icon
-            await setBadgeIcon('non-scrape')
+            await setBadgeIcon('error')
             break
     }
 }
