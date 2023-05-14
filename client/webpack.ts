@@ -37,6 +37,10 @@ const config = {
   module: {
     rules: [
       {
+        test: /\.(png|jpg|jpeg|gif)$/i,
+        type: "asset/resource",
+      },
+      {
         test: /\.(js|ts|tsx)$/,
         exclude: /node_modules/,
         use: [

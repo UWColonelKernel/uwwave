@@ -4,6 +4,7 @@ import { Footer } from 'components/Footer/Footer'
 import JobsPage from 'views/JobsPage'
 import { NavigationBar } from 'components/NavigationBar/NavigationBar'
 import { HomePage } from 'views/HomePage/HomePage'
+import JobsListPage from 'views/JobsListPage'
 import { createTheme, ThemeProvider } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
 import { sendMessageOnLoadAndSetupListenerHook } from 'src/services/extension/extensionService'
@@ -14,7 +15,7 @@ import {
   buildFulltimeJobsListFromExtensionData,
 } from 'src/util/jobsList'
 import { JobBoard } from 'src/shared/extension/jobBoard'
-import JobsPage from 'src/views/JobsPage'
+import { SpecificJobPage } from './views/SpecificJobPage'
 
 const theme = createTheme({
   typography: {
@@ -72,7 +73,7 @@ export const App = () => {
               <Route
                 path="/jobs"
                 element={
-                  <JobsPage
+                  <JobsListPage
                     jobs={coopJobsListPageRows}
                     jobBoard={JobBoard.coop}
                     loading={!isDataReady}
@@ -82,12 +83,16 @@ export const App = () => {
               <Route
                 path="/jobs_fulltime"
                 element={
-                  <JobsPage
+                  <JobsListPage
                     jobs={fulltimeJobsListPageRows}
                     jobBoard={JobBoard.fulltime}
                     loading={!isDataReady}
                   />
                 }
+              />
+              <Route
+                path="/jobs/:jobId"
+                element={<SpecificJobPage jobs={extensionData} />}
               />
               {/* <Route path = '/login' element={<LoginPage />} />
               <Route path = '/jobs/:jobId' element={<Job/>} />

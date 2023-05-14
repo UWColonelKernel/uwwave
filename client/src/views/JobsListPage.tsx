@@ -38,6 +38,10 @@ export interface JobsPageRowData {
   keywords: string[]
   openings: number
   appDeadline: string
+  jobResponsibilities: string
+  jobSummary: string
+  requiredSkills: string
+  compensationAndBenefitsInformation: string
 }
 
 export interface JobsPageProps {
@@ -161,7 +165,7 @@ const columns: GridColDef<JobsPageRowData>[] = [
   },
 ]
 
-export default function JobsPage({ jobs, loading }: JobsPageProps) {
+export default function JobsListPage({ jobs, loading }: JobsPageProps) {
   useEffect(() => {
     document.title = 'Jobs'
   }, [])
