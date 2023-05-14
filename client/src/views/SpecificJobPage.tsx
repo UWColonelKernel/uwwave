@@ -123,18 +123,20 @@ export const SpecificJobPage = (props: {
 
   const Header = () => (
     <>
-      <Grid item xs={12} md={8}>
-        {imageURL !== '' && (
-          <CompanyCard
-            imageURL={imageURL}
-            companyName={companyInfo.companyName}
-            positionTitle={companyInfo.positionTitle}
-          />
-        )}
-      </Grid>
-      <Grid item xs={12} md={4}>
-        <WWButtons />
-      </Grid>
+      {imageURL !== '' && (
+        <>
+          <Grid item xs={12} md={8}>
+            <CompanyCard
+              imageURL={imageURL}
+              companyName={companyInfo.companyName}
+              positionTitle={companyInfo.positionTitle}
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <WWButtons />
+          </Grid>
+        </>
+      )}
     </>
   )
 
