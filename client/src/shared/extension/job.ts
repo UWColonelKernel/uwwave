@@ -16,6 +16,10 @@ export interface PostingListDataCoop {
   level: string
   applications: number
   deadline: string
+  jobSummary: string
+  jobResponsibilities: string
+  requiredSkills: string
+  compensation: string
 }
 
 export interface PostingListDataFulltime {
@@ -26,6 +30,10 @@ export interface PostingListDataFulltime {
   internalStatus: string
   city: string
   deadline: string
+  jobSummary: string
+  jobResponsibilities: string
+  requiredSkills: string
+  compensation: string
 }
 
 export interface PostingListDataOther {
@@ -37,6 +45,10 @@ export interface PostingListDataOther {
   location: string
   city: string
   deadline: string
+  jobSummary: string
+  jobResponsibilities: string
+  requiredSkills: string
+  compensation: string
 }
 
 export type PostingListData =
