@@ -1,0 +1,223 @@
+body {
+    width: 365px;
+    height: 413px;
+    margin: 0;
+    border: 1px solid grey;
+    font-family: 'Lato', sans-serif;
+}
+
+.grey-bg {
+    background-color: #616B7E;
+}
+
+.blue-bg {
+    background-color: #0082D5;
+}
+
+.red-bg {
+    background-color: #F44336;
+}
+
+.green-bg {
+    background-color: #4CD137;
+}
+
+.yellow-bg {
+    background-color: #FFC312;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: calc(100% - 30px);
+    height: calc(100% - 18px);
+    padding: 0px 15px 18px;
+}
+
+.navbar-container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.wave-logo {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 11px;
+}
+
+.placeholder-icon {
+    width: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+#settings-button {
+    cursor: pointer;
+}
+
+.setting-icon {
+    width: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.content-container {
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: calc(100% - 48px);
+    overflow-y: scroll;
+    margin: 24px;
+}
+
+.content-box {
+    border-radius: 25px;
+    background-color: white;
+    width: 100%;
+    height: 341px;
+}
+
+h1 {
+    margin-top: 0;
+}
+
+h2 {
+    font-weight: lighter;
+}
+
+.button {
+    background-color: #0082D5;
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 24px;
+    cursor: pointer;
+}
+
+.button-rect {
+    padding: 16px 20px;
+    border-radius: 4px;
+}
+
+button, a {
+    margin: 4px;
+}
+
+.button:hover {
+    background-color: #0145AC;
+}
+
+.loader {
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #3498db; /* Blue */
+    border-radius: 50%;
+    animation: spin 0.5s linear infinite;
+}
+
+.loading-loader {
+    width: 80px;
+    height: 80px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.progress-circle {
+    height: calc(100% - 20px);
+    width: calc(100% - 20px);
+    border: 10px solid #3498db;
+    border-radius: 50%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    transition: transform 0.5s ease-in;
+}
+
+.progress-shadow {
+    height: calc(100% - 20px);
+    width: calc(100% - 20px);
+    border: 10px solid #bdc3c7;
+    border-radius: 50%;
+}
+
+.progress-pie {
+    height: 100%;
+    width: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+}
+
+.progress-loader {
+    height: calc(100% - 40px);
+    width: calc(100% - 40px);
+    left: 10px;
+    top: 10px;
+    border: 10px solid #bdc3c7;
+    border-top: 10px solid #cfcfcf;
+    position: absolute;
+    animation-duration: 2s;
+}
+
+.progress-pie-right {
+    clip-path: inset(0 0 0 50%);
+}
+.progress-pie-right .progress-circle {
+    clip-path: inset(0 50% 0 0);
+}
+
+.progress-pie-left {
+    clip-path: inset(0 50% 0 0);
+}
+.progress-pie-left .progress-circle {
+    clip-path: inset(0 0 0 50%);
+    transition-delay: .5s;
+    transition-timing-function: ease-out;
+}
+
+.progress {
+    height: 200px;
+    width: 200px;
+    margin: 20px;
+    position: relative;
+}
+
+#ww-scrape-in-progress h2:nth-child(1) {
+    margin-top: 0
+}
+#ww-scrape-in-progress h2:nth-last-child(1) {
+    margin-bottom: 0;
+}
+
+.progress-label {
+    width: 100%;
+    top: 50%;
+    font-size: 40px;
+    line-height: 0;
+    border-radius: 50%;
+    color: #7f8c8d;
+    cursor: default;
+    display: block;
+    position: absolute;
+    text-align: center;
+}
+
+.last-scrape-icon {
+    height: 20px;
+    margin-left: 4px;
+    margin-bottom: -4px;
+    margin-right: -8px;
+}

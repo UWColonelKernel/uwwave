@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../css/popup.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div id='main-container' class='main-container'>
+  <div class='navbar-container'>
+    <div class='placeholder-icon'></div>
+    <div class='wave-logo'>
+      <img src='../../assets/popup/wave_logo.svg' alt='logo'>
+    </div>
+    <div id='settings-button' class='setting-icon'>
+      <img src='../../assets/popup/settings_icon.svg' alt='settings'>
+    </div>
+  </div>
+  <div class='content-box'>
+    <div class='content-container'>
+      <div id='loading'>
+        <div class="loader loading-loader"></div>
+      </div>
+      <div id='on-ww-first-time'>
+        <h1>
+          Welcome!
+        </h1>
+        <h2>
+          When you're ready, click on the button below to begin the scraping and setup process.
+        </h2>
+        <button class='button scrape-main-button' style='margin-top: 4px'>
+          Scrape Co-op Jobs
+        </button>
+      </div>
+      <div id='not-on-ww'>
+        <h1>
+          Complete setup on WaterlooWorks
+        </h1>
+        <a class='button' href='https://waterlooworks.uwaterloo.ca/waterloo.htm?action=login' target='_blank'>
+          Open WaterlooWorks
+        </a>
+      </div>
+      <div id='ww-scrape-in-progress'>
+        <h2>
+          Working...
+        </h2>
+        <div class='progress'>
+          <span id='progress-label' class='progress-label'></span>
+          <div class='progress-pie progress-pie-right'>
+            <div id='progress-circle-right' class='progress-circle'></div>
+          </div>
+          <div class='progress-pie progress-pie-left'>
+            <div id='progress-circle-left' class='progress-circle'></div>
+          </div>
+<!--          <div class='progress-shadow'></div>-->
+          <div class="loader progress-loader"></div>
+        </div>
+        <h2 id='progress-label-message'>
+          Starting...
+        </h2>
+      </div>
+      <div id='ww-scrape-failed'>
+        <h1>
+          Error
+        </h1>
+        <h2>
+          This can happen if you're not logged in.
+        </h2>
+        <button id='scrape-failed-button' class='button'>
+          Back
+        </button>
+      </div>
+      <div id='ww-scrape-completed'>
+        <h1>
+          You're all set!
+        </h1>
+        <h2>
+          You can now access jobs and companies on UW Wave
+        </h2>
+        <a class='button' target='_blank' href='https://uwwave.ca'>
+          Go to uwwave.ca
+        </a>
+      </div>
+      <div id='general-status'>
+        <h1>
+          UW Wave
+        </h1>
+        <h2>
+          Quick access
+        </h2>
+        <button id='general-scrape-button' class='button scrape-main-button'>
+          Scrape Co-op Jobs
+        </button>
+        <a id='general-ww-button' class='button' href='https://waterlooworks.uwaterloo.ca/waterloo.htm?action=login' target='_blank'>
+          Open WaterlooWorks
+        </a>
+        <a id='general-uwwave-button' class='button' target='_blank' href='https://uwwave.ca'>
+          Open UW Wave
+        </a>
+        <h2>
+          Last scrape: <span id='last-success-scrape-time-label'></span>
+          <img id='last-scrape-check-icon' class='last-scrape-icon' src='../../assets/popup/check_icon.svg' alt='checkmark'>
+          <img id='last-scrape-warning-icon' class='last-scrape-icon' src='../../assets/popup/warning_icon.svg' alt='warning'>
+        </h2>
+        <p>
+          <span id='last-scrape-warning-label'>Your jobs list may be out of date<br></span>
+          <span id='last-scrape-error-label'>
+            Your most recent scrape <span id='last-scrape-time-label'></span> failed.
+            <img class='last-scrape-icon' src='../../assets/popup/error_icon.svg' alt='error'>
+          </span>
+        </p>
+      </div>
+      <div id='settings'>
+        <h1>UW Wave</h1>
+        <p>Version: <span id='version-number'></span></p>
+        <p>Jobs scraped: <span id='job-count'></span></p>
+        <p>Companies scraped: <span id='company-count'></span></p>
+        <h2>Manage your data</h2>
+        <button id='import-data-button' class='button button-rect'>
+          Import
+        </button>
+        <button id='export-data-button' class='button button-rect'>
+          Export
+        </button>
+        <button id='clear-data-button' class='button button-rect'>
+          Clear
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<input id="ck_importJsonPicker_popup" type="file" name="name" style="display: none;" />
+<script src='../../main/popup/popup.ts' type="module"></script>
+</body>
+</html>

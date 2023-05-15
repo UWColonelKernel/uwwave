@@ -5,7 +5,7 @@
     "repository": "https://github.com/UWColonelKernel/uwwave",
     "license": "MIT",
     "scripts": {
-        "clean": "rm -rf dist/*",
+        "clean": "rm -rf dist/* .parcel-cache",
         "start": "yarn clean && parcel watch src/manifest.json --host localhost",
         "build": "yarn clean && parcel build src/manifest.json",
         "test": "jest --passWithNoTests",
@@ -42,6 +42,7 @@
         "axios-retry": "^3.4.0",
         "jquery": "^3.6.4",
         "json5": "^2.2.3",
+        "moment": "^2.29.4",
         "tiny-async-pool": "^2.1.0"
     }
 }

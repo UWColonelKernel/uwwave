@@ -1,15 +1,13 @@
-.ck_root {
-    padding: 4px 0 16px;
-}
-
-.ck_container {
+#ck_dashboard {
     border: 2px solid;
     border-radius: 12px;
     padding: 16px 20px;
+    margin: 4px 0 16px;
 }
 
 .ck_title {
     line-height: inherit;
+    margin-top: 0;
 }
 
 #ck_scrapeProgressBar.ck_progress-bar {
@@ -17,5 +15,61 @@
     height: 100%;
     border-radius: 4px;
     min-width: fit-content;
-    padding: 0px 8px;
+    padding: 0 8px;
+}
+
+.ck_setup-container {
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999999;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.ck_main-container {
+    border-radius: 25px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+
+    color: black;
+    text-align: center;
+}
+
+.ck_wave-logo {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    margin-bottom: 20px;
+}
+
+.ck_wave-logo-toolbar {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+}
+
+.ck_go-button, .ck_done-button {
+    margin-top: 20px;
+}
+
+.ck_welcome-text {
+    max-width: 400px;
+}
+
+.ck_welcome-text h1, h2 {
+    line-height: 2rem !important;
 }
