@@ -62,17 +62,25 @@ function isScrapeActive() {
     return scraperStatus?.stage !== undefined && !waitingScrapeStages.includes(scraperStatus.stage)
 }
 
-function getTimeDiffString(timeRecent: string, timeOld: string) {
-    const timeDiffSeconds = moment(timeRecent).utc().diff(timeOld, 'second')
+function getTimeDiffString(timeOld: string) {
+    const timeDiffSeconds = moment().utc().diff(timeOld, 'second')
     let timeDiffString
-    if (timeDiffSeconds < 60) { // 1 min
-        timeDiffString = `${moment(timeRecent).utc().diff(timeOld, 'second')} seconds ago`
-    } else if (timeDiffSeconds < 3600) { // 1 hr
-        timeDiffString = `${moment(timeRecent).utc().diff(timeOld, 'minute')} minutes ago`
-    } else if (timeDiffSeconds < 86400) { // 1 day
-        timeDiffString = `${moment(timeRecent).utc().diff(timeOld, 'hour')} hours ago`
-    } else {
-        timeDiffString = `${moment(timeRecent).utc().diff(timeOld, 'day')} days ago`
+    if (timeDiffSeconds === 1) { // 1 s
+        timeDiffString = '1 second ago'
+    } else if (timeDiffSeconds < 60) { // < 1 min in seconds
+        timeDiffString = `${moment().utc().diff(timeOld, 'second')} seconds ago`
+    } else if (timeDiffSeconds < 119) { // 1 min
+        timeDiffString = '1 minute ago'
+    } else if (timeDiffSeconds < 3600) { // < 1 hr in minutes
+        timeDiffString = `${moment().utc().diff(timeOld, 'minute')} minutes ago`
+    } else if (timeDiffSeconds < 7199) { // 1 hr
+        timeDiffString = '1 hour ago'
+    } else if (timeDiffSeconds < 86400) { // < 1 day in hours
+        timeDiffString = `${moment().utc().diff(timeOld, 'hour')} hours ago`
+    } else if (timeDiffSeconds < 172799) { // 1 day
+        timeDiffString = '1 day ago'
+    } else { // >= 2 days
+        timeDiffString = `${moment().utc().diff(timeOld, 'day')} days ago`
     }
     return timeDiffString
 }
@@ -140,8 +148,8 @@ function showCurrentView() {
             const isDataStale = moment().utc().subtract(DAYS_TO_STALE_DATA, 'day').isAfter(lastSuccessfulScrapeAt)
             const isHeartbeatDead = moment(lastSuccessfulScrapeAt).utc().subtract(MINUTES_TO_FAILED_SCRAPE, 'minute').isAfter(lastScrapeHeartbeatAt)
 
-            $('#last-success-scrape-time-label').text(getTimeDiffString(moment().utc().toISOString(), lastSuccessfulScrapeAt))
-            $('#last-scrape-time-label').text(getTimeDiffString(lastScrapeAt, lastSuccessfulScrapeAt))
+            $('#last-success-scrape-time-label').text(getTimeDiffString(lastSuccessfulScrapeAt))
+            $('#last-scrape-time-label').text(getTimeDiffString(lastScrapeAt))
 
             if ((isHeartbeatDead && lastScrapeStatus === ScrapeStatus.PENDING) || lastScrapeStatus === ScrapeStatus.FAILED) {
                 $('#last-scrape-error-label').show()
