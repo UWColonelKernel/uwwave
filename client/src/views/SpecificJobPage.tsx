@@ -109,6 +109,10 @@ export const SpecificJobPage = (props: {
       .catch((err: any) => err)
   }, [companyInfo, jobInfo])
 
+  useEffect(() => {
+    document.title = `Wave - ${job?.jobName}`
+  }, [job])
+
   const Search = () => (
     <>
       <Spacer />
