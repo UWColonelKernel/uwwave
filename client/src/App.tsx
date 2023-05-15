@@ -1,7 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Spacer } from 'components/Spacer/Spacer'
 import { Footer } from 'components/Footer/Footer'
-import JobsPage from 'views/JobsPage'
 import { NavigationBar } from 'components/NavigationBar/NavigationBar'
 import { HomePage } from 'views/HomePage/HomePage'
 import JobsListPage from 'views/JobsListPage'
