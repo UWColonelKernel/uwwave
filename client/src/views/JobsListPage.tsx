@@ -167,7 +167,7 @@ const columns: GridColDef<JobsPageRowData>[] = [
 
 export default function JobsListPage({ jobs, loading }: JobsPageProps) {
   useEffect(() => {
-    document.title = 'Jobs'
+    document.title = 'Wave - Jobs List'
   }, [])
 
   const [pageSize, setPageSize] = React.useState(10)

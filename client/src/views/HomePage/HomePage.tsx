@@ -63,7 +63,7 @@ const HeroWrapper = styled.div`
 
 export const HomePage = () => {
   useEffect(() => {
-    document.title = 'UW Wave'
+    document.title = 'Wave'
   }, [])
 
   const [searchListItems, setSearchListItems] = useState<IListItem[]>([])
