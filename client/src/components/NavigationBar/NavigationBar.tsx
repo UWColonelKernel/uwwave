@@ -59,7 +59,7 @@ export const NavigationBar = (props: INavigationBar) => {
 
   return (
     <>
-      <AppBar position="static" sx={{ bgcolor: backgroundColor }}>
+      <AppBar position="static" elevation={0} sx={{ bgcolor: backgroundColor }}>
         <Toolbar>
           <LogoWrapper>
             <Link href="/">
