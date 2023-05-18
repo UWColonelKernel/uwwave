@@ -101,7 +101,7 @@ export const Footer = () => {
       </FooterWrapper>
       <BottomFooterWrapper>
         <StyledTypography color={Color.textPrimary} fontWeight="normal">
-          Lorem Ipsum Sample Text Fill Up Space
+          © 2023 Wave. All rights reserved.
         </StyledTypography>
       </BottomFooterWrapper>
     </>
