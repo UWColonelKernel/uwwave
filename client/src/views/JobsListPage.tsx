@@ -15,7 +15,8 @@ import {
 } from '@mui/x-data-grid'
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
-import { Link } from '@mui/material'
+import Link from '@mui/material/Link'
+import Container from '@mui/material/Container'
 // import lunr from 'lunr'
 // import { getSearchTypeField, SearchTypes } from 'util/search/search'
 // import Filter from 'components/SearchBar/Filter'
@@ -25,6 +26,7 @@ import Chip from '@mui/material/Chip'
 // import JOB_TAGS_FILE from '../ww_data_tags_industry.json' // TODO load this from somewhere else or generate it with a function
 // import { buildExtensionApiListener } from '../util/extension_api'
 import { JobBoard } from 'src/shared/extension/jobBoard'
+import { NavigationBar } from 'src/components/NavigationBar/NavigationBar'
 import { Color } from '../styles/color'
 
 export interface JobsPageRowData {
@@ -174,41 +176,44 @@ export default function JobsListPage({ jobs, loading }: JobsPageProps) {
 
   return (
     <>
-      <Box sx={{ m: 2 }}>
-        {/* <SearchBarJobsList onSearchUpdated={setSearchChips} /> */}
-        {/*
+      <NavigationBar />
+      <Container>
+        <Box sx={{ m: 2 }}>
+          {/* <SearchBarJobsList onSearchUpdated={setSearchChips} /> */}
+          {/*
             Need to pass in filters from calling filter_jobs
         */}
-        {/* <Filter onFormulaChange={setFilterFormula} filters={filterCategories} /> */}
-      </Box>
-      <Box sx={{ width: 'calc(100% - 32px)', m: 2, mb: 0 }}>
-        <DataGrid
-          rows={jobs}
-          columns={columns}
-          pageSize={pageSize}
-          loading={loading}
-          disableColumnMenu
-          onPageSizeChange={newPageSize => setPageSize(newPageSize)}
-          rowsPerPageOptions={[5, 10, 25, 50, 100]}
-          pagination
-          autoHeight
-          rowHeight={100}
-          disableSelectionOnClick
-          sx={{
-            '.MuiDataGrid-root, .MuiDataGrid-cell': {
-              whiteSpace: 'normal !important',
-              wordWrap: 'break-all !important',
-            },
-            '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows':
-              {
-                m: 1,
+          {/* <Filter onFormulaChange={setFilterFormula} filters={filterCategories} /> */}
+        </Box>
+        <Box sx={{ width: 'calc(100% - 32px)', m: 2, mb: 0 }}>
+          <DataGrid
+            rows={jobs}
+            columns={columns}
+            pageSize={pageSize}
+            loading={loading}
+            disableColumnMenu
+            onPageSizeChange={newPageSize => setPageSize(newPageSize)}
+            rowsPerPageOptions={[5, 10, 25, 50, 100]}
+            pagination
+            autoHeight
+            rowHeight={100}
+            disableSelectionOnClick
+            sx={{
+              '.MuiDataGrid-root, .MuiDataGrid-cell': {
+                whiteSpace: 'normal !important',
+                wordWrap: 'break-all !important',
               },
-          }}
-          components={{
-            Toolbar: GridToolbar,
-          }}
-        />
-      </Box>
+              '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows':
+                {
+                  m: 1,
+                },
+            }}
+            components={{
+              Toolbar: GridToolbar,
+            }}
+          />
+        </Box>
+      </Container>
     </>
   )
 }
