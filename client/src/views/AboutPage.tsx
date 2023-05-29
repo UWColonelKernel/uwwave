@@ -95,7 +95,7 @@ export const AboutPage = () => {
             </PicturesRow>
             <Spacer height={32} />
             <ContactPaper>
-              <Typography variant="h6" align="center">
+              <Typography variant="h5" align="center">
                 <b>Contact</b>
               </Typography>
               <Spacer height={16} />
@@ -108,6 +108,25 @@ export const AboutPage = () => {
                 Email
               </PrimaryButton>
             </ContactPaper>
+            <Spacer height={32} />
+            <Name variant="h6">
+              <b>Contributors</b>
+            </Name>
+            <Spacer height={32} />
+            <PicturesRow>
+              <ProfileWrapper>
+                <RelativeWrapper>
+                  <ProfileImageBackground color="#0145AC" />
+                  <ProfileImageWrapper imageURL="yiwei.png" />
+                </RelativeWrapper>
+                <Spacer height={4} />
+                <Name>
+                  <b>Yi Wei</b>
+                </Name>
+                <Spacer height={4} />
+                <Name>Backend</Name>
+              </ProfileWrapper>
+            </PicturesRow>
           </MainWrapper>
         </Container>
       </WaterWrapper>
