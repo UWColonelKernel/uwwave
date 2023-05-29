@@ -3,8 +3,11 @@ import Toolbar from '@mui/material/Toolbar'
 import MUITypography from '@mui/material/Typography'
 import styled from 'styled-components'
 import { Color } from 'styles/color'
-import WaveLogo from 'assets/logo/Navbar.svg'
+import WaveLogo from 'src/assets/logo/Navbar'
 import Link from '@mui/material/Link'
+import Container from '@mui/material/Container'
+import React from 'react'
+import { Spacer } from '../Spacer/Spacer'
 
 interface INavigationBar {
   textColor?: string
@@ -18,8 +21,6 @@ type PageItem = {
 
 const StyledLink = styled(Link)`
   && {
-    padding-left: 20px;
-    padding-right: 20px;
     &:active {
       text-decoration: underline;
     }
@@ -28,13 +29,8 @@ const StyledLink = styled(Link)`
 
 const LogoWrapper = styled.div`
   display: flex;
-  padding-left: 130px;
-  align-items: center;
+  align-items: left;
   flex-grow: 1;
-`
-
-const SpaceBlock = styled.div`
-  width: 150px;
 `
 
 const pages: PageItem[] = [
@@ -43,7 +39,7 @@ const pages: PageItem[] = [
     pageUrl: '/jobs',
   },
   {
-    pageName: 'Companies List',
+    pageName: 'Companies',
     pageUrl: '/companies',
   },
   {
@@ -53,35 +49,36 @@ const pages: PageItem[] = [
 ]
 
 export const NavigationBar = (props: INavigationBar) => {
-  const { textColor = Color.textSecondary, backgroundColor = 'transparent' } =
-    props
+  const { textColor, backgroundColor = 'transparent' } = props
   const path = window.location.pathname
-
+  const color = textColor ?? Color.textSecondary
   return (
     <>
       <AppBar position="static" elevation={0} sx={{ bgcolor: backgroundColor }}>
-        <Toolbar>
-          <LogoWrapper>
-            <Link href="/">
-              <WaveLogo fill={textColor} />
-            </Link>
-          </LogoWrapper>
-          {pages.map((pageItem: PageItem) => (
-            <MUITypography>
-              <StyledLink
-                variant="h5"
-                href={pageItem.pageUrl}
-                color={textColor}
-                fontWeight="bold"
-                underline={path === pageItem.pageUrl ? 'always' : 'hover'}
-              >
-                {pageItem.pageName}
-              </StyledLink>
-            </MUITypography>
-          ))}
-          <SpaceBlock />
-          {path === '/' && <h2>I hope this works</h2>}
-        </Toolbar>
+        <Container>
+          <Toolbar>
+            <LogoWrapper>
+              <Link href="/">
+                <WaveLogo color={color} />
+              </Link>
+            </LogoWrapper>
+            {pages.map((pageItem: PageItem, i) => (
+              <React.Fragment key={pageItem.pageUrl}>
+                <MUITypography>
+                  <StyledLink
+                    variant="subtitle1"
+                    href={pageItem.pageUrl}
+                    color={color}
+                    underline={path === pageItem.pageUrl ? 'always' : 'hover'}
+                  >
+                    {pageItem.pageName}
+                  </StyledLink>
+                </MUITypography>
+                {i < pages.length - 1 ? <Spacer width={24} /> : null}
+              </React.Fragment>
+            ))}
+          </Toolbar>
+        </Container>
       </AppBar>
     </>
   )

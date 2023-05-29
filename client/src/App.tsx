@@ -64,7 +64,6 @@ export const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <div>
-        <NavigationBar />
         <div style={{ minHeight: `calc(100vh - 185px)` }}>
           <BrowserRouter>
             <Routes>
@@ -99,7 +98,6 @@ export const App = () => {
             </Routes>
           </BrowserRouter>
         </div>
-        <Spacer height={50} />
         <Footer />
       </div>
     </ThemeProvider>

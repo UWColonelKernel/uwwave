@@ -10,16 +10,24 @@ interface ISearchBar<T> {
   listItems: T[]
   Component: (props: T) => JSX.Element // should take listItem's type as props
   onSearchValChange: (val: string) => void // val is the value of the search field
+  placeholder?: string
 }
 
 export const SearchBar = <T extends any>(props: ISearchBar<T>) => {
-  const { width, minWidth, listItems, Component, onSearchValChange } = props
+  const {
+    width,
+    minWidth,
+    listItems,
+    Component,
+    onSearchValChange,
+    placeholder,
+  } = props
   return (
     <MainWrapper width={width} minWidth={minWidth}>
       <form>
         <SearchInputWrapper>
           <StyledTextField
-            placeholder="Search"
+            placeholder={placeholder ?? 'Search'}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               onSearchValChange(event.target.value)
             }}
@@ -59,10 +67,11 @@ const MainWrapper = styled.div<IMainWrapper>`
   position: relative;
 `
 const StyledButton = styled(Button)`
-  && {
+  &&&&& {
     position: relative;
     right: 4px;
     border-radius: 0 4px 0 0;
+    background-color: #061e39;
   }
 `
 

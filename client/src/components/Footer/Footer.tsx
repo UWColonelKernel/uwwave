@@ -3,10 +3,11 @@ import { Color } from 'styles/color'
 import FacebookIcon from '@mui/icons-material/Facebook'
 import InstagramIcon from '@mui/icons-material/Instagram'
 import TwitterIcon from '@mui/icons-material/Twitter'
-import WaveLogo from 'assets/logo/Footer.svg'
+import WaveLogo from 'src/assets/logo/Footer'
 import Link from '@mui/material/Link'
 import MUITypography from '@mui/material/Typography'
 import { Typography } from '../MUI/Typography'
+import { Spacer } from '../Spacer/Spacer'
 
 const FooterWrapper = styled.div`
   background-color: #061e39;
@@ -28,8 +29,7 @@ const BottomFooterWrapper = styled.div`
 
 const StyledLink = styled(Link)`
   && {
-    font-size: 1.5rem;
-    padding: 5px;
+    font-size: 1rem;
   }
 `
 
@@ -65,6 +65,7 @@ export const Footer = () => {
             Jobs List
           </StyledLink>
         </MUITypography>
+        <Spacer height={16} />
         <MUITypography>
           <StyledLink
             href="/companies"
@@ -74,16 +75,19 @@ export const Footer = () => {
             Companies
           </StyledLink>
         </MUITypography>
+        <Spacer height={16} />
         <MUITypography>
           <StyledLink href="/about" color={Color.textPrimary} underline="none">
             About
           </StyledLink>
         </MUITypography>
+        <Spacer height={16} />
         <MUITypography>
           <StyledLink href="/login" color={Color.textPrimary} underline="none">
             Login
           </StyledLink>
         </MUITypography>
+        <Spacer height={16} />
         <SocialMediaWrapper>
           <IconWrapper>
             <FacebookIcon style={{ color: Color.textPrimary, fontSize: 40 }} />
@@ -96,7 +100,7 @@ export const Footer = () => {
           </IconWrapper>
         </SocialMediaWrapper>
         <IconWrapper>
-          <WaveLogo fill="white" />
+          <WaveLogo color="white" />
         </IconWrapper>
       </FooterWrapper>
       <BottomFooterWrapper>
