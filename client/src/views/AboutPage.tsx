@@ -116,7 +116,7 @@ export const AboutPage = () => {
             <PicturesRow>
               <ProfileWrapper>
                 <RelativeWrapper>
-                  <ProfileImageBackground color="#0145AC" />
+                  <ProfileImageBackground color="#00C2FF" />
                   <ProfileImageWrapper imageURL="yiwei.png" />
                 </RelativeWrapper>
                 <Spacer height={4} />
