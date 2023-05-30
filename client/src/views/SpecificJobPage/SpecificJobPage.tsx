@@ -242,15 +242,15 @@ export const SpecificJobPage = (props: {
               href={`https://waterlooworks.uwaterloo.ca/myAccount/co-op/coop-postings.htm?ck_jobid=${jobId}`}
               target="_blank"
             >
-              Apply
+              Open in WaterlooWorks
             </Button>
-            <StyledShortlistButton
+            {/* <StyledShortlistButton
               sx={{ borderRadius: '50px', marginBottom: '10px' }}
               href={`https://waterlooworks.uwaterloo.ca/myAccount/co-op/coop-postings.htm?ck_jobid=${jobId}`}
               target="_blank"
             >
               Shortlist
-            </StyledShortlistButton>
+            </StyledShortlistButton> */}
             {extraInfo &&
               extraInfo.map((item: { title: string; text: string }) => {
                 return (
