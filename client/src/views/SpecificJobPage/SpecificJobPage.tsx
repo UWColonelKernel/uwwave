@@ -297,7 +297,6 @@ const MainWrapper = styled.div`
   display: flex;
   align-items: left;
   flex-direction: column;
-  min-height: 25vh;
 `
 
 const WaterWrapper = styled.div`
