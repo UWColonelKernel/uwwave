@@ -35,6 +35,10 @@ const LogoWrapper = styled.div`
 
 const pages: PageItem[] = [
   {
+    pageName: 'Setup',
+    pageUrl: '/setup',
+  },
+  {
     pageName: 'Jobs List',
     pageUrl: '/jobs',
   },

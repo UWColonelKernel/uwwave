@@ -27,7 +27,7 @@ export const HomePage = () => {
         listItems={[]}
         Component={() => <></>}
         onSearchValChange={() => null}
-        placeholder="My Dream Job..."
+        value="My Dream Job..."
       />
       <Spacer height={8} />
       <Stack direction="row" spacing={1}>
@@ -205,7 +205,7 @@ const CTAButton = styled(Fab).attrs({
     font-weight: bold;
     margin: auto;
     min-width: 180px;
-    box-shadow: 4px 4px rgba(7, 20, 30, 1);
+    box-shadow: 6px 6px rgba(7, 20, 30, 1);
   }
 `
 
@@ -225,6 +225,7 @@ const DummySearchPaper = styled(Paper).attrs({
     width: 100%;
     pointer-events: none;
     user-select: none;
+    box-shadow: 2px 2px 8px rgba(7, 20, 30, 0.42);
   }
 `
 
@@ -251,11 +252,12 @@ const CompanyCard = styled(Paper).attrs({
 })`
   padding: 8px;
   position: absolute;
-  top: -8px;
-  left: -4px;
+  top: -40px;
+  left: -32px;
   display: flex;
-  gap: 40px;
+  gap: 24px;
   align-items: center;
+  box-shadow: 2px 2px 8px rgba(7, 20, 30, 0.42);
 `
 const CompanyLogo = styled.div`
   width: 64px;

@@ -1,7 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { Spacer } from 'components/Spacer/Spacer'
 import { Footer } from 'components/Footer/Footer'
-import { NavigationBar } from 'components/NavigationBar/NavigationBar'
 import { HomePage } from 'views/HomePage/HomePage'
 import JobsListPage from 'views/JobsListPage'
 import { createTheme, ThemeProvider } from '@mui/material'
@@ -14,7 +12,9 @@ import {
   buildFulltimeJobsListFromExtensionData,
 } from 'src/util/jobsList'
 import { JobBoard } from 'src/shared/extension/jobBoard'
+import { Setup } from 'src/views/Setup'
 import { SpecificJobPage } from './views/SpecificJobPage'
+import { AboutPage } from './views/AboutPage'
 
 const theme = createTheme({
   typography: {
@@ -93,8 +93,9 @@ export const App = () => {
                 element={<SpecificJobPage jobs={extensionData} />}
               />
               {/* <Route path = '/login' element={<LoginPage />} />
-              <Route path = '/jobs/:jobId' element={<Job/>} />
-              <Route path = '/about-us' element={<AboutPage/>}/> */}
+              <Route path = '/jobs/:jobId' element={<Job/>} /> */}
+              <Route path="/about-us" element={<AboutPage />} />
+              <Route path="/setup" element={<Setup />} />
             </Routes>
           </BrowserRouter>
         </div>

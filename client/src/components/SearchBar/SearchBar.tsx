@@ -11,6 +11,7 @@ interface ISearchBar<T> {
   Component: (props: T) => JSX.Element // should take listItem's type as props
   onSearchValChange: (val: string) => void // val is the value of the search field
   placeholder?: string
+  value?: string
 }
 
 export const SearchBar = <T extends any>(props: ISearchBar<T>) => {
@@ -21,6 +22,7 @@ export const SearchBar = <T extends any>(props: ISearchBar<T>) => {
     Component,
     onSearchValChange,
     placeholder,
+    value,
   } = props
   return (
     <MainWrapper width={width} minWidth={minWidth}>
@@ -31,6 +33,7 @@ export const SearchBar = <T extends any>(props: ISearchBar<T>) => {
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               onSearchValChange(event.target.value)
             }}
+            value={value}
           />
           <StyledButton variant="outline-primary">
             <SearchIcon />

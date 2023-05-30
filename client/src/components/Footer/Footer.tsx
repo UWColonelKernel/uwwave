@@ -57,6 +57,17 @@ export const Footer = () => {
         {/* Weird font bug, need to wrap link with typography: https://mui.com/material-ui/api/link */}
         <MUITypography>
           <StyledLink
+            href="/setup"
+            color={Color.textPrimary}
+            variant="inherit"
+            underline="none"
+          >
+            Setup
+          </StyledLink>
+        </MUITypography>
+        <Spacer height={16} />
+        <MUITypography>
+          <StyledLink
             href="/jobs"
             color={Color.textPrimary}
             variant="inherit"
@@ -77,7 +88,11 @@ export const Footer = () => {
         </MUITypography>
         <Spacer height={16} />
         <MUITypography>
-          <StyledLink href="/about" color={Color.textPrimary} underline="none">
+          <StyledLink
+            href="/about-us"
+            color={Color.textPrimary}
+            underline="none"
+          >
             About
           </StyledLink>
         </MUITypography>
