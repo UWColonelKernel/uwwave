@@ -301,7 +301,7 @@ const MainWrapper = styled.div`
 
 const WaterWrapper = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   flex-direction: column;
   width: 100%;
   background: linear-gradient(
