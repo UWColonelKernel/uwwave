@@ -13,7 +13,7 @@ import {
 } from 'src/util/jobsList'
 import { JobBoard } from 'src/shared/extension/jobBoard'
 import { Setup } from 'src/views/Setup'
-import { SpecificJobPage } from './views/SpecificJobPage'
+import { SpecificJobPage } from './views/SpecificJobPage/SpecificJobPage'
 import { AboutPage } from './views/AboutPage'
 
 const theme = createTheme({

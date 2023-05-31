@@ -1,13 +1,14 @@
 import Paper from '@mui/material/Paper'
 import styled from 'styled-components'
-import { Star } from 'components/Icons/Star'
+import LocationOnIcon from '@mui/icons-material/LocationOn'
 import { Typography } from '../MUI/Typography'
 import { Spacer } from '../Spacer/Spacer'
-import { Color } from '../../styles/color'
 
 interface CompanyCardProps {
   imageURL: string
   companyName: string
+  city?: string
+  country?: string
   positionTitle?: string
   reviewCount?: number
   ratingValue?: number
@@ -17,13 +18,12 @@ interface CompanyCardProps {
 interface MainWrapperProps {
   isOutlined?: boolean
 }
-interface SubtitleProps {
-  isOutlined?: boolean
-}
 
 export const CompanyCard = ({
   imageURL,
   companyName,
+  city,
+  country,
   positionTitle,
   reviewCount,
   ratingValue,
@@ -35,35 +35,28 @@ export const CompanyCard = ({
       <ImageWrapper src={imageURL} />
       <Spacer width={8} />
       <NameWrapper>
-        {reviewCount ? (
-          <Typography variant="subtitle2">
-            {' '}
-            {`${reviewCount} Reviews`}
+        {city && country ? (
+          <Typography
+            fontWeight={!positionTitle ? 'bold' : 'initial'}
+            color="gray"
+            fontSize="14px"
+          >
+            <LocationOnIcon
+              fontSize="small"
+              style={{ verticalAlign: 'middle', marginBottom: '5px' }}
+            />
+            {`${city} ${country}`}
           </Typography>
-        ) : null}
-        {positionTitle ? (
-          <Typography fontWeight="bold">{positionTitle}</Typography>
         ) : null}
         <Typography fontWeight={!positionTitle ? 'bold' : 'initial'}>
           {companyName}
         </Typography>
-      </NameWrapper>
-      <StarsColumnWrapper>
-        {ratingValue ? (
-          <StarsWrapper>
-            <Star width={32} height={32} />
-            <Typography
-              color={Color.primary}
-              fontWeight={!positionTitle ? 'bold' : 'initial'}
-            >
-              {ratingValue}
-            </Typography>
-          </StarsWrapper>
+        {positionTitle ? (
+          <Typography fontWeight="bold" fontSize="20px">
+            {positionTitle}
+          </Typography>
         ) : null}
-      </StarsColumnWrapper>
-      {subtitle ? (
-        <Subtitle isOutlined={isOutlined}>{subtitle}</Subtitle>
-      ) : null}
+      </NameWrapper>
     </MainWrapper>
   )
 }
@@ -79,7 +72,8 @@ const MainWrapper = styled(Paper)<MainWrapperProps>`
 const ImageWrapper = styled.img`
   width: 80px;
   height: 80px;
-  border: 1px solid black;
+  border: 1px solid gray;
+  border-radius: 10px;
 `
 
 const NameWrapper = styled.div`
@@ -87,24 +81,4 @@ const NameWrapper = styled.div`
   flex-direction: column-reverse;
   justify-content: center;
   flex: 1;
-`
-
-const StarsColumnWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-`
-
-const StarsWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`
-
-const Subtitle = styled(Typography).attrs({
-  variant: 'subtitle2',
-})<SubtitleProps>`
-  position: absolute;
-  bottom: ${props => (props.isOutlined ? `16px` : '0px')};
-  right: ${props => (props.isOutlined ? `16px` : '0px')};
 `
