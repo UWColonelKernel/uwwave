@@ -36,6 +36,12 @@
         <button class='button scrape-main-button' style='margin-top: 4px'>
           Scrape Co-op Jobs
         </button>
+        <span class='last-scrape-error-label'>
+          <br>
+          <br>
+          <span class='last-scrape-error-label-text'></span>
+          <img class='last-scrape-icon last-scrape-error-icon' src='../../assets/popup/error_icon.svg' alt='error'>
+        </span>
       </div>
       <div id='not-on-ww'>
         <h1>
@@ -44,6 +50,12 @@
         <a class='button' href='https://waterlooworks.uwaterloo.ca/waterloo.htm?action=login' target='_blank'>
           Open WaterlooWorks
         </a>
+        <span class='last-scrape-error-label'>
+          <br>
+          <br>
+          <span class='last-scrape-error-label-text'></span>
+          <img class='last-scrape-icon last-scrape-error-icon' src='../../assets/popup/error_icon.svg' alt='error'>
+        </span>
       </div>
       <div id='ww-scrape-in-progress'>
         <h2>
@@ -103,15 +115,15 @@
           Open UW Wave
         </a>
         <h2>
-          Last scrape: <span id='last-success-scrape-time-label'></span>
+          <span id='last-success-scrape-label'></span>
           <img id='last-scrape-check-icon' class='last-scrape-icon' src='../../assets/popup/check_icon.svg' alt='checkmark'>
           <img id='last-scrape-warning-icon' class='last-scrape-icon' src='../../assets/popup/warning_icon.svg' alt='warning'>
         </h2>
         <p>
           <span id='last-scrape-warning-label'>Your jobs list may be out of date<br></span>
-          <span id='last-scrape-error-label'>
-            Your most recent scrape <span id='last-scrape-time-label'></span> failed.
-            <img class='last-scrape-icon' src='../../assets/popup/error_icon.svg' alt='error'>
+          <span class='last-scrape-error-label'>
+            <span class='last-scrape-error-label-text'></span>
+            <img class='last-scrape-icon last-scrape-error-icon' src='../../assets/popup/error_icon.svg' alt='error'>
           </span>
         </p>
       </div>
@@ -120,6 +132,10 @@
         <p>Version: <span id='version-number'></span></p>
         <p>Jobs scraped: <span id='job-count'></span></p>
         <p>Companies scraped: <span id='company-count'></span></p>
+        <span class='last-scrape-error-label'>
+          <span class='last-scrape-error-label-text'></span>
+          <img class='last-scrape-icon last-scrape-error-icon' src='../../assets/popup/error_icon.svg' alt='error'>
+        </span>
         <h2>Manage your data</h2>
         <button id='import-data-button' class='button button-rect'>
           Import

@@ -19,9 +19,15 @@ export function getExtensionId() {
 }
 
 export function getExtensionVersion() {
-    return browser.runtime.getManifest().version;
+    return browser.runtime.getManifest().version
 }
 
-export function addRuntimeListener(listener: (message: any, sender: MessageSender, sendResponse: (...params: any) => void) => void) {
+export function addRuntimeListener(
+    listener: (
+        message: any,
+        sender: MessageSender,
+        sendResponse: (...params: any) => void,
+    ) => void,
+) {
     browser.runtime.onMessage.addListener(listener)
 }
