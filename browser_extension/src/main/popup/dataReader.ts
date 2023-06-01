@@ -1,13 +1,16 @@
 import $ from 'jquery'
-import { getLocalStorage } from '../common/storage'
+import { getLocalStorage, getSyncStorage } from '../common/storage'
 import { JOB_DATA_IDENTIFIERS } from '../shared/job'
 import { JobBoard } from '../shared/jobBoard'
 import { DIVISION_DATA_IDENTIFIER } from '../shared/company'
+import { getJobBoardSetting } from '../shared/userProfile'
 
 export async function getJobCount(): Promise<number> {
+    const jobBoard: JobBoard = await getJobBoardSetting()
+
     const results = await getLocalStorage(null)
     const keys = Object.keys(results).filter(
-        key => key.indexOf(JOB_DATA_IDENTIFIERS[JobBoard.coop]) !== -1,
+        key => key.indexOf(JOB_DATA_IDENTIFIERS[jobBoard]) !== -1,
     )
     return keys.length
 }

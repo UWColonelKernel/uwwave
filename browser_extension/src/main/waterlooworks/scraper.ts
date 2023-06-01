@@ -14,6 +14,7 @@ import {
     scrapeWorkTermRatingButton,
 } from './scraperUtil'
 import {
+    getSyncStorage,
     setLocalStorageByKey,
     setSyncStorage,
     setSyncStorageByKey,
@@ -24,21 +25,21 @@ import { getJobDataKey, JobPosting } from '../shared/job'
 import { getCompanyDivisionDataKey } from '../shared/company'
 import { JOB_BOARD_SPEC, JobBoard } from '../shared/jobBoard'
 import {
+    getJobBoardSetting,
+    getTargetSearchActionSetting,
     LocalStorageMetadataKeys,
     ScrapeStatus,
+    TargetSearchAction,
     UserSyncStorageKeys,
 } from '../shared/userProfile'
 import moment from 'moment'
-import { getJobCount } from '../popup/dataReader'
 
 const DASHBOARD_URL =
     'https://waterlooworks.uwaterloo.ca/myAccount/dashboard.htm'
 
 export enum ScrapeStage {
     standby,
-    defaultSearch,
-    forMyProgram,
-    viewed,
+    jobPostings,
     workTermRatings,
     finished,
     failed,
@@ -67,6 +68,8 @@ class Scraper {
     public stageProgress: number = 0
     public stageTarget: number = 1
     public jobBoard: JobBoard = JobBoard.coop
+    public targetSearchAction: TargetSearchAction =
+        TargetSearchAction.FOR_MY_PROGRAM
     public pendingWorkTermRatings: WorkTermRatingButtonRequest[] = []
     public heartbeatInterval: number | undefined
 
@@ -96,36 +99,41 @@ class Scraper {
             case JobBoard.other:
                 rowScrape = scrapeJobTableRowOther(tableRow)
                 break
+            default:
+                console.error(`Unexpected job board ${this.jobBoard}`)
+                break
         }
         if (!rowScrape) {
             console.warn(
-                `Failed to scrape job with html: ${$(tableRow).html()}}`,
+                `Failed to scrape job with html: ${$(tableRow)
+                    .html()
+                    .substring(0, 100)}}`,
             )
             return
         }
 
-        if (this.stage !== ScrapeStage.forMyProgram) {
-            const jobPostingResp = await this.scraperSendForm(rowScrape.formObj)
-            const jobPostingDoc = $.parseHTML(jobPostingResp.data)
-            const scrapeResult = scrapeJobPostingPage(jobPostingDoc)
-            await updateLocalStorage(
-                getJobDataKey(rowScrape.jobId, this.jobBoard),
-                {
-                    jobId: rowScrape.jobId,
-                    jobBoard: this.jobBoard,
-                    postingListData: rowScrape.postingListData,
-                    pageData: scrapeResult,
-                } as JobPosting,
-            )
-            const wtrScrapeResult =
-                scrapeJobPostingForWtrButtonAction(jobPostingDoc)
-            if (wtrScrapeResult) {
-                this.pendingWorkTermRatings.push({
-                    jobId: rowScrape.jobId,
-                    formObj: wtrScrapeResult,
-                })
-            }
-        } else {
+        const jobPostingResp = await this.scraperSendForm(rowScrape.formObj)
+        const jobPostingDoc = $.parseHTML(jobPostingResp.data)
+        const scrapeResult = scrapeJobPostingPage(jobPostingDoc)
+        await updateLocalStorage(
+            getJobDataKey(rowScrape.jobId, this.jobBoard),
+            {
+                jobId: rowScrape.jobId,
+                jobBoard: this.jobBoard,
+                postingListData: rowScrape.postingListData,
+                pageData: scrapeResult,
+            } as JobPosting,
+        )
+        const wtrScrapeResult =
+            scrapeJobPostingForWtrButtonAction(jobPostingDoc)
+        if (wtrScrapeResult) {
+            this.pendingWorkTermRatings.push({
+                jobId: rowScrape.jobId,
+                formObj: wtrScrapeResult,
+            })
+        }
+
+        if (this.targetSearchAction === TargetSearchAction.FOR_MY_PROGRAM) {
             await updateLocalStorage(
                 getJobDataKey(rowScrape.jobId, this.jobBoard),
                 {
@@ -249,7 +257,12 @@ class Scraper {
             )
         }, 3000)
 
-        const scrapeViewed = $('#ck_scrapeViewedCheckbox').prop('checked')
+        this.jobBoard = await getJobBoardSetting()
+        this.targetSearchAction = await getTargetSearchActionSetting()
+
+        console.log(
+            `Initiating scrape for job board ${this.jobBoard} and search action ${this.targetSearchAction}`,
+        )
 
         const jobBoardHomeResp = await getHttp(
             JOB_BOARD_SPEC[this.jobBoard].url,
@@ -277,40 +290,25 @@ class Scraper {
         const quickSearchScrape = scrapeQuickSearches(quickSearchDoc)
 
         this.advanceStage()
-        console.log(
-            `${this.stage}) Scraping jobs available from default search`,
-        )
-        await this.scrapeAllPages(jobBoardHomeScrape.searchAction)
-
-        this.advanceStage()
-        console.log(`${this.stage}) Scraping to tag For My Program jobs`)
-        if (quickSearchScrape.forMyProgramAction) {
-            console.log(
-                `${this.stage}) "For My Program" action found, scraping`,
-            )
-            await this.scrapeAllPages(quickSearchScrape.forMyProgramAction)
-        } else {
-            console.warn(
-                `${this.stage}) "For My Program" action not found, skipping`,
-            )
+        const searchActionMap = {
+            [TargetSearchAction.DEFAULT_SEARCH]:
+                jobBoardHomeScrape.searchAction,
+            [TargetSearchAction.FOR_MY_PROGRAM]:
+                quickSearchScrape.forMyProgramAction,
+            [TargetSearchAction.VIEWED]: quickSearchScrape.viewedAction,
         }
-
-        this.advanceStage()
-        if (scrapeViewed) {
+        const searchAction = searchActionMap[this.targetSearchAction]
+        console.log(
+            `${this.stage}) Scraping jobs available for target search action ${this.targetSearchAction}`,
+        )
+        if (searchAction) {
             console.log(
-                `${this.stage}) Scrape "Viewed" is checked, scraping "Viewed" jobs`,
+                `${this.stage}) Search action for ${this.targetSearchAction} found, scraping`,
             )
-            if (quickSearchScrape.viewedAction) {
-                console.log(`${this.stage}) "Viewed" action found, scraping`)
-                await this.scrapeAllPages(quickSearchScrape.viewedAction)
-            } else {
-                console.warn(
-                    `${this.stage}) "Viewed" action not found, skipping`,
-                )
-            }
+            await this.scrapeAllPages(searchAction)
         } else {
             console.log(
-                `${this.stage}) Scrape "Viewed" is not checked, skipping`,
+                `${this.stage}) Search action for ${this.targetSearchAction} not found, skipping`,
             )
         }
 
@@ -346,7 +344,6 @@ class Scraper {
 }
 
 export const scraper = new Scraper()
-scraper.jobBoard = JobBoard.coop
 
 const scrapeMain = () => {
     // hide the first time screen

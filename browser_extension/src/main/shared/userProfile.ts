@@ -1,4 +1,6 @@
 import { BadgeIconName } from '../common/icon'
+import { getSyncStorage } from '../common/storage'
+import { JobBoard } from './jobBoard'
 
 export const DAYS_TO_STALE_DATA = 2
 export const MINUTES_TO_FAILED_SCRAPE = 1
@@ -13,6 +15,12 @@ export enum UserSyncStorageKeys {
 
 export enum LocalStorageMetadataKeys {
     SCRAPE_AT = 'SCRAPE_AT',
+}
+
+export enum TargetSearchAction {
+    FOR_MY_PROGRAM = 'FOR_MY_PROGRAM',
+    DEFAULT_SEARCH = 'DEFAULT_SEARCH',
+    VIEWED = 'VIEWED',
 }
 
 export enum ScrapeStatus {
@@ -34,4 +42,27 @@ export interface AppStatusOverview {
     badgeIcon: BadgeIconName
     scrapeStatus: ScrapeStatus
     scrapeError: string
+}
+
+export const getJobBoardSetting = async () => {
+    return (
+        Number(
+            (
+                await getSyncStorage(
+                    UserSyncStorageKeys.SETTING_TARGET_JOB_BOARD,
+                )
+            )[UserSyncStorageKeys.SETTING_TARGET_JOB_BOARD],
+        ) || JobBoard.coop
+    )
+}
+
+export const getTargetSearchActionSetting = async () => {
+    return (
+        (
+            await getSyncStorage(
+                UserSyncStorageKeys.SETTING_TARGET_SEARCH_ACTION,
+            )
+        )[UserSyncStorageKeys.SETTING_TARGET_SEARCH_ACTION] ||
+        TargetSearchAction.FOR_MY_PROGRAM
+    )
 }
