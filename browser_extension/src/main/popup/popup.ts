@@ -1,12 +1,36 @@
 import $ from 'jquery'
 import * as browser from 'webextension-polyfill'
-import { addLocalStorageListener, clearLocalStorage, getSyncStorage, setLocalStorage } from '../common/storage'
-import { exportJSON, getCompanyCount, getJobCount, openJsonPicker, setupJsonPickerHandler } from './dataReader'
+import {
+    addLocalStorageListener,
+    clearLocalStorage,
+    getLocalStorage,
+    getSyncStorage,
+    setLocalStorage,
+    setSyncStorageByKey,
+} from '../common/storage'
+import {
+    exportJSON,
+    getCompanyCount,
+    getJobCount,
+    openJsonPicker,
+    setupJsonPickerHandler,
+} from './dataReader'
 import { getExtensionVersion } from '../common/runtime'
-import { ScrapeStage, terminalScrapeStages, waitingScrapeStages } from '../waterlooworks/scraper'
+import {
+    ScrapeStage,
+    terminalScrapeStages,
+    waitingScrapeStages,
+} from '../waterlooworks/scraper'
 import { updateBadge } from '../common/icon'
-import { DAYS_TO_STALE_DATA, MINUTES_TO_FAILED_SCRAPE, ScrapeStatus, UserSyncStorageKeys } from '../shared/userProfile'
+import {
+    AppStatusOverview,
+    DataStatus,
+    LocalStorageMetadataKeys,
+    ScrapeStatus,
+    UserSyncStorageKeys,
+} from '../shared/userProfile'
 import moment from 'moment'
+import { getAppStatus, warningDataStatuses } from '../common/appStatus'
 
 enum BackgroundColors {
     GREY = 'grey-bg',
@@ -29,11 +53,11 @@ enum Views {
 
 async function trySendMessageToWaterlooWorks(op: string): Promise<any> {
     const tabs = await browser.tabs.query({ active: true, currentWindow: true })
-    var activeTab = tabs[0];
-    var activeTabId = activeTab.id;
-    var result = null;
+    var activeTab = tabs[0]
+    var activeTabId = activeTab.id
+    var result = null
     if (activeTabId) {
-        console.log('sending');
+        console.log('sending')
         try {
             result = await browser.tabs.sendMessage(activeTabId, { op })
         } catch {
@@ -51,7 +75,7 @@ function showView(view: Views) {
 }
 
 function setBgColor(bgColor: BackgroundColors) {
-    const mainContainer = $("#main-container")
+    const mainContainer = $('#main-container')
     for (const bgColor of Object.values(BackgroundColors)) {
         mainContainer.removeClass(bgColor)
     }
@@ -59,61 +83,67 @@ function setBgColor(bgColor: BackgroundColors) {
 }
 
 function isScrapeActive() {
-    return scraperStatus?.stage !== undefined && !waitingScrapeStages.includes(scraperStatus.stage)
-}
-
-function getTimeDiffString(timeOld: string) {
-    const timeDiffSeconds = moment().utc().diff(timeOld, 'second')
-    let timeDiffString
-    if (timeDiffSeconds === 1) { // 1 s
-        timeDiffString = '1 second ago'
-    } else if (timeDiffSeconds < 60) { // < 1 min in seconds
-        timeDiffString = `${moment().utc().diff(timeOld, 'second')} seconds ago`
-    } else if (timeDiffSeconds < 119) { // 1 min
-        timeDiffString = '1 minute ago'
-    } else if (timeDiffSeconds < 3600) { // < 1 hr in minutes
-        timeDiffString = `${moment().utc().diff(timeOld, 'minute')} minutes ago`
-    } else if (timeDiffSeconds < 7199) { // 1 hr
-        timeDiffString = '1 hour ago'
-    } else if (timeDiffSeconds < 86400) { // < 1 day in hours
-        timeDiffString = `${moment().utc().diff(timeOld, 'hour')} hours ago`
-    } else if (timeDiffSeconds < 172799) { // 1 day
-        timeDiffString = '1 day ago'
-    } else { // >= 2 days
-        timeDiffString = `${moment().utc().diff(timeOld, 'day')} days ago`
-    }
-    return timeDiffString
+    return (
+        scraperStatus?.stage !== undefined &&
+        !waitingScrapeStages.includes(scraperStatus.stage)
+    )
 }
 
 function showCurrentView() {
-    const isDataAvailable = jobCount > 0
     const isOnWaterlooWorks = scraperStatus !== null
     const isScraping = initiatedScrape || isScrapeActive()
 
-    if (isOnWaterlooWorks) {
-        setBgColor(BackgroundColors.BLUE)
-    } else {
-        if (!isDataAvailable || !lastSuccessfulScrapeAt) {
-            setBgColor(BackgroundColors.GREY)
+    updateBadge().then()
+
+    if (appStatus.dataStatus === DataStatus.NO_DATA) {
+        if (isOnWaterlooWorks) {
+            setBgColor(BackgroundColors.BLUE)
         } else {
-            const isDataStale = moment().utc().subtract(DAYS_TO_STALE_DATA, 'day').isAfter(lastSuccessfulScrapeAt)
-            if (isDataStale) {
-                setBgColor(BackgroundColors.YELLOW)
-            } else {
-                setBgColor(BackgroundColors.BLUE)
-            }
+            setBgColor(BackgroundColors.GREY)
+        }
+    } else {
+        if (warningDataStatuses.includes(appStatus.dataStatus)) {
+            setBgColor(BackgroundColors.YELLOW)
+        } else {
+            setBgColor(BackgroundColors.BLUE)
         }
     }
 
+    // Fill the data into the labels
+    $('.last-scrape-error-label-text').text(appStatus.scrapeError)
+    if (appStatus.scrapeError) {
+        $('.last-scrape-error-label').show()
+    } else {
+        $('.last-scrape-error-label').hide()
+    }
+    if (isOnWaterlooWorks) {
+        $('#general-scrape-button').show()
+        $('#general-ww-button').hide()
+    } else {
+        $('#general-scrape-button').hide()
+        $('#general-ww-button').show()
+    }
+    $('#last-success-scrape-label').text(appStatus.dataAgeMessage)
+    if (warningDataStatuses.includes(appStatus.dataStatus)) {
+        $('#last-scrape-warning-icon').show()
+        $('#last-scrape-warning-label').show()
+        $('#last-scrape-check-icon').hide()
+    } else {
+        $('#last-scrape-warning-icon').hide()
+        $('#last-scrape-warning-label').hide()
+        $('#last-scrape-check-icon').show()
+    }
+
+    // Determine which page to show
     if (isSettingsOpen) {
         // Settings
         showView(Views.SETTINGS)
 
         const version = getExtensionVersion()
-        $("#version-number").text(version)
-        $("#job-count").text(jobCount)
-        $("#company-count").text(companyCount)
-    } else if (isScraping) { // todo just store most recent scrape status and show that
+        $('#version-number').text(version)
+        $('#job-count').text(jobCount)
+        $('#company-count').text(companyCount)
+    } else if (isScraping) {
         // Scraping, show progress
         if (scraperStatus?.stage === ScrapeStage.failed) {
             setBgColor(BackgroundColors.RED)
@@ -127,7 +157,7 @@ function showCurrentView() {
         }
     } else {
         // Not scraping, show pages
-        if (!isDataAvailable) {
+        if (appStatus.dataStatus === DataStatus.NO_DATA) {
             // First time user
             if (isOnWaterlooWorks) {
                 showView(Views.ON_WW_FIRST_TIME)
@@ -137,35 +167,6 @@ function showCurrentView() {
         } else {
             // Not first time user, need to check staleness of data
             showView(Views.GENERAL_STATUS)
-            if (isOnWaterlooWorks) {
-                $('#general-scrape-button').show()
-                $('#general-ww-button').hide()
-            } else {
-                $('#general-scrape-button').hide()
-                $('#general-ww-button').show()
-            }
-
-            const isDataStale = moment().utc().subtract(DAYS_TO_STALE_DATA, 'day').isAfter(lastSuccessfulScrapeAt)
-            const isHeartbeatDead = moment(lastSuccessfulScrapeAt).utc().subtract(MINUTES_TO_FAILED_SCRAPE, 'minute').isAfter(lastScrapeHeartbeatAt)
-
-            $('#last-success-scrape-time-label').text(getTimeDiffString(lastSuccessfulScrapeAt))
-            $('#last-scrape-time-label').text(getTimeDiffString(lastScrapeAt))
-
-            if ((isHeartbeatDead && lastScrapeStatus === ScrapeStatus.PENDING) || lastScrapeStatus === ScrapeStatus.FAILED) {
-                $('#last-scrape-error-label').show()
-            } else {
-                $('#last-scrape-error-label').hide()
-            }
-
-            if (isDataStale) {
-                $('#last-scrape-warning-icon').show()
-                $('#last-scrape-warning-label').show()
-                $('#last-scrape-check-icon').hide()
-            } else {
-                $('#last-scrape-warning-icon').hide()
-                $('#last-scrape-warning-label').hide()
-                $('#last-scrape-check-icon').show()
-            }
         }
     }
 }
@@ -174,17 +175,27 @@ function updateProgressBar() {
     const numStages = ScrapeStage.finished - 1
     let percent = 0
     if (scraperStatus) {
-        percent = (Math.max(scraperStatus.stage - 1, 0) + scraperStatus.stageProgress / scraperStatus.stageTarget) / numStages * 100
+        percent =
+            ((Math.max(scraperStatus.stage - 1, 0) +
+                scraperStatus.stageProgress / scraperStatus.stageTarget) /
+                numStages) *
+            100
     }
 
     if (percent >= 50) {
         $('#progress-circle-right').css('transform', `rotate(180deg)`)
     } else {
-        $('#progress-circle-right').css('transform', `rotate(${percent / 50 * 180}deg)`)
+        $('#progress-circle-right').css(
+            'transform',
+            `rotate(${(percent / 50) * 180}deg)`,
+        )
     }
 
     if (percent > 50) {
-        $('#progress-circle-left').css('transform', `rotate(${(percent - 50) / 50 * 180}deg)`)
+        $('#progress-circle-left').css(
+            'transform',
+            `rotate(${((percent - 50) / 50) * 180}deg)`,
+        )
     } else {
         $('#progress-circle-left').css('transform', `rotate(0deg)`)
     }
@@ -215,7 +226,10 @@ function updateProgressBar() {
     $('#progress-label-message').text(newMessage)
 }
 
-async function loadDataAndUpdateView(updateCounts = true, updateScraperStatus = true) {
+async function loadDataAndUpdateView(
+    updateCounts = true,
+    updateScraperStatus = true,
+) {
     if (updateCounts) {
         jobCount = await getJobCount()
         companyCount = await getCompanyCount()
@@ -223,10 +237,8 @@ async function loadDataAndUpdateView(updateCounts = true, updateScraperStatus = 
     if (updateScraperStatus) {
         scraperStatus = await trySendMessageToWaterlooWorks('status')
     }
-    lastScrapeAt = (await getSyncStorage(UserSyncStorageKeys.LAST_SCRAPE_INITIATED_AT))[UserSyncStorageKeys.LAST_SCRAPE_INITIATED_AT]
-    lastScrapeHeartbeatAt = (await getSyncStorage(UserSyncStorageKeys.LAST_SCRAPE_HEARTBEAT_AT))[UserSyncStorageKeys.LAST_SCRAPE_HEARTBEAT_AT]
-    lastSuccessfulScrapeAt = (await getSyncStorage(UserSyncStorageKeys.LAST_SUCCESSFUL_SCRAPE_AT))[UserSyncStorageKeys.LAST_SUCCESSFUL_SCRAPE_AT]
-    lastScrapeStatus = (await getSyncStorage(UserSyncStorageKeys.LAST_SCRAPE_STATUS))[UserSyncStorageKeys.LAST_SCRAPE_STATUS]
+
+    appStatus = await getAppStatus(jobCount)
 
     showCurrentView()
 }
@@ -237,7 +249,10 @@ function pollScrapeStatus() {
     }
     pollScrapeInterval = setInterval(async () => {
         await loadDataAndUpdateView(false)
-        if (scraperStatus?.stage !== undefined && terminalScrapeStages.includes(scraperStatus.stage)) {
+        if (
+            scraperStatus?.stage !== undefined &&
+            terminalScrapeStages.includes(scraperStatus.stage)
+        ) {
             clearInterval(pollScrapeInterval)
         }
     }, 3000)
@@ -246,16 +261,13 @@ function pollScrapeStatus() {
 // global vars
 let pollScrapeInterval: undefined | number = undefined
 let scraperStatus: null | {
-    stage: ScrapeStage,
-    stageProgress: 0,
-    stageTarget: 1,
+    stage: ScrapeStage
+    stageProgress: 0
+    stageTarget: 1
 } = null
 let jobCount = 0
 let companyCount = 0
-let lastScrapeAt = ''
-let lastScrapeHeartbeatAt = ''
-let lastSuccessfulScrapeAt = ''
-let lastScrapeStatus: ScrapeStatus | undefined = undefined
+let appStatus: AppStatusOverview
 
 // state
 let isSettingsOpen = false
@@ -280,50 +292,64 @@ async function main() {
 }
 
 main().then()
-updateBadge().then()
 
-$(".scrape-main-button").on( "click", async function() {
+async function clearLastScrapeStatus() {
+    await setSyncStorageByKey(UserSyncStorageKeys.LAST_SCRAPE_STATUS, '')
+    await setSyncStorageByKey(UserSyncStorageKeys.LAST_SCRAPE_HEARTBEAT_AT, '')
+    await setSyncStorageByKey(UserSyncStorageKeys.LAST_SCRAPE_INITIATED_AT, '')
+}
+
+$('.scrape-main-button').on('click', async function () {
     console.log('Triggering scrape main event')
     initiatedScrape = true
     showCurrentView()
     pollScrapeStatus()
     await trySendMessageToWaterlooWorks('scrape')
-});
+})
 
-$("#scrape-failed-button").on( "click", async function() {
+$('#scrape-failed-button').on('click', async function () {
     console.log('Returning to main screen')
     initiatedScrape = false
     showCurrentView()
-});
+})
 
-$("#settings-button").on( "click", async function() {
+$('#settings-button').on('click', async function () {
     console.log('Toggling settings')
     isSettingsOpen = !isSettingsOpen
     showCurrentView()
     await loadDataAndUpdateView(true, false)
-});
+})
 
-$("#import-data-button").on( "click", async function() {
+$('#import-data-button').on('click', async function () {
     console.log('Importing data')
     openJsonPicker(JSON_PICKER_KEY)
-});
-setupJsonPickerHandler(JSON_PICKER_KEY, async function(contentObj) {
+})
+setupJsonPickerHandler(JSON_PICKER_KEY, async function (contentObj) {
     console.log('Received imported data')
+    await clearLocalStorage()
+    await clearLastScrapeStatus()
     await setLocalStorage(contentObj)
     await loadDataAndUpdateView(true, false)
     console.log('Done importing data')
 })
 
-$("#export-data-button").on( "click", async function() {
+$('#export-data-button').on('click', async function () {
     console.log('Importing data')
     await exportJSON()
-});
+})
 
-$("#clear-data-button").on( "click", async function() {
+$('#clear-data-button').on('click', async function () {
     console.log('Clearing data')
     await clearLocalStorage()
+    await clearLastScrapeStatus()
     await loadDataAndUpdateView(true, false)
-});
+})
+
+$('.last-scrape-error-icon').on('click', async function () {
+    console.log('Clearing last scrape status')
+    await clearLastScrapeStatus()
+    await loadDataAndUpdateView(false, false)
+})
 
 addLocalStorageListener(async function (changes) {
     jobCount = await getJobCount()

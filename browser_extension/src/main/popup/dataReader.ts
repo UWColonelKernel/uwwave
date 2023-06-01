@@ -1,7 +1,5 @@
 import $ from 'jquery'
-import {
-    getLocalStorage,
-} from '../common/storage'
+import { getLocalStorage } from '../common/storage'
 import { JOB_DATA_IDENTIFIERS } from '../shared/job'
 import { JobBoard } from '../shared/jobBoard'
 import { DIVISION_DATA_IDENTIFIER } from '../shared/company'
@@ -54,7 +52,10 @@ export async function exportJSON() {
     })
 }
 
-export function setupJsonPickerHandler(key: string, callback: (contentObj: any) => void) {
+export function setupJsonPickerHandler(
+    key: string,
+    callback: (contentObj: any) => void,
+) {
     const picker = $(`#${key}`)
     picker.change(function (e) {
         // getting a hold of the file reference

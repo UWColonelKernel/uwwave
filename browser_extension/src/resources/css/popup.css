@@ -221,3 +221,11 @@ button, a {
     margin-bottom: -4px;
     margin-right: -8px;
 }
+
+.last-scrape-error-label {
+    color: red;
+}
+
+.last-scrape-error-icon {
+    cursor: pointer;
+}
