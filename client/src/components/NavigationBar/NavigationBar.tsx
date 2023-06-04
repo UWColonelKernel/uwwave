@@ -29,7 +29,7 @@ const StyledLink = styled(Link)`
 
 const LogoWrapper = styled.div`
   display: flex;
-  align-items: left;
+  align-items: start;
   flex-grow: 1;
 `
 
