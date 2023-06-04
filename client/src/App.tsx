@@ -45,6 +45,7 @@ export const App = () => {
         if (result) {
           setExtensionData(result)
           console.info('Successfully set extension data.')
+          setIsDataReady(true)
         } else {
           console.warn(
             'Expected extension callback to return a result, but no result was returned',
@@ -58,7 +59,6 @@ export const App = () => {
     console.info(
       `Extension data updated: ${Object.values(extensionData).length}`,
     )
-    setIsDataReady(true)
   }, [extensionData])
 
   return (

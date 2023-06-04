@@ -89,7 +89,7 @@ const SearchBarJobsListInner = (props: ISearchBarJobsListInner) => {
     <MainWrapper>
       <form
         onSubmit={(event: FormEvent<HTMLFormElement>) => {
-          event.preventDefault
+          event.preventDefault()
           handleSubmit()
         }}
       >
