@@ -1,4 +1,4 @@
-const DIVISION_DATA_IDENTIFIER = 'division_'
+export const DIVISION_DATA_IDENTIFIER = 'division_'
 
 export interface HireHistory {
   term: string
