@@ -48,7 +48,7 @@ export const getSearchTypeField = (type: SearchTypes) => {
     case SearchTypes.RequiredSkills:
       return 'requiredSkills'
     case SearchTypes.Industry:
-      return 'industry_tags'
+      return 'industryTag'
     default:
       return ''
   }

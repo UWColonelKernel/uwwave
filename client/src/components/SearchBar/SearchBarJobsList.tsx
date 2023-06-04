@@ -12,7 +12,7 @@ import { SearchTypes, getSearchTypeName, getSearchTypeIcon } from 'util/search'
 import MUIButton from '@mui/material/Button'
 
 // Interfaces
-interface ISearchChip {
+export interface ISearchChip {
   searchType: SearchTypes
   searchVal: string
 }

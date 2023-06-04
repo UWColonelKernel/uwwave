@@ -1,12 +1,11 @@
-import React, { useEffect } from 'react'
+/* eslint-disable react/no-this-in-sfc */
+import React, { useEffect, useState } from 'react'
 
 import Box from '@mui/material/Box'
-// import { SearchBarJobsList } from 'components/SearchBar/variants/SearchBarJobsList'
-// import {
-//   convertRawJobsForJobList,
-//   convertRawJobsForJobListFilter,
-//   convertRawJobsForJobListSearch,
-// } from 'util/extension_adapter'
+import {
+  SearchBarJobsList,
+  ISearchChip,
+} from 'components/SearchBar/SearchBarJobsList'
 import {
   DataGrid,
   GridColDef,
@@ -17,14 +16,13 @@ import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import Link from '@mui/material/Link'
 import Container from '@mui/material/Container'
-// import lunr from 'lunr'
-// import { getSearchTypeField, SearchTypes } from 'util/search/search'
-// import Filter from 'components/SearchBar/Filter'
+import lunr from 'lunr'
+import { getSearchTypeField, SearchTypes } from 'util/search'
 import Chip from '@mui/material/Chip'
+// import Filter from 'components/SearchBar/Filter'
 
 // import { getFilterUniqueValuesByCategory, isJobMatched } from 'util/filter_job'
 // import JOB_TAGS_FILE from '../ww_data_tags_industry.json' // TODO load this from somewhere else or generate it with a function
-// import { buildExtensionApiListener } from '../util/extension_api'
 import { JobBoard } from 'src/shared/extension/jobBoard'
 import { NavigationBar } from 'src/components/NavigationBar/NavigationBar'
 import { Color } from '../styles/color'
@@ -172,14 +170,73 @@ export default function JobsListPage({ jobs, loading }: JobsPageProps) {
     document.title = 'Wave - Jobs List'
   }, [])
 
+  const [jobsList, setJobsList] = useState<any>({})
+  const [displayJobs, setDisplayJobs] = useState<JobsPageRowData[]>(jobs)
+  const [searchChips, setSearchChips] = useState<ISearchChip[]>([])
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  const [searchIndex, setSearchIndex] = useState(lunr(() => {}))
+
   const [pageSize, setPageSize] = React.useState(10)
+
+  useEffect(() => {
+    const newJobsList: any = {}
+
+    jobs.forEach(job => {
+      newJobsList[job.id] = {
+        ...job,
+      }
+    })
+    setJobsList(newJobsList)
+  }, [jobs])
+
+  useEffect(() => {
+    setSearchIndex(
+      // eslint-disable-next-line func-names
+      lunr(function (this: lunr) {
+        this.ref('id')
+        Object.values(SearchTypes).forEach(type => {
+          typeof type === 'number' && this.field(getSearchTypeField(type))
+        }, this)
+
+        Object.values(jobsList).forEach(job => {
+          this.add(job)
+        })
+      }),
+    )
+  }, [jobsList])
+
+  useEffect(() => {
+    let queryString = ''
+    searchChips.forEach(chip => {
+      if (queryString !== '') {
+        queryString += ' '
+      }
+      queryString += '+'
+      const typeName = getSearchTypeField(chip.searchType)
+      if (typeName !== '') {
+        queryString += `${typeName}:`
+      }
+      queryString += chip.searchVal
+    })
+
+    let newJobs: JobsPageRowData[] = Object.values(jobsList)
+    if (queryString !== '') {
+      const searchRankings = searchIndex.search(queryString)
+      newJobs = searchRankings.map((searchResult: any) => {
+        return jobsList[searchResult.ref]
+      })
+    }
+
+    setDisplayJobs(newJobs)
+  }, [jobsList, searchIndex, searchChips])
 
   return (
     <>
       <NavigationBar />
       <Container>
         <Box sx={{ m: 2 }}>
-          {/* <SearchBarJobsList onSearchUpdated={setSearchChips} /> */}
+          <SearchBarJobsList onSearchUpdated={setSearchChips} />
           {/*
             Need to pass in filters from calling filter_jobs
         */}
@@ -187,7 +244,7 @@ export default function JobsListPage({ jobs, loading }: JobsPageProps) {
         </Box>
         <Box sx={{ width: 'calc(100% - 32px)', m: 2, mb: 0 }}>
           <DataGrid
-            rows={jobs}
+            rows={displayJobs}
             columns={columns}
             pageSize={pageSize}
             loading={loading}
