@@ -13,6 +13,7 @@ import {
 } from 'src/util/jobsList'
 import { JobBoard } from 'src/shared/extension/jobBoard'
 import { Setup } from 'src/views/Setup'
+import { useAppDispatch, useAppSelector } from 'src/hooks'
 import { SpecificJobPage } from './views/SpecificJobPage/SpecificJobPage'
 import { AboutPage } from './views/AboutPage'
 
@@ -22,9 +23,15 @@ const theme = createTheme({
   },
 })
 
+const setStateAction = (state: any) => {
+  return { type: 'SET_STATE', payload: state }
+}
+
 export const App = () => {
+  const extensionData = useAppSelector(state => state)
+  const setExtensionData = useAppDispatch()
+
   const [isDataReady, setIsDataReady] = useState(false)
-  const [extensionData, setExtensionData] = useState({})
   const coopJobsListPageRows = useMemo(
     () => buildCoopJobsListFromExtensionData(extensionData),
     [extensionData],
@@ -35,6 +42,7 @@ export const App = () => {
   )
 
   useEffect(() => {
+    console.log(extensionData)
     return sendMessageOnLoadAndSetupListenerHook(
       {
         id: ListenerId.allExtensionLocalStorage,
@@ -43,7 +51,7 @@ export const App = () => {
       result => {
         console.info('Received callback to get extension data.')
         if (result) {
-          setExtensionData(result)
+          setExtensionData(setStateAction(result))
           console.info('Successfully set extension data.')
         } else {
           console.warn(
@@ -93,7 +101,7 @@ export const App = () => {
                 element={<SpecificJobPage jobs={extensionData} />}
               />
               {/* <Route path = '/login' element={<LoginPage />} />
-              <Route path = '/jobs/:jobId' element={<Job/>} /> */}
+                <Route path = '/jobs/:jobId' element={<Job/>} /> */}
               <Route path="/about-us" element={<AboutPage />} />
               <Route path="/setup" element={<Setup />} />
             </Routes>
