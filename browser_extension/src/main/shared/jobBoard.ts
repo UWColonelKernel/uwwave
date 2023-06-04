@@ -1,6 +1,3 @@
-import { getSyncStorage } from '../common/storage'
-import { UserSyncStorageKeys } from './userProfile'
-
 export enum JobBoard {
     coop,
     fulltime,

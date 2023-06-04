@@ -24,13 +24,16 @@ import { updateBadge } from '../common/icon'
 import {
     AppStatusOverview,
     DataStatus,
-    getJobBoardSetting,
-    getTargetSearchActionSetting,
     ScrapeStatus,
     TargetSearchAction,
     UserSyncStorageKeys,
 } from '../shared/userProfile'
-import { getAppStatus, warningDataStatuses } from '../common/appStatus'
+import {
+    getAppStatus,
+    getJobBoardSetting,
+    getTargetSearchActionSetting,
+    warningDataStatuses,
+} from '../common/appStatus'
 import { JobBoard } from '../shared/jobBoard'
 
 enum BackgroundColors {

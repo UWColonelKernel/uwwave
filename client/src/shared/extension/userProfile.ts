@@ -1,5 +1,3 @@
-import { BadgeIconName } from '../common/icon'
-
 export const DAYS_TO_STALE_DATA = 2
 export const MINUTES_TO_FAILED_SCRAPE = 1
 
@@ -13,6 +11,21 @@ export enum UserSyncStorageKeys {
 
 export enum LocalStorageMetadataKeys {
   SCRAPE_AT = 'SCRAPE_AT',
+}
+
+export enum TargetSearchAction {
+  FOR_MY_PROGRAM = 'FOR_MY_PROGRAM',
+  DEFAULT_SEARCH = 'DEFAULT_SEARCH',
+  VIEWED = 'VIEWED',
+}
+
+export enum BadgeIconName {
+  error = 'error',
+  warning = 'warning',
+  ok = 'good-2-go',
+  loading = 'loading',
+  greyIcon = 'non-scrape',
+  blueIcon = 'wave-icon',
 }
 
 export enum ScrapeStatus {

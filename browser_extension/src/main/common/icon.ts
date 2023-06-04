@@ -2,6 +2,7 @@ import { action } from 'webextension-polyfill'
 import { ExtensionResource, getResourceUrl } from './runtime'
 import { getAppStatus } from './appStatus'
 import { getJobCount } from '../popup/dataReader'
+import { BadgeIconName } from '../shared/userProfile'
 
 async function setBadgeText() {
     await action.setBadgeText({ text: 'x' })
@@ -24,15 +25,6 @@ async function setBadgeIcon(iconName: BadgeIconName) {
             ),
         },
     })
-}
-
-export enum BadgeIconName {
-    error = 'error',
-    warning = 'warning',
-    ok = 'good-2-go',
-    loading = 'loading',
-    greyIcon = 'non-scrape',
-    blueIcon = 'wave-icon',
 }
 
 export async function updateBadge(jobCount?: number) {
