@@ -34,7 +34,7 @@
           When you're ready, click on the button below to begin the scraping and setup process.
         </h2>
         <button class='button scrape-main-button' style='margin-top: 4px'>
-          Scrape Co-op Jobs
+          Scrape Jobs
         </button>
         <span class='last-scrape-error-label'>
           <br>
@@ -106,7 +106,7 @@
           Quick access
         </h2>
         <button id='general-scrape-button' class='button scrape-main-button'>
-          Scrape Co-op Jobs
+          Scrape Jobs
         </button>
         <a id='general-ww-button' class='button' href='https://waterlooworks.uwaterloo.ca/waterloo.htm?action=login' target='_blank'>
           Open WaterlooWorks
@@ -130,7 +130,7 @@
       <div id='settings'>
         <h1>UW Wave</h1>
         <p>Version: <span id='version-number'></span></p>
-        <p>Jobs scraped: <span id='job-count'></span></p>
+        <p><span id='job-board-label'></span> Jobs scraped: <span id='job-count'></span></p>
         <p>Companies scraped: <span id='company-count'></span></p>
         <span class='last-scrape-error-label'>
           <span class='last-scrape-error-label-text'></span>
@@ -146,6 +146,22 @@
         <button id='clear-data-button' class='button button-rect'>
           Clear
         </button>
+        <p>
+          <span>Target search action: </span>
+          <select id="target-search-select">
+            <option value="FOR_MY_PROGRAM">For My Program</option>
+            <option value="DEFAULT_SEARCH">Default Search</option>
+            <option value="VIEWED">Viewed</option>
+          </select>
+        </p>
+        <p>
+          <span>Job board: </span>
+          <select id="job-board-select">
+            <option value="0">Co-op</option>
+            <option value="1">Full-time</option>
+            <option value="2">Other</option>
+          </select>
+        </p>
       </div>
     </div>
   </div>

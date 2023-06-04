@@ -3,7 +3,6 @@ import * as browser from 'webextension-polyfill'
 import {
     addLocalStorageListener,
     clearLocalStorage,
-    getLocalStorage,
     getSyncStorage,
     setLocalStorage,
     setSyncStorageByKey,
@@ -25,12 +24,14 @@ import { updateBadge } from '../common/icon'
 import {
     AppStatusOverview,
     DataStatus,
-    LocalStorageMetadataKeys,
+    getJobBoardSetting,
+    getTargetSearchActionSetting,
     ScrapeStatus,
+    TargetSearchAction,
     UserSyncStorageKeys,
 } from '../shared/userProfile'
-import moment from 'moment'
 import { getAppStatus, warningDataStatuses } from '../common/appStatus'
+import { JobBoard } from '../shared/jobBoard'
 
 enum BackgroundColors {
     GREY = 'grey-bg',
@@ -87,6 +88,29 @@ function isScrapeActive() {
         scraperStatus?.stage !== undefined &&
         !waitingScrapeStages.includes(scraperStatus.stage)
     )
+}
+
+async function updateSettingSelections() {
+    // dropdowns
+    const targetSearchAction = await getTargetSearchActionSetting()
+    $('#target-search-select').val(targetSearchAction)
+
+    const targetJobBoard = await getJobBoardSetting()
+    $('#job-board-select').val(targetJobBoard)
+
+    let jobBoardLabel = ''
+    switch (targetJobBoard) {
+        case JobBoard.coop:
+            jobBoardLabel = 'Co-op'
+            break
+        case JobBoard.fulltime:
+            jobBoardLabel = 'Full-time'
+            break
+        case JobBoard.other:
+            jobBoardLabel = 'Other'
+            break
+    }
+    $('#job-board-label').text(jobBoardLabel)
 }
 
 function showCurrentView() {
@@ -148,7 +172,10 @@ function showCurrentView() {
         if (scraperStatus?.stage === ScrapeStage.failed) {
             setBgColor(BackgroundColors.RED)
             showView(Views.WW_SCRAPE_FAILED)
-        } else if (scraperStatus?.stage === ScrapeStage.finished) {
+        } else if (
+            scraperStatus?.stage === ScrapeStage.finished &&
+            appStatus.scrapeStatus === ScrapeStatus.COMPLETED
+        ) {
             setBgColor(BackgroundColors.GREEN)
             showView(Views.WW_SCRAPE_COMPLETED)
         } else {
@@ -207,14 +234,8 @@ function updateProgressBar() {
         case ScrapeStage.standby:
             newMessage = 'Starting...'
             break
-        case ScrapeStage.defaultSearch:
-            newMessage = 'Fetching all jobs...'
-            break
-        case ScrapeStage.forMyProgram:
-            newMessage = 'Tagging ForMyProgram jobs...'
-            break
-        case ScrapeStage.viewed:
-            newMessage = 'Fetching all viewed jobs...'
+        case ScrapeStage.jobPostings:
+            newMessage = 'Fetching jobs...'
             break
         case ScrapeStage.workTermRatings:
             newMessage = 'Fetching company ratings...'
@@ -239,6 +260,8 @@ async function loadDataAndUpdateView(
     }
 
     appStatus = await getAppStatus(jobCount)
+
+    await updateSettingSelections()
 
     showCurrentView()
 }
@@ -302,6 +325,11 @@ async function clearLastScrapeStatus() {
 $('.scrape-main-button').on('click', async function () {
     console.log('Triggering scrape main event')
     initiatedScrape = true
+    if (scraperStatus) {
+        scraperStatus.stage = ScrapeStage.standby
+        scraperStatus.stageProgress = 0
+        scraperStatus.stageTarget = 1
+    }
     showCurrentView()
     pollScrapeStatus()
     await trySendMessageToWaterlooWorks('scrape')
@@ -353,4 +381,21 @@ $('.last-scrape-error-icon').on('click', async function () {
 
 addLocalStorageListener(async function (changes) {
     jobCount = await getJobCount()
+})
+
+$('#target-search-select').on('change', async function () {
+    const val = $('#target-search-select').val()
+    await setSyncStorageByKey(
+        UserSyncStorageKeys.SETTING_TARGET_SEARCH_ACTION,
+        val,
+    )
+})
+
+$('#job-board-select').on('change', async function () {
+    const val = $('#job-board-select').val()
+    await setSyncStorageByKey(
+        UserSyncStorageKeys.SETTING_TARGET_JOB_BOARD,
+        Number(val),
+    )
+    await loadDataAndUpdateView(true, false)
 })
