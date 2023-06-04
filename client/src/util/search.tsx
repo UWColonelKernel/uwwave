@@ -4,6 +4,7 @@ import NotesIcon from '@mui/icons-material/Notes'
 import HandshakeIcon from '@mui/icons-material/Handshake'
 import StarBorderPurple500Icon from '@mui/icons-material/StarBorderPurple500'
 import FactoryIcon from '@mui/icons-material/Factory'
+import ContactSupportIcon from '@mui/icons-material/ContactSupport'
 
 export enum SearchTypes {
   'All' = 0,
@@ -68,6 +69,6 @@ export const getSearchTypeIcon = (type: SearchTypes) => {
     case SearchTypes.Industry:
       return <FactoryIcon />
     default:
-      return null
+      return <ContactSupportIcon />
   }
 }
