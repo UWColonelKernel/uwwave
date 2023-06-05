@@ -126,6 +126,12 @@ export const SearchBarJobsList = (props: ISearchBarJobsList) => {
   }
 
   const onSearch = (val: string, type: SearchTypes) => {
+    const searchVal = val.trim()
+
+    if (!searchVal) {
+      return ''
+    }
+
     const newChip: ISearchChip = {
       searchVal: val,
       searchType: type,
