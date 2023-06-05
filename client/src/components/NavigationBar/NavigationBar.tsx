@@ -42,14 +42,6 @@ const pages: PageItem[] = [
     pageName: 'Jobs List',
     pageUrl: '/jobs',
   },
-  {
-    pageName: 'Companies',
-    pageUrl: '/companies',
-  },
-  {
-    pageName: 'About Us',
-    pageUrl: '/about-us',
-  },
 ]
 
 export const NavigationBar = (props: INavigationBar) => {

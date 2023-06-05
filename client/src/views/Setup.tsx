@@ -7,6 +7,7 @@ import { SetupStepper } from 'src/components/Stepper/SetupStepper'
 import { useState } from 'react'
 import Paper from '@mui/material/Paper'
 import { PrimaryButton } from 'src/components/Buttons/PrimaryButton'
+import { BackgroundColor } from 'src/styles/color'
 
 const Step2 = () => {
   return (
@@ -59,7 +60,7 @@ const Step4 = () => {
 }
 
 export const Setup = () => {
-  const [step] = useState(3)
+  const [step] = useState(1)
   const steps = [
     'Discover Wave',
     'Download The Extension',
@@ -105,12 +106,7 @@ const WaterWrapper = styled.div`
   align-items: center;
   flex-direction: column;
   width: 100%;
-  background: linear-gradient(
-    153.7deg,
-    #058dda 32.98%,
-    #004aa0 53.06%,
-    #032544 81.36%
-  );
+  background: ${BackgroundColor.darker};
   min-height: 100vh;
 `
 
@@ -121,5 +117,10 @@ const MainPaper = styled(Paper)`
     flex-direction: column;
     align-items: center;
     min-width: 300px;
+    background-color: ${BackgroundColor.dark};
+  }
+
+  && .MuiTypography-root {
+    color: white;
   }
 `
