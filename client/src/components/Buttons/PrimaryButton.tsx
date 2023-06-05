@@ -1,20 +1,18 @@
-import Fab from '@mui/material/Fab'
 import styled from 'styled-components'
+import Fab from '@mui/material/Fab'
+import { Color } from 'src/styles/color'
 
 export const PrimaryButton = styled(Fab).attrs({
   variant: 'extended',
-  size: 'medium',
 })`
   && {
     color: white;
-    background: linear-gradient(
-      135.34deg,
-      #00c2ff 15.92%,
-      #0082d5 49.59%,
-      #0145ac 82.57%
-    );
+    background-color: ${Color.primaryButton}!important;
     font-weight: bold;
     margin: auto;
     min-width: 180px;
+    padding-left: 24px;
+    padding-right: 24px;
+    box-shadow: 3px 4px ${Color.primaryButtonShadow};
   }
 `

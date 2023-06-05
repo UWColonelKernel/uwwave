@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { Color } from 'styles/color'
+import { BackgroundColor, Color } from 'styles/color'
 import FacebookIcon from '@mui/icons-material/Facebook'
 import InstagramIcon from '@mui/icons-material/Instagram'
 import TwitterIcon from '@mui/icons-material/Twitter'
@@ -9,8 +9,11 @@ import MUITypography from '@mui/material/Typography'
 import { Typography } from '../MUI/Typography'
 import { Spacer } from '../Spacer/Spacer'
 
-const FooterWrapper = styled.div`
-  background-color: #061e39;
+interface IFooterWrapper {
+  color: string
+}
+const FooterWrapper = styled.div<IFooterWrapper>`
+  background-color: ${props => props.color};
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -51,9 +54,13 @@ const IconWrapper = styled.div`
 `
 
 export const Footer = () => {
+  const useDarkFooter =
+    window.location.pathname === '/' || window.location.pathname === '/about-us'
   return (
     <>
-      <FooterWrapper>
+      <FooterWrapper
+        color={useDarkFooter ? BackgroundColor.darker : BackgroundColor.dark}
+      >
         {/* Weird font bug, need to wrap link with typography: https://mui.com/material-ui/api/link */}
         <MUITypography>
           <StyledLink
@@ -74,16 +81,6 @@ export const Footer = () => {
             underline="none"
           >
             Jobs List
-          </StyledLink>
-        </MUITypography>
-        <Spacer height={16} />
-        <MUITypography>
-          <StyledLink
-            href="/companies"
-            color={Color.textPrimary}
-            underline="none"
-          >
-            Companies
           </StyledLink>
         </MUITypography>
         <Spacer height={16} />

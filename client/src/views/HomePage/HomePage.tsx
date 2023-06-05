@@ -19,6 +19,8 @@ import Divider from '@mui/material/Divider'
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
 import StarIcon from '@mui/icons-material/Star'
 import SearchIcon from '@mui/icons-material/Search'
+import { BackgroundColor, Color } from 'src/styles/color'
+import { PrimaryButton } from 'src/components/Buttons/PrimaryButton'
 
 export const HomePage = () => {
   const renderDummySearchBar = () => (
@@ -100,12 +102,12 @@ export const HomePage = () => {
           <StatsWrapper>
             <Pillar>
               <InnerPillar1>
-                <MoneyIcon />
+                <RatingIcon />
               </InnerPillar1>
             </Pillar>
             <Pillar>
               <InnerPillar2>
-                <RatingIcon />
+                <MoneyIcon />
               </InnerPillar2>
             </Pillar>
             <Pillar>
@@ -125,18 +127,20 @@ export const HomePage = () => {
         <Container>
           <Spacer height={64} />
           <Title>
-            Life could be
-            <br /> a Dream
+            The Ultimate <br /> Waterloo Works Companion
           </Title>
           <Spacer height={16} />
           <SubTitleWrapper>
             <UwaterlooLogo />
             <Spacer width={8} />
-            <SubTitle>The Ultimate Companion App for Waterloo Works</SubTitle>
+            <SubTitle>
+              {' '}
+              Browse Jobs, Salaries and Reviews with Upgraded Search
+            </SubTitle>
           </SubTitleWrapper>
           <Spacer height={64} />
           <Center>
-            <CTAButton>Get Started</CTAButton>
+            <PrimaryButton href="/setup">Get Started</PrimaryButton>
           </Center>
           <Spacer height={64} />
           <Center>{renderDummySearchBar()}</Center>
@@ -161,12 +165,7 @@ const Hero = styled(Container)`
 `
 const HeroWrapper = styled.div`
   width: 100%;
-  background: linear-gradient(
-    153.7deg,
-    #058dda 32.98%,
-    #004aa0 53.06%,
-    #032544 81.36%
-  );
+  background: ${BackgroundColor.dark};
   min-height: 100vh;
 `
 
@@ -194,19 +193,6 @@ const SubTitleWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-`
-
-const CTAButton = styled(Fab).attrs({
-  variant: 'extended',
-})`
-  && {
-    color: black;
-    background-color: white;
-    font-weight: bold;
-    margin: auto;
-    min-width: 180px;
-    box-shadow: 6px 6px rgba(7, 20, 30, 1);
-  }
 `
 
 const Center = styled.div`
@@ -294,7 +280,7 @@ const InnerPillar1 = styled.div`
   height: 45px;
   width: 16px;
   border-radius: 16px;
-  background-color: #00c2ff;
+  background-color: ${Color.rating};
   flex-direction: column-reverse;
   display: flex;
   align-items: center;
@@ -304,7 +290,7 @@ const InnerPillar2 = styled.div`
   height: 54px;
   width: 16px;
   border-radius: 16px;
-  background-color: #0082d5;
+  background-color: ${Color.salary};
   flex-direction: column-reverse;
   display: flex;
   align-items: center;
@@ -314,7 +300,7 @@ const InnerPillar3 = styled.div`
   height: 30px;
   width: 16px;
   border-radius: 16px;
-  background-color: #0145ac;
+  background-color: ${Color.compatibility};
   flex-direction: column-reverse;
   display: flex;
   align-items: center;

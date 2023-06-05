@@ -5,6 +5,7 @@ import { Typography } from 'src/components/MUI/Typography'
 import { Spacer } from 'src/components/Spacer/Spacer'
 import Paper from '@mui/material/Paper'
 import { PrimaryButton } from 'src/components/Buttons/PrimaryButton'
+import { BackgroundColor, Color } from 'src/styles/color'
 
 export const AboutPage = () => {
   return (
@@ -13,24 +14,24 @@ export const AboutPage = () => {
       <Container>
         <MainWrapper>
           <Spacer height={64} />
-          <Typography>
+          <Typography variant="h6">
             uwWave is a Capstone Project lead by a team of SE24s
           </Typography>
           <Spacer height={64} />
-          <Typography variant="h5">
+          <Typography variant="h4">
             <b>Meet The Team</b>
           </Typography>
-          <Spacer height={64} />
+          <Spacer height={32} />
         </MainWrapper>
       </Container>
       <WaterWrapper>
         <Container>
           <MainWrapper>
-            <Spacer height={32} />
+            <Spacer height={64} />
             <PicturesRow>
               <ProfileWrapper>
                 <RelativeWrapper>
-                  <ProfileImageBackground color="#0145AC" />
+                  <ProfileImageBackground color={Color.rating} />
                   <ProfileImageWrapper imageURL="bryan.png" />
                 </RelativeWrapper>
                 <Spacer height={4} />
@@ -42,7 +43,7 @@ export const AboutPage = () => {
               </ProfileWrapper>
               <ProfileWrapper>
                 <RelativeWrapper>
-                  <ProfileImageBackground color="#00C2FF" />
+                  <ProfileImageBackground color={Color.salary} />
                   <ProfileImageWrapper imageURL="michelle.png" />
                 </RelativeWrapper>
                 <Spacer height={4} />
@@ -54,7 +55,7 @@ export const AboutPage = () => {
               </ProfileWrapper>
               <ProfileWrapper>
                 <RelativeWrapper>
-                  <ProfileImageBackground color="#0145AC" />
+                  <ProfileImageBackground color={Color.compatibility} />
                   <ProfileImageWrapper imageURL="william.png" />
                 </RelativeWrapper>
                 <Spacer height={4} />
@@ -69,7 +70,7 @@ export const AboutPage = () => {
             <PicturesRow>
               <ProfileWrapper>
                 <RelativeWrapper>
-                  <ProfileImageBackground color="#00C2FF" />
+                  <ProfileImageBackground color={Color.rating} />
                   <ProfileImageWrapper imageURL="linda.png" />
                 </RelativeWrapper>
                 <Spacer height={4} />
@@ -82,7 +83,7 @@ export const AboutPage = () => {
 
               <ProfileWrapper>
                 <RelativeWrapper>
-                  <ProfileImageBackground color="#00C2FF" />
+                  <ProfileImageBackground color={Color.salary} />
                   <ProfileImageWrapper imageURL="andrew.png" />
                 </RelativeWrapper>
                 <Spacer height={4} />
@@ -116,7 +117,7 @@ export const AboutPage = () => {
             <PicturesRow>
               <ProfileWrapper>
                 <RelativeWrapper>
-                  <ProfileImageBackground color="#00C2FF" />
+                  <ProfileImageBackground color={Color.rating} />
                   <ProfileImageWrapper imageURL="yiwei.png" />
                 </RelativeWrapper>
                 <Spacer height={4} />
@@ -127,6 +128,7 @@ export const AboutPage = () => {
                 <Name>Backend</Name>
               </ProfileWrapper>
             </PicturesRow>
+            <Spacer height={64} />
           </MainWrapper>
         </Container>
       </WaterWrapper>
@@ -145,12 +147,7 @@ const WaterWrapper = styled.div`
   align-items: center;
   flex-direction: column;
   width: 100%;
-  background: linear-gradient(
-    153.7deg,
-    #058dda 32.98%,
-    #004aa0 53.06%,
-    #032544 81.36%
-  );
+  background: ${BackgroundColor.dark};
   min-height: 100vh;
 `
 
@@ -216,5 +213,10 @@ const ContactPaper = styled(Paper).attrs({
     display: flex;
     flex-direction: column;
     align-items: center;
+    background-color: ${BackgroundColor.darker};
+  }
+
+  && .MuiTypography-root {
+    color: white;
   }
 `
