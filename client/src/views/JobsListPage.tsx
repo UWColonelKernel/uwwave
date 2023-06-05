@@ -1,6 +1,11 @@
 import React, { useEffect } from 'react'
-
+import { Typography } from 'src/components/MUI/Typography'
+import { Spacer } from 'src/components/Spacer/Spacer'
 import Box from '@mui/material/Box'
+import styled from 'styled-components'
+import moment from 'moment/moment'
+import warningIcon from 'components/Icons/warning_icon.svg'
+
 // import { SearchBarJobsList } from 'components/SearchBar/variants/SearchBarJobsList'
 // import {
 //   convertRawJobsForJobList,
@@ -13,7 +18,6 @@ import {
   GridColumnHeaderParams,
   GridToolbar,
 } from '@mui/x-data-grid'
-import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import Link from '@mui/material/Link'
 import Container from '@mui/material/Container'
@@ -27,6 +31,7 @@ import Chip from '@mui/material/Chip'
 // import { buildExtensionApiListener } from '../util/extension_api'
 import { JobBoard } from 'src/shared/extension/jobBoard'
 import { NavigationBar } from 'src/components/NavigationBar/NavigationBar'
+import { DAYS_TO_STALE_DATA } from 'src/shared/extension/userProfile'
 import { Color } from '../styles/color'
 
 export interface JobsPageRowData {
@@ -50,6 +55,7 @@ export interface JobsPageProps {
   jobs: JobsPageRowData[]
   jobBoard: JobBoard
   loading: boolean
+  dateScraped: string
 }
 
 const headerComponent = (
@@ -74,7 +80,7 @@ const columns: GridColDef<JobsPageRowData>[] = [
           {rowData.row.division}
           <br />
         </div>
-        <div style={{ color: 'blue', fontSize: '0.7rem' }}>
+        <div style={{ color: 'black', fontSize: '0.7rem' }}>
           {rowData.row.city}
           {rowData.row.city && rowData.row.country && ', '}
           {rowData.row.country}
@@ -90,15 +96,6 @@ const columns: GridColDef<JobsPageRowData>[] = [
     renderCell: rowData => (
       <div style={{ margin: '2px' }}>
         <a href={`/jobs/${rowData.id}`}>{rowData.row.jobName}</a>
-        <br />
-        <Chip
-          size="small"
-          label={`Industry: ${rowData.row.industryTag}`}
-          key={rowData.row.industryTag}
-          sx={{
-            margin: '2px',
-          }}
-        />
       </div>
     ),
   },
@@ -106,6 +103,7 @@ const columns: GridColDef<JobsPageRowData>[] = [
     field: 'keywords',
     headerName: 'Keywords',
     flex: 0.24,
+    sortable: false,
     renderHeader: headerComponent,
     renderCell: rowData => (
       <div style={{ margin: '2px' }}>
@@ -135,7 +133,7 @@ const columns: GridColDef<JobsPageRowData>[] = [
   },
   {
     field: 'appDeadline',
-    headerName: 'App Deadline',
+    headerName: 'Deadline',
     flex: 0.1,
     align: 'center',
     headerAlign: 'center',
@@ -154,7 +152,6 @@ const columns: GridColDef<JobsPageRowData>[] = [
     sortable: false,
     renderCell: rowData => (
       <>
-        <BookmarkBorderIcon sx={{ m: 0.5, color: Color.primary }} />
         <Link
           href={`https://waterlooworks.uwaterloo.ca/myAccount/co-op/coop-postings.htm?ck_jobid=${rowData.id}`}
           target="_blank"
@@ -167,53 +164,162 @@ const columns: GridColDef<JobsPageRowData>[] = [
   },
 ]
 
-export default function JobsListPage({ jobs, loading }: JobsPageProps) {
+function getTimeDiffString(timeOld: string) {
+  const timeDiffSeconds = moment().utc().diff(timeOld, 'second')
+  let timeDiffString
+  if (timeDiffSeconds === 1) {
+    // 1 s
+    timeDiffString = '1 second ago '
+  } else if (timeDiffSeconds < 60) {
+    // < 1 min in seconds
+    timeDiffString = `${moment().utc().diff(timeOld, 'second')} seconds ago `
+  } else if (timeDiffSeconds < 119) {
+    // 1 min
+    timeDiffString = '1 minute ago '
+  } else if (timeDiffSeconds < 3600) {
+    // < 1 hr in minutes
+    timeDiffString = `${moment().utc().diff(timeOld, 'minute')} minutes ago `
+  } else if (timeDiffSeconds < 7199) {
+    // 1 hr
+    timeDiffString = '1 hour ago '
+  } else if (timeDiffSeconds < 86400) {
+    // < 1 day in hours
+    timeDiffString = `${moment().utc().diff(timeOld, 'hour')} hours ago `
+  } else if (timeDiffSeconds < 172799) {
+    // 1 day
+    timeDiffString = '1 day ago '
+  } else {
+    // >= 2 days
+    timeDiffString = `${moment().utc().diff(timeOld, 'day')} days ago `
+  }
+  return timeDiffString
+}
+export default function JobsListPage({
+  jobs,
+  loading,
+  dateScraped,
+}: JobsPageProps) {
   useEffect(() => {
     document.title = 'Wave - Jobs List'
   }, [])
 
   const [pageSize, setPageSize] = React.useState(10)
+  let dataAgeMessage = ''
+
+  const isStale = moment()
+    .utc()
+    .subtract(DAYS_TO_STALE_DATA, 'day')
+    .isAfter(dateScraped)
+  dataAgeMessage = dateScraped
+    ? `Last scraped: ${getTimeDiffString(dateScraped)}`
+    : ''
 
   return (
     <>
       <NavigationBar />
       <Container>
-        <Box sx={{ m: 2 }}>
-          {/* <SearchBarJobsList onSearchUpdated={setSearchChips} /> */}
-          {/*
+        <MainWrapper>
+          <Spacer height={64} />
+          <Typography fontWeight="bold" sx={{ fontSize: '24px' }}>
+            Jobs List
+          </Typography>
+          <Typography>{jobs.length} Listings</Typography>
+          {!!dataAgeMessage && (
+            <Typography>
+              {dataAgeMessage}
+              {isStale ? (
+                <img
+                  src="components/Icons/warning_icon.svg"
+                  width="16px"
+                  alt="warning"
+                />
+              ) : (
+                <img
+                  src="components/Icons/check_icon.svg"
+                  width="16px"
+                  alt="checkMark"
+                />
+              )}
+            </Typography>
+          )}
+          <Spacer height={32} />
+        </MainWrapper>
+      </Container>
+      <WaterWrapper>
+        <Container>
+          <MainWrapper>
+            <Box sx={{ m: 2 }}>
+              {/* <SearchBarJobsList onSearchUpdated={setSearchChips} /> */}
+              {/*
             Need to pass in filters from calling filter_jobs
         */}
-          {/* <Filter onFormulaChange={setFilterFormula} filters={filterCategories} /> */}
-        </Box>
-        <Box sx={{ width: 'calc(100% - 32px)', m: 2, mb: 0 }}>
-          <DataGrid
-            rows={jobs}
-            columns={columns}
-            pageSize={pageSize}
-            loading={loading}
-            disableColumnMenu
-            onPageSizeChange={newPageSize => setPageSize(newPageSize)}
-            rowsPerPageOptions={[5, 10, 25, 50, 100]}
-            pagination
-            autoHeight
-            rowHeight={100}
-            disableSelectionOnClick
-            sx={{
-              '.MuiDataGrid-root, .MuiDataGrid-cell': {
-                whiteSpace: 'normal !important',
-                wordWrap: 'break-all !important',
-              },
-              '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows':
-                {
-                  m: 1,
-                },
-            }}
-            components={{
-              Toolbar: GridToolbar,
-            }}
-          />
-        </Box>
-      </Container>
+              {/* <Filter onFormulaChange={setFilterFormula} filters={filterCategories} /> */}
+            </Box>
+            <Box
+              sx={{
+                width: 'calc(100% - 32px)',
+                m: 2,
+                mb: 0,
+                background: 'white',
+                borderRadius: '16px',
+                padding: '16px',
+              }}
+            >
+              <DataGrid
+                disableColumnFilter
+                disableColumnSelector
+                disableDensitySelector
+                rows={jobs}
+                columns={columns}
+                pageSize={pageSize}
+                loading={loading}
+                disableColumnMenu
+                onPageSizeChange={newPageSize => setPageSize(newPageSize)}
+                rowsPerPageOptions={[5, 10, 25, 50, 100]}
+                pagination
+                autoHeight
+                rowHeight={100}
+                disableSelectionOnClick
+                sx={{
+                  '.MuiDataGrid-root, .MuiDataGrid-cell': {
+                    whiteSpace: 'normal !important',
+                    wordWrap: 'break-all !important',
+                  },
+                  '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows':
+                    {
+                      m: 1,
+                    },
+                  border: 'none',
+                }}
+                components={{
+                  Toolbar: GridToolbar,
+                }}
+              />
+            </Box>
+            <Spacer height={48} />
+          </MainWrapper>
+        </Container>
+      </WaterWrapper>
     </>
   )
 }
+
+const MainWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+`
+
+const WaterWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  background: linear-gradient(
+    153.7deg,
+    #058dda 32.98%,
+    #004aa0 53.06%,
+    #032544 81.36%
+  );
+  min-height: 100vh;
+`

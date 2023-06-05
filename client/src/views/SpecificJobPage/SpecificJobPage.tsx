@@ -37,9 +37,7 @@ type JobInfo = {
 // jobInfo: { title: string; text: string }[]
 // companyInfo: { imageURL: string; companyName: string; city: string; country:string; positionTitle: string }
 // jobId: string
-export const SpecificJobPage = (props: {
-  jobs: Record<number, JobsPageRowData>
-}) => {
+export const SpecificJobPage = (props: { jobs: Record<string, any> }) => {
   const { jobs } = props
   const [imageURL, setImageURL] = useState<string>('')
   const { jobId } = useParams()
