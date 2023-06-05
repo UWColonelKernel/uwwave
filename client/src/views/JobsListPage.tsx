@@ -209,15 +209,19 @@ export default function JobsListPage({ jobs, loading }: JobsPageProps) {
   useEffect(() => {
     let queryString = ''
     searchChips.forEach(chip => {
-      if (queryString !== '') {
-        queryString += ' '
-      }
-      queryString += '+'
+      const terms = chip.searchVal.split(' ')
       const typeName = getSearchTypeField(chip.searchType)
-      if (typeName !== '') {
-        queryString += `${typeName}:`
-      }
-      queryString += chip.searchVal
+
+      terms.forEach(term => {
+        if (queryString !== '') {
+          queryString += ' '
+        }
+        queryString += '+'
+        if (typeName !== '') {
+          queryString += `${typeName}:`
+        }
+        queryString += term
+      })
     })
 
     let newJobs: JobsPageRowData[] = Object.values(jobsList)

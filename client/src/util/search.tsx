@@ -4,8 +4,9 @@ import NotesIcon from '@mui/icons-material/Notes'
 import HandshakeIcon from '@mui/icons-material/Handshake'
 import StarBorderPurple500Icon from '@mui/icons-material/StarBorderPurple500'
 import FactoryIcon from '@mui/icons-material/Factory'
-import ContactSupportIcon from '@mui/icons-material/ContactSupport'
+import SearchIcon from '@mui/icons-material/ContactSupport'
 
+// TODO: Replace Industry with Keywords(?)
 export enum SearchTypes {
   'All' = 0,
   'JobTitle',
@@ -13,7 +14,7 @@ export enum SearchTypes {
   'JobSummary',
   'JobResponsibilities',
   'RequiredSkills',
-  'Industry',
+  // 'Industry',
 }
 
 export const getSearchTypeName = (type: SearchTypes) => {
@@ -28,8 +29,8 @@ export const getSearchTypeName = (type: SearchTypes) => {
       return 'Responsibilities'
     case SearchTypes.RequiredSkills:
       return 'Skills'
-    case SearchTypes.Industry:
-      return 'Industry'
+    // case SearchTypes.Industry:
+    //  return 'Industry'
     default:
       return 'All'
   }
@@ -47,8 +48,8 @@ export const getSearchTypeField = (type: SearchTypes) => {
       return 'jobResponsibilities'
     case SearchTypes.RequiredSkills:
       return 'requiredSkills'
-    case SearchTypes.Industry:
-      return 'industryTag'
+    // case SearchTypes.Industry:
+    //  return 'industryTag'
     default:
       return ''
   }
@@ -66,9 +67,9 @@ export const getSearchTypeIcon = (type: SearchTypes) => {
       return <HandshakeIcon />
     case SearchTypes.RequiredSkills:
       return <StarBorderPurple500Icon />
-    case SearchTypes.Industry:
-      return <FactoryIcon />
+    // case SearchTypes.Industry:
+    //  return <FactoryIcon />
     default:
-      return <ContactSupportIcon />
+      return <SearchIcon />
   }
 }
