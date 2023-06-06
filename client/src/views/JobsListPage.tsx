@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Typography } from 'src/components/MUI/Typography'
 import { Spacer } from 'src/components/Spacer/Spacer'
 import Box from '@mui/material/Box'
 import styled from 'styled-components'
 import moment from 'moment/moment'
-import warningIcon from 'components/Icons/warning_icon.svg'
+import axios from 'axios'
 
 // import { SearchBarJobsList } from 'components/SearchBar/variants/SearchBarJobsList'
 // import {
@@ -66,104 +66,6 @@ const headerComponent = (
   </strong>
 )
 
-const columns: GridColDef<JobsPageRowData>[] = [
-  {
-    field: 'companyName',
-    headerName: 'Company',
-    flex: 0.25,
-    renderHeader: headerComponent,
-    renderCell: rowData => (
-      <div style={{ margin: '2px' }}>
-        {rowData.row.companyName}
-        <br />
-        <div style={{ color: 'grey', fontSize: '0.7rem' }}>
-          {rowData.row.division}
-          <br />
-        </div>
-        <div style={{ color: 'black', fontSize: '0.7rem' }}>
-          {rowData.row.city}
-          {rowData.row.city && rowData.row.country && ', '}
-          {rowData.row.country}
-        </div>
-      </div>
-    ),
-  },
-  {
-    field: 'jobName',
-    headerName: 'Job Name',
-    flex: 0.25,
-    renderHeader: headerComponent,
-    renderCell: rowData => (
-      <div style={{ margin: '2px' }}>
-        <a href={`/jobs/${rowData.id}`}>{rowData.row.jobName}</a>
-      </div>
-    ),
-  },
-  {
-    field: 'keywords',
-    headerName: 'Keywords',
-    flex: 0.24,
-    sortable: false,
-    renderHeader: headerComponent,
-    renderCell: rowData => (
-      <div style={{ margin: '2px' }}>
-        {rowData.row.keywords &&
-          rowData.row.keywords.map(keyword => {
-            return (
-              <Chip
-                size="small"
-                label={`${keyword}`}
-                key={keyword}
-                sx={{
-                  margin: '2px',
-                }}
-              />
-            )
-          })}
-      </div>
-    ),
-  },
-  {
-    field: 'openings',
-    headerName: 'Openings',
-    flex: 0.08,
-    align: 'center',
-    headerAlign: 'center',
-    renderHeader: headerComponent,
-  },
-  {
-    field: 'appDeadline',
-    headerName: 'Deadline',
-    flex: 0.1,
-    align: 'center',
-    headerAlign: 'center',
-    renderHeader: headerComponent,
-    sortComparator: (date1: string, date2: string) =>
-      Date.parse(date1) - Date.parse(date2),
-  },
-
-  {
-    field: 'shortlistAndApply',
-    headerName: 'Actions',
-    flex: 0.08,
-    align: 'center',
-    headerAlign: 'center',
-    renderHeader: headerComponent,
-    sortable: false,
-    renderCell: rowData => (
-      <>
-        <Link
-          href={`https://waterlooworks.uwaterloo.ca/myAccount/co-op/coop-postings.htm?ck_jobid=${rowData.id}`}
-          target="_blank"
-          sx={{ m: 0.5, color: Color.primary }}
-        >
-          <OpenInNewIcon />
-        </Link>
-      </>
-    ),
-  },
-]
-
 function getTimeDiffString(timeOld: string) {
   const timeDiffSeconds = moment().utc().diff(timeOld, 'second')
   let timeDiffString
@@ -203,16 +105,131 @@ export default function JobsListPage({
     document.title = 'Wave - Jobs List'
   }, [])
 
-  const [pageSize, setPageSize] = React.useState(10)
-  let dataAgeMessage = ''
+  const columns: GridColDef<JobsPageRowData>[] = [
+    {
+      field: 'companyName',
+      headerName: 'Company',
+      flex: 0.25,
+      renderHeader: headerComponent,
+      renderCell: rowData => (
+        <div style={{ margin: '2px' }}>
+          {rowData.row.companyName}
+          <br />
+          <div style={{ color: 'grey', fontSize: '0.7rem' }}>
+            {rowData.row.division}
+            <br />
+          </div>
+          <div style={{ color: 'black', fontSize: '0.7rem' }}>
+            {rowData.row.city}
+            {rowData.row.city && rowData.row.country && ', '}
+            {rowData.row.country}
+          </div>
+        </div>
+      ),
+    },
+    {
+      field: 'jobName',
+      headerName: 'Job Name',
+      flex: 0.25,
+      renderHeader: headerComponent,
+      renderCell: rowData => (
+        <div style={{ margin: '2px' }}>
+          <a href={`/jobs/${rowData.id}`}>{rowData.row.jobName}</a>
+        </div>
+      ),
+    },
+    {
+      field: 'keywords',
+      headerName: 'Keywords',
+      flex: 0.24,
+      sortable: false,
+      renderHeader: headerComponent,
+      renderCell: rowData => (
+        <div style={{ margin: '2px' }}>
+          {jobKeywords[rowData.row.id] &&
+            jobKeywords[rowData.row.id].map(keyword => {
+              return (
+                <Chip
+                  size="small"
+                  label={`${keyword}`}
+                  key={keyword}
+                  sx={{
+                    margin: '2px',
+                  }}
+                />
+              )
+            })}
+        </div>
+      ),
+    },
+    {
+      field: 'openings',
+      headerName: 'Openings',
+      flex: 0.08,
+      align: 'center',
+      headerAlign: 'center',
+      renderHeader: headerComponent,
+    },
+    {
+      field: 'appDeadline',
+      headerName: 'Deadline',
+      flex: 0.1,
+      align: 'center',
+      headerAlign: 'center',
+      renderHeader: headerComponent,
+      sortComparator: (date1: string, date2: string) =>
+        Date.parse(date1) - Date.parse(date2),
+    },
 
-  const isStale = moment()
-    .utc()
-    .subtract(DAYS_TO_STALE_DATA, 'day')
-    .isAfter(dateScraped)
-  dataAgeMessage = dateScraped
-    ? `Last scraped: ${getTimeDiffString(dateScraped)}`
-    : ''
+    {
+      field: 'shortlistAndApply',
+      headerName: 'Actions',
+      flex: 0.08,
+      align: 'center',
+      headerAlign: 'center',
+      renderHeader: headerComponent,
+      sortable: false,
+      renderCell: rowData => (
+        <>
+          <Link
+            href={`https://waterlooworks.uwaterloo.ca/myAccount/co-op/coop-postings.htm?ck_jobid=${rowData.id}`}
+            target="_blank"
+            sx={{ m: 0.5, color: Color.primary }}
+          >
+            <OpenInNewIcon />
+          </Link>
+        </>
+      ),
+    },
+  ]
+
+  const [pageSize, setPageSize] = React.useState(10)
+  const [dataAgeMessage, setDataAgeMessage] = useState('')
+  const [isStale, setIsStale] = useState(false)
+  const [jobKeywords, setJobKeywords] = useState<{ [key: string]: string[] }>(
+    {},
+  )
+  useEffect(() => {
+    // get last scraped time
+    setIsStale(
+      moment().utc().subtract(DAYS_TO_STALE_DATA, 'day').isAfter(dateScraped),
+    )
+    setDataAgeMessage(
+      dateScraped ? `Last scraped: ${getTimeDiffString(dateScraped)}` : '',
+    )
+
+    // get keywords for jobs
+    axios
+      .get(
+        `https://uwwave-next-git-main-uwwave.vercel.app/api/keywords?jobIDs=[${jobs.map(
+          item => item.id as any as string,
+        )}]`,
+      )
+      .then((res: any) => {
+        setJobKeywords(res)
+      })
+      .catch((err: any) => err)
+  }, [jobs, dateScraped])
 
   return (
     <>
