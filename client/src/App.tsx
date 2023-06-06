@@ -15,6 +15,7 @@ import { JobBoard } from 'src/shared/extension/jobBoard'
 import { Setup } from 'src/views/Setup'
 import { SpecificJobPage } from './views/SpecificJobPage/SpecificJobPage'
 import { AboutPage } from './views/AboutPage'
+import { LocalStorageMetadataKeys } from './shared/extension/userProfile'
 
 const theme = createTheme({
   typography: {
@@ -24,7 +25,9 @@ const theme = createTheme({
 
 export const App = () => {
   const [isDataReady, setIsDataReady] = useState(false)
-  const [extensionData, setExtensionData] = useState({})
+  const [extensionData, setExtensionData] = useState<{ [key: string]: string }>(
+    {},
+  )
   const coopJobsListPageRows = useMemo(
     () => buildCoopJobsListFromExtensionData(extensionData),
     [extensionData],
@@ -75,6 +78,9 @@ export const App = () => {
                     jobs={coopJobsListPageRows}
                     jobBoard={JobBoard.coop}
                     loading={!isDataReady}
+                    dateScraped={
+                      extensionData[LocalStorageMetadataKeys.SCRAPE_AT]
+                    }
                   />
                 }
               />
@@ -85,6 +91,9 @@ export const App = () => {
                     jobs={fulltimeJobsListPageRows}
                     jobBoard={JobBoard.fulltime}
                     loading={!isDataReady}
+                    dateScraped={
+                      extensionData[LocalStorageMetadataKeys.SCRAPE_AT]
+                    }
                   />
                 }
               />
